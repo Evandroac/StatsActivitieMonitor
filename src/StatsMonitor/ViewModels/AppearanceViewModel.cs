@@ -194,9 +194,12 @@ public sealed class AppearanceViewModel : ObservableObject
         SelectedPreset = p;
     }
 
+    private AppearancePreset? FindByName() =>
+        Presets.FirstOrDefault(x => string.Equals(x.Name, PresetName.Trim(), StringComparison.OrdinalIgnoreCase));
+
     private void LoadPreset()
     {
-        if (SelectedPreset is not { } p) return;
+        if (FindByName() is not { } p) return;
         DarkTheme = p.DarkTheme;
         foreach (var o in MainOptions.Concat(GadgetOptions))
             o.Hex = p.ColorOverrides.TryGetValue(o.Key, out var v) ? v : "";
@@ -209,11 +212,12 @@ public sealed class AppearanceViewModel : ObservableObject
 
     private void DeletePreset()
     {
-        if (SelectedPreset is not { } p) return;
+        if (FindByName() is not { } p) return;
         Presets.Remove(p);
         _service.Current.Presets = Presets.ToList();
         _presetsDirty = true;
         SelectedPreset = null;
+        PresetName = "";
     }
 
     private void Save()
