@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:StatsMonitor.Controls"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
-        Title="{h:Tr 'Stats Monitor'}" Icon="/StatsMonitor.ico" Width="990" MinWidth="990" MinHeight="600" SizeToContent="Height"
+        Title="{h:Tr 'Stats Monitor'}" Icon="/StatsMonitor.ico" Width="990" MinWidth="990" SizeToContent="Height"
         Background="{DynamicResource WindowBg}" FontFamily="Segoe UI"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
