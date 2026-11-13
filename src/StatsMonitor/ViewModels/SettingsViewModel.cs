@@ -21,12 +21,11 @@ public sealed class SettingsViewModel : ObservableObject
         ShowTemperatures = s.ShowTemperatures;
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
-        ShowFpsInGame = s.ShowFpsInGame;
         _gadgetMode = s.GadgetMode;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
         ShowCpuGadget = s.ShowCpuGadget; ShowGpuGadget = s.ShowGpuGadget; ShowRamGadget = s.ShowRamGadget;
-        ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget;
+        ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         _snapshot = service.Snapshot();
@@ -43,7 +42,6 @@ public sealed class SettingsViewModel : ObservableObject
     public bool ShowTemperatures { get; set; }
     public bool ShowGadget { get; set; }
     public bool AlwaysShowGadget { get; set; }
-    public bool ShowFpsInGame { get; set; }
     private GadgetDisplayMode _gadgetMode;
     public bool GadgetFloating { get => _gadgetMode == GadgetDisplayMode.Floating; set { if (value) _gadgetMode = GadgetDisplayMode.Floating; } }
     public bool GadgetOnTaskbar { get => _gadgetMode == GadgetDisplayMode.Taskbar; set { if (value) _gadgetMode = GadgetDisplayMode.Taskbar; } }
@@ -58,6 +56,7 @@ public sealed class SettingsViewModel : ObservableObject
     public bool ShowRamGadget { get; set; }
     public bool ShowVramGadget { get; set; }
     public bool ShowNetworkGadget { get; set; }
+    public bool ShowFpsGadget { get; set; }
     public double CpuWarnTemp { get; set; }
     public double CpuCritTemp { get; set; }
     public double GpuWarnTemp { get; set; }
@@ -79,12 +78,11 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowTemperatures = ShowTemperatures;
         s.ShowGadget = ShowGadget;
         s.AlwaysShowGadget = AlwaysShowGadget;
-        s.ShowFpsInGame = ShowFpsInGame;
         s.GadgetMode = _gadgetMode;
         s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
         s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;
         s.ShowCpuGadget = ShowCpuGadget; s.ShowGpuGadget = ShowGpuGadget; s.ShowRamGadget = ShowRamGadget;
-        s.ShowVramGadget = ShowVramGadget; s.ShowNetworkGadget = ShowNetworkGadget;
+        s.ShowVramGadget = ShowVramGadget; s.ShowNetworkGadget = ShowNetworkGadget; s.ShowFpsGadget = ShowFpsGadget;
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
 

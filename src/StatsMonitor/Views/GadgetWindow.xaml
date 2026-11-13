@@ -26,6 +26,9 @@
                 <TextBlock x:Name="FVram" FontSize="13">
                     <Run Text="VRAM: "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Vram.UsedText, Mode=OneWay}"/>
                 </TextBlock>
+                <TextBlock x:Name="FFps" FontSize="13">
+                    <Run Text="FPS: "/><Run Text="{Binding FpsText, Mode=OneWay}"/>
+                </TextBlock>
                 <TextBlock x:Name="FNet" FontSize="13">
                     <Run Text="NET: ↓ "/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
@@ -43,6 +46,9 @@
                 </TextBlock>
                 <TextBlock x:Name="TVram" FontSize="12" Margin="12,0,0,0">
                     <Run Text="VRAM "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="TFps" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="FPS "/><Run Text="{Binding FpsText, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TNet" FontSize="12" Margin="12,0,0,0">
                     <Run Text="NET ↓ "/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>

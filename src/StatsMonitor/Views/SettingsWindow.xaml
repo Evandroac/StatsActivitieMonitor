@@ -21,9 +21,7 @@
         <CheckBox ToolTip="Abre direto no modo minimizado (gadget)" Content="Iniciar minimizado" IsChecked="{Binding StartMinimized}"/>
         <CheckBox ToolTip="Mostra ou oculta os valores de temperatura" Content="Exibir temperaturas" IsChecked="{Binding ShowTemperatures}"/>
         <CheckBox ToolTip="Mostra o gadget quando o app é minimizado" Content="Exibir gadget" IsChecked="{Binding ShowGadget}"/>
-        <CheckBox ToolTip="Mantém o gadget na tela mesmo com a janela principal aberta" Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>
-        <CheckBox ToolTip="Mostra os quadros por segundo no canto da tela quando um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador." Content="Exibir FPS ao iniciar um jogo" IsChecked="{Binding ShowFpsInGame}"/>
-        <TextBlock Text="Exibição do gadget ao minimizar" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <CheckBox ToolTip="Mantém o gadget na tela mesmo com a janela principal aberta" Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>`r`n        <TextBlock Text="Exibição do gadget ao minimizar" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Gadget solto sobre a tela, que pode ser arrastado" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Gadget compacto ao lado da área de notificação" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Ao minimizar, o app apenas minimiza, sem exibir gadget" Content="Não fazer nada (sem gadget)" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
@@ -48,6 +46,7 @@
                 <CheckBox Content="Memória RAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowRamGadget}"/>
                 <CheckBox Content="Memória VRAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowVramGadget}"/>
                 <CheckBox Content="Rede / Internet" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowNetworkGadget}"/>
+                <CheckBox Content="FPS (em jogos)" ToolTip="Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador." IsChecked="{Binding ShowFpsGadget}"/>
             </StackPanel>
         </Grid>
 

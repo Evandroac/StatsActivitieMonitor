@@ -27,7 +27,7 @@ public sealed class AppSettings
     public bool ShowTemperatures { get; set; } = true;
     public bool ShowGadget { get; set; } = true;
     public bool AlwaysShowGadget { get; set; }
-    public bool ShowFpsInGame { get; set; }
+    
     public bool DarkTheme { get; set; } = true;
 
     // Custom colors keyed by theme resource name (WindowBg, CardBg, ...); missing/empty means theme default.
@@ -46,6 +46,7 @@ public sealed class AppSettings
     public bool ShowRamGadget { get; set; } = true;
     public bool ShowVramGadget { get; set; } = true;
     public bool ShowNetworkGadget { get; set; }
+    public bool ShowFpsGadget { get; set; }
 
     public double CpuWarnTemp { get; set; } = 70;
     public double CpuCritTemp { get; set; } = 85;

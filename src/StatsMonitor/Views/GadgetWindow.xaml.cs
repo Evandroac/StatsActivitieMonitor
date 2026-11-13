@@ -67,6 +67,7 @@ public partial class GadgetWindow : Window
         FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
         FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
         FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
+        FFps.Visibility = TFps.Visibility = V(s.ShowFpsGadget);
 
         if (taskbar) ReserveTaskbarWidths(s);
     }
@@ -89,6 +90,7 @@ public partial class GadgetWindow : Window
         TGpu.MinWidth = Measure("GPU 100%" + (s.ShowTemperatures ? temp : ""));
         TRam.MinWidth = Measure("RAM 100%");
         TVram.MinWidth = Measure("VRAM 100%");
+        TFps.MinWidth = Measure("FPS 999");
         TNet.MinWidth = Measure("NET ↓ 999.9 Mbps ↑ 999.9 Mbps");
     }
 

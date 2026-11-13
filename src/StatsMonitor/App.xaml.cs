@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using StatsMonitor.Helpers;
 using StatsMonitor.Services;
 using StatsMonitor.Settings;
@@ -43,7 +43,7 @@ public partial class App : Application
         main.Show();
         _viewModel.Start();
 
-        _fps = new FpsMonitor(settings);
+        _fps = new FpsMonitor(settings, _viewModel);
         _fps.Start();
     }
 

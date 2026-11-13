@@ -1,16 +1,16 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using Microsoft.Diagnostics.Tracing.Session;
 using StatsMonitor.Settings;
-using StatsMonitor.Views;
+using StatsMonitor.ViewModels;
 
 namespace StatsMonitor.Services;
 
 /// <summary>
 /// Counts frames per second of the foreground full-screen (game) window by listening to the
-/// DXGI/D3D9 Present events via ETW (needs administrator rights). Shows <see cref="FpsOverlay"/> while a game is in front.
+/// DXGI/D3D9 Present events via ETW (needs administrator rights). Publishes the value to the gadget while a game is in front.
 /// </summary>
 public sealed class FpsMonitor : IDisposable
 {
@@ -20,17 +20,18 @@ public sealed class FpsMonitor : IDisposable
     private const int D3D9PresentStart = 1;
 
     private readonly SettingsService _settings;
+    private readonly MainViewModel _vm;
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly ConcurrentDictionary<int, int> _frames = new();
     private readonly Stopwatch _clock = Stopwatch.StartNew();
     private readonly int _ownPid = Environment.ProcessId;
-    private FpsOverlay? _overlay;
     private TraceEventSession? _session;
     private bool _traceFailed;
 
-    public FpsMonitor(SettingsService settings)
+    public FpsMonitor(SettingsService settings, MainViewModel vm)
     {
         _settings = settings;
+        _vm = vm;
         _timer.Tick += (_, _) => Tick();
     }
 
@@ -38,10 +39,10 @@ public sealed class FpsMonitor : IDisposable
 
     private void Tick()
     {
-        if (!_settings.Current.ShowFpsInGame)
+        if (!_settings.Current.ShowFpsGadget)
         {
             StopTrace();
-            HideOverlay();
+            _vm.FpsText = "--";
             return;
         }
 
@@ -56,17 +57,13 @@ public sealed class FpsMonitor : IDisposable
         int fgPid = ForegroundGamePid();
         if (fgPid > 0 && counts.TryGetValue(fgPid, out int frames) && frames >= 5 && seconds > 0)
         {
-            _overlay ??= new FpsOverlay();
-            _overlay.SetFps(frames / seconds);
-            _overlay.ShowOverlay();
+            _vm.FpsText = (frames / seconds).ToString("0");
         }
         else
         {
-            HideOverlay();
+            _vm.FpsText = "--";
         }
     }
-
-    private void HideOverlay() => _overlay?.Hide();
 
     private void StartTrace()
     {
@@ -125,7 +122,6 @@ public sealed class FpsMonitor : IDisposable
     {
         _timer.Stop();
         StopTrace();
-        _overlay?.Close();
     }
 
     [StructLayout(LayoutKind.Sequential)] private struct RECT { public int Left, Top, Right, Bottom; }
