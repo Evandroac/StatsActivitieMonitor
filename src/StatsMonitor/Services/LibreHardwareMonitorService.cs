@@ -90,8 +90,10 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
 
         var cpu = all.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         var mem = all.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
-        var gpu = all.FirstOrDefault(h => h.HardwareType is HardwareType.GpuNvidia or HardwareType.GpuAmd)
-                  ?? all.FirstOrDefault(h => h.HardwareType == HardwareType.GpuIntel);
+        // Prefer the discrete GPU (largest VRAM) over integrated graphics.
+        var gpu = all.Where(h => h.HardwareType is HardwareType.GpuNvidia or HardwareType.GpuAmd or HardwareType.GpuIntel)
+                     .OrderByDescending(h => Value(h, SensorType.SmallData, "GPU Memory Total") ?? 0)
+                     .FirstOrDefault();
 
         double? ramUsed = Value(mem, SensorType.Data, "Memory Used");
         double? ramAvail = Value(mem, SensorType.Data, "Memory Available");

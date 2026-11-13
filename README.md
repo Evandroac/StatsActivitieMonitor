@@ -23,7 +23,7 @@ src/StatsMonitor
 
 ## Compilar e executar (Visual Studio)
 
-Requisitos: Windows 10/11, Visual Studio 2022 com a carga de trabalho **Desenvolvimento para desktop com .NET**, SDK .NET 8+.
+Requisitos: Windows 10/11, Visual Studio 2022 com a carga de trabalho **Desenvolvimento para desktop com .NET**, SDK .NET 8+. O aplicativo solicita **privilégios de administrador** (UAC) ao iniciar, pois a temperatura da CPU (ex.: AMD Ryzen) só é lida com acesso ao driver de sensores; sem isso o sensor retorna 0. Abra o Visual Studio como administrador para depurar com F5.
 
 1. Abra `StatsMonitor.sln`.
 2. Restaure os pacotes NuGet (automático) e compile (`Ctrl+Shift+B`).
