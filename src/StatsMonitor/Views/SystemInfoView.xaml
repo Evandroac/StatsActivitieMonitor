@@ -44,14 +44,14 @@
     </UserControl.Resources>
     <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-    <Border x:Name="ActionsPanel" Visibility="Collapsed" Grid.Column="0" Margin="0,0,14,0" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="240" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+    <Border x:Name="ActionsPanel" Visibility="Collapsed" Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="240" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <StackPanel>
             <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
             <TextBlock Text="{h:Tr 'Lê novamente as informações do computador'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
             <Button x:Name="RescanPanelButton" Content="{h:Tr '🔄  Verificar novamente'}" ToolTip="{h:Tr 'Lê novamente as informações do computador'}" AutomationProperties.Name="{h:Tr 'Verificar novamente'}" Style="{StaticResource PillButton}" Click="OnRescan"/>
         </StackPanel>
     </Border>
-    <DockPanel Grid.Column="1">        <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
+    <DockPanel x:Name="ContentPanel" Grid.Column="1">        <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
             <Button x:Name="RescanButton" DockPanel.Dock="Right" Content="{h:Tr '🔄  Verificar novamente'}" ToolTip="{h:Tr 'Lê novamente as informações do computador'}" AutomationProperties.Name="{h:Tr 'Verificar novamente'}" Style="{StaticResource PillButton}" VerticalAlignment="Center" Margin="0,0,56,0" Click="OnRescan"/>
             <TextBlock x:Name="PageTitle" Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </DockPanel>

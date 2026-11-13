@@ -29,7 +29,7 @@ public partial class SystemInfoView : UserControl
     {
         InitializeComponent();
         IsPeripherals = peripherals;
-        if (peripherals) { ActionsPanel.Visibility = Visibility.Visible; RescanButton.Visibility = Visibility.Collapsed; }
+        if (peripherals) { ActionsPanel.Visibility = Visibility.Visible; RescanButton.Visibility = Visibility.Collapsed; ContentPanel.Margin = new Thickness(20); }
         void SetTitle() => PageTitle.Text = Loc.T(peripherals ? "Periféricos" : "Sistema");
         SetTitle();
         async Task Load()
