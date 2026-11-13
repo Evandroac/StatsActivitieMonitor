@@ -10,7 +10,7 @@ public sealed class TitleIcon : IValueConverter
 
     private static readonly (string Key, string Icon)[] Map =
     {
-        ("cpu", "🧠"), ("processador", "🧠"), ("gpu", "🎮"), ("vídeo", "🎮"), ("video", "🎮"),
+        ("sensor", "📡"), ("cache", "⚡"), ("cpu", "🧠"), ("processador", "🧠"), ("gpu", "🎮"), ("vídeo", "🎮"), ("video", "🎮"),
         ("ram", "🧩"), ("memória", "🧩"), ("memory", "🧩"), ("disk", "💽"), ("storage", "💽"), ("disco", "💽"), ("armazen", "💽"),
         ("rede", "🌐"), ("network", "🌐"), ("computer", "💻"), ("board", "🔌"), ("processor", "🧠"), ("internet", "🌐"), ("computador", "💻"), ("sistema", "🪟"),
         ("placa", "🔌"), ("bios", "🔌"),

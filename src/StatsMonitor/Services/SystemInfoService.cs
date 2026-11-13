@@ -7,12 +7,28 @@ namespace StatsMonitor.Services;
 
 public sealed record InfoGroup(string Title, List<InfoLine> Lines);
 /// <summary>CopyText is the text the copy button puts on the clipboard; null hides the button.</summary>
-public sealed record InfoLine(string Label, string Value, string? CopyText = null);
+public sealed class InfoLine : System.ComponentModel.INotifyPropertyChanged
+{
+    private string _value;
+    private string? _copyText;
+
+    public InfoLine(string label, string value, string? copyText = null) { Label = label; _value = value; _copyText = copyText; }
+
+    public string Label { get; }
+
+    public string Value { get => _value; set { if (_value != value) { _value = value; Raise(nameof(Value)); } } }
+
+    public string? CopyText { get => _copyText; set { if (_copyText != value) { _copyText = value; Raise(nameof(CopyText)); } } }
+
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+
+    private void Raise(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
+}
 
 /// <summary>Collects static information about the computer through WMI.</summary>
 public static class SystemInfoService
 {
-    private const string NA = "N/D";
+    internal const string NA = "N/D";
 
     private static Task<List<InfoGroup>>? _cache;
 
@@ -116,7 +132,7 @@ public static class SystemInfoService
 
     private static ManagementBaseObject? First(string cls, params string[] props) => All(cls, props).FirstOrDefault();
 
-    private static string S(ManagementBaseObject? o, string prop, string fallback = NA)
+    internal static string S(ManagementBaseObject? o, string prop, string fallback = NA)
     {
         try
         {
@@ -126,7 +142,7 @@ public static class SystemInfoService
         catch { return fallback; }
     }
 
-    private static string Date(ManagementBaseObject? o, string prop)
+    internal static string Date(ManagementBaseObject? o, string prop)
     {
         string v = S(o, prop, "");
         try { return v.Length > 0 ? ManagementDateTimeConverter.ToDateTime(v).ToString("dd/MM/yyyy HH:mm") : NA; }

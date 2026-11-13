@@ -421,7 +421,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = v;
         SearchBox.Visibility = v;
         if (!open) SearchPopup.IsOpen = false;
     }
@@ -480,7 +480,7 @@ public partial class MainWindow : Window
         switch (r.Page)
         {
             case SearchPage.Main: ShowMain(); break;
-            case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false }) OnOpenSystem(this, new RoutedEventArgs()); break;
+            case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false, Component: null }) OnOpenSystem(this, new RoutedEventArgs()); break;
             case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Appearance: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
@@ -517,7 +517,13 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavPeripherals, NavSettings }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavPeripherals, NavSettings }) b.Tag = b == active ? "active" : null;
+    }
+
+    private void OnOpenComponent(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { CommandParameter: string p } b && Enum.TryParse<StatsMonitor.Services.ComponentKind>(p, out var kind))
+            ShowPage(new SystemInfoView(kind, () => _vm.LastSnapshot, () => _vm.LastNetwork), b);
     }
 
     private void OnOpenSystem(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(), NavSystem);

@@ -221,6 +221,24 @@
             <Button x:Name="NavMain" Style="{StaticResource NavButton}" Tag="active" ToolTip="{h:Tr 'Tela principal'}" AutomationProperties.Name="{h:Tr 'Tela principal'}" Click="OnNavMain">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📊" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMain" Text="{h:Tr 'Principal'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
+            <Button x:Name="NavCpu" Style="{StaticResource NavButton}" CommandParameter="Cpu" ToolTip="{h:Tr 'CPU'}" AutomationProperties.Name="{h:Tr 'CPU'}" Click="OnOpenComponent">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🧠" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblCpu" Text="{h:Tr 'CPU'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+            <Button x:Name="NavGpu" Style="{StaticResource NavButton}" CommandParameter="Gpu" ToolTip="{h:Tr 'GPU'}" AutomationProperties.Name="{h:Tr 'GPU'}" Click="OnOpenComponent">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🎮" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblGpu" Text="{h:Tr 'GPU'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+            <Button x:Name="NavRam" Style="{StaticResource NavButton}" CommandParameter="Memory" ToolTip="{h:Tr 'RAM'}" AutomationProperties.Name="{h:Tr 'RAM'}" Click="OnOpenComponent">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🧩" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblRam" Text="{h:Tr 'RAM'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+            <Button x:Name="NavDisk" Style="{StaticResource NavButton}" CommandParameter="Disk" ToolTip="{h:Tr 'Disco'}" AutomationProperties.Name="{h:Tr 'Disco'}" Click="OnOpenComponent">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="💽" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblDisk" Text="{h:Tr 'Disco'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+            <Button x:Name="NavNet" Style="{StaticResource NavButton}" CommandParameter="Network" ToolTip="{h:Tr 'Rede'}" AutomationProperties.Name="{h:Tr 'Rede'}" Click="OnOpenComponent">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblNet" Text="{h:Tr 'Rede'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+            <Button x:Name="NavSensors" Style="{StaticResource NavButton}" CommandParameter="Sensors" ToolTip="{h:Tr 'Sensores'}" AutomationProperties.Name="{h:Tr 'Sensores'}" Click="OnOpenComponent">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="📡" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSensors" Text="{h:Tr 'Sensores'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
             <Button x:Name="NavSystem" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Informações do computador'}" AutomationProperties.Name="{h:Tr 'Informações do computador'}" Click="OnOpenSystem">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="ℹ️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSystem" Text="{h:Tr 'Sistema'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>

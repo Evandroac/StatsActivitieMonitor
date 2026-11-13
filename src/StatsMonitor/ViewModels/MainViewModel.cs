@@ -70,6 +70,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     }
 
     private NetworkSnapshot? _lastNet;
+    public NetworkSnapshot? LastNetwork => _lastNet;
+    public HardwareSnapshot? LastSnapshot => _last;
     private AppSettings S => _settingsService.Current;
 
     public ComponentViewModel Cpu { get; }
