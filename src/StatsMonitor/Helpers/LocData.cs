@@ -91,7 +91,7 @@ public static class LocData
         ["Unidade de temperatura"] = "Temperature unit",
         ["Notificações de alerta"] = "Alert notifications",
         ["Pausar a leitura quando oculto e sem gadget"] = "Pause reading when hidden and no gadget",
-        ["Economiza recursos, mas os alertas não são emitidos enquanto a leitura está pausada"] = "Saves resources, but alerts are not raised while reading is paused",
+        ["Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas"] = "Saves resources. Only pauses when alert notifications are off",
         ["Ler sensores de disco e placa-mãe com menos frequência"] = "Read disk and motherboard sensors less often",
         ["Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais"] = "Updates disks and motherboard every 10 s: saves resources, but those values are less current",
         ["SEÇÕES"] = "SECTIONS",
