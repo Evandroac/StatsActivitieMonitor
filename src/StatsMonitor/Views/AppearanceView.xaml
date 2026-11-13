@@ -4,6 +4,32 @@
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         FontFamily="Segoe UI">
     <UserControl.Resources>
+        <Style x:Key="ThemeCard" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid>
+                            <Border x:Name="Bd" CornerRadius="12" BorderThickness="2" Padding="8" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource ControlBorder}">
+                                <ContentPresenter/>
+                            </Border>
+                            <Border x:Name="Badge" Visibility="Collapsed" Width="20" Height="20" CornerRadius="10" Background="{DynamicResource Accent}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,6,6,0">
+                                <TextBlock Text="✓" Foreground="White" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ControlBorderHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="Badge" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <h:BoolTextConverter x:Key="CustomText" TrueText="Personalizada" FalseText="Padrão do tema"/>
         <DataTemplate x:Key="ColorRow">
             <Grid Margin="0,3">
@@ -135,9 +161,33 @@
                 <StackPanel>
                     <TextBlock Text="🌗  Tema base" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="Theme" Content="Escuro" ToolTip="Usa as cores escuras como base" IsChecked="{Binding DarkTheme}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
-                        <RadioButton GroupName="Theme" Content="Claro" ToolTip="Usa as cores claras como base" IsChecked="{Binding LightTheme}" Foreground="{DynamicResource TextPrimary}"/>
-                    </StackPanel>
+                        <RadioButton GroupName="Theme" Tag="Escuro" ToolTip="Usa as cores escuras como base" IsChecked="{Binding DarkTheme}" Style="{StaticResource ThemeCard}" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="120" Height="64" CornerRadius="8" Background="#12141A" BorderBrush="#40808080" BorderThickness="1" Padding="8">
+                                    <Border Background="#1B1E27" CornerRadius="5" Padding="6" BorderBrush="#30808080" BorderThickness="1">
+                                        <StackPanel>
+                                            <Border Height="5" Width="44" CornerRadius="2.5" Background="#ECEFF4" HorizontalAlignment="Left"/>
+                                            <Border Height="5" Width="70" CornerRadius="2.5" Background="#ECEFF4" Opacity="0.5" HorizontalAlignment="Left" Margin="0,5,0,0"/>
+                                            <Border Height="6" Width="30" CornerRadius="3" Background="#4DA3FF" HorizontalAlignment="Left" Margin="0,6,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Border>
+                                <TextBlock Text="🌙  Escuro" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </RadioButton>                        <RadioButton GroupName="Theme" Tag="Claro" ToolTip="Usa as cores claras como base" IsChecked="{Binding LightTheme}" Style="{StaticResource ThemeCard}" Margin="0">
+                            <StackPanel>
+                                <Border Width="120" Height="64" CornerRadius="8" Background="#EEF1F6" BorderBrush="#40808080" BorderThickness="1" Padding="8">
+                                    <Border Background="#FFFFFF" CornerRadius="5" Padding="6" BorderBrush="#30808080" BorderThickness="1">
+                                        <StackPanel>
+                                            <Border Height="5" Width="44" CornerRadius="2.5" Background="#1B1F2A" HorizontalAlignment="Left"/>
+                                            <Border Height="5" Width="70" CornerRadius="2.5" Background="#1B1F2A" Opacity="0.5" HorizontalAlignment="Left" Margin="0,5,0,0"/>
+                                            <Border Height="6" Width="30" CornerRadius="3" Background="#1F7AE0" HorizontalAlignment="Left" Margin="0,6,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Border>
+                                <TextBlock Text="☀  Claro" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </RadioButton>                    </StackPanel>
                     <Border Margin="0,10,0,0" CornerRadius="8" Padding="10" BorderThickness="1" BorderBrush="#40808080" Background="{Binding MainOptions[0].Preview}"
                             ToolTip="Pré-visualização do sistema com o tema e as cores escolhidas">
                         <StackPanel>

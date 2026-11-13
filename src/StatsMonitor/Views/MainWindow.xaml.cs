@@ -264,6 +264,9 @@ public partial class MainWindow : Window
                 case System.Windows.Controls.Primitives.ToggleButton { Content: string label } tb when tb is CheckBox or RadioButton:
                     if (Clean(label) is { Length: > 0 } l) lines.Add($"{(tb.IsChecked == true ? "[x]" : "[ ]")} {l}");
                     return;
+                case RadioButton { Tag: string name } rb:
+                    lines.Add($"{(rb.IsChecked == true ? "[x]" : "[ ]")} {name}");
+                    return;
                 case System.Windows.Controls.Primitives.ButtonBase:
                 case System.Windows.Controls.Primitives.Popup:
                     return;
