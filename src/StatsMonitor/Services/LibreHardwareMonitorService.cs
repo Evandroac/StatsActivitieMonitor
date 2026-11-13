@@ -121,7 +121,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
 
             CpuName = cpu?.Name.Trim() ?? "CPU",
             CpuLoad = Value(cpu, SensorType.Load, "CPU Total"),
-            CpuClockMhz = Average(cpu, SensorType.Clock, n => n.StartsWith("CPU Core #", StringComparison.Ordinal)),
+            CpuClockMhz = CpuClock(cpu),
             CpuTemp = CpuTemperature(cpu),
 
             RamTotalGb = ramTotal,
@@ -179,6 +179,17 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             .Where(s => s.SensorType == type && s.Value.HasValue && nameFilter(s.Name))
             .Select(s => (double)s.Value!.Value).ToList();
         return values is { Count: > 0 } ? values.Average() : null;
+    }
+
+    // AMD reports "Core #1", Intel "CPU Core #1"; "(Effective)" and bus sensors are fallbacks.
+    private static double? CpuClock(IHardware? cpu)
+    {
+        static bool IsCore(string n) => (n.StartsWith("Core #", StringComparison.OrdinalIgnoreCase)
+                                         || n.StartsWith("CPU Core #", StringComparison.OrdinalIgnoreCase))
+                                        && !n.Contains("Effective", StringComparison.OrdinalIgnoreCase);
+        return Average(cpu, SensorType.Clock, n => IsCore(n) && n.Contains('#'))
+               ?? Average(cpu, SensorType.Clock, n => n.Contains("Core", StringComparison.OrdinalIgnoreCase))
+               ?? Average(cpu, SensorType.Clock, n => !n.Contains("Bus", StringComparison.OrdinalIgnoreCase));
     }
 
     private static double? MaxTemp(IEnumerable<IHardware> hardware)
