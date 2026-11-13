@@ -89,8 +89,8 @@
                             </Style>
                         </ToggleButton.Style>
                     </ToggleButton>
-                    <Popup x:Name="PresetPopup" PlacementTarget="{Binding ElementName=PresetToggle}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
-                        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Margin="0,2,6,6" MinWidth="260" MaxHeight="220">
+                    <Popup x:Name="PresetPopup" PlacementTarget="{Binding ElementName=PresetBox}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
+                        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Margin="0,2,6,6" Width="{Binding ActualWidth, ElementName=PresetBox}" MaxHeight="220">
                             <ListBox ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset}" SelectionChanged="OnPresetPicked"
                                      Background="Transparent" BorderThickness="0" DisplayMemberPath="Name" Foreground="{DynamicResource TextPrimary}"/>
                         </Border>
