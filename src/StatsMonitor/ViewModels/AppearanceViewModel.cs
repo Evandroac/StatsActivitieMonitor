@@ -78,7 +78,9 @@ public sealed class AppearanceViewModel : ObservableObject
             Fixed("Critical", "Crítica", s.CriticalColor, "#FF4D4F"),
         ];
 
+        _snapshot = service.Snapshot();
         SaveCommand = new RelayCommand(Save);
+        ApplyCommand = new RelayCommand(Apply);
         ResetCommand = new RelayCommand(Reset);
     }
 
@@ -101,6 +103,8 @@ public sealed class AppearanceViewModel : ObservableObject
 
     public double GadgetOpacity { get => _gadgetOpacity; set => Set(ref _gadgetOpacity, Math.Clamp(Math.Round(value), 10, 100)); }
 
+    private readonly string _snapshot;
+    public ICommand ApplyCommand { get; }
     public ICommand SaveCommand { get; }
     public ICommand ResetCommand { get; }
 
@@ -115,7 +119,25 @@ public sealed class AppearanceViewModel : ObservableObject
         GadgetOpacity = 80;
     }
 
+    public bool IsSaved { get; private set; }
+
+    public void Revert()
+    {
+        _service.Restore(_snapshot);
+        ThemeHelper.Apply(_service.Current);
+        _onApplied();
+    }
+
     private void Save()
+    {
+        Apply();
+        _service.Save();
+        IsSaved = true;
+        Saved?.Invoke();
+    }
+
+    // Previews the values without persisting them.
+    private void Apply()
     {
         var s = _service.Current;
         s.DarkTheme = _dark;
@@ -129,9 +151,7 @@ public sealed class AppearanceViewModel : ObservableObject
         s.WarningColor = Alert(1, "#FFC107");
         s.CriticalColor = Alert(2, "#FF4D4F");
 
-        _service.Save();
         ThemeHelper.Apply(s);
         _onApplied();
-        Saved?.Invoke();
     }
 }

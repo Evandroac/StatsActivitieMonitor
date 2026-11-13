@@ -28,8 +28,13 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
+        _snapshot = service.Snapshot();
         SaveCommand = new RelayCommand(Save);
+        ApplyCommand = new RelayCommand(Apply);
     }
+
+    private readonly string _snapshot;
+    public ICommand ApplyCommand { get; }
 
     public double IntervalSeconds { get; set; }
     public bool RunAtStartup { get; set; }
@@ -58,7 +63,10 @@ public sealed class SettingsViewModel : ObservableObject
 
     public event Action? Saved;
 
-    private void Save()
+    public bool IsSaved { get; private set; }
+
+    // Previews the values without persisting them.
+    private void Apply()
     {
         var s = _service.Current;
         s.UpdateIntervalMs = (int)Math.Clamp(IntervalSeconds * 1000, 250, 60000);
@@ -75,9 +83,21 @@ public sealed class SettingsViewModel : ObservableObject
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
 
-        _service.Save();
-        StartupService.SetEnabled(s.RunAtStartup);
         _onApplied();
+    }
+
+    private void Save()
+    {
+        Apply();
+        _service.Save();
+        StartupService.SetEnabled(_service.Current.RunAtStartup);
+        IsSaved = true;
         Saved?.Invoke();
+    }
+
+    public void Revert()
+    {
+        _service.Restore(_snapshot);
+        _onApplied();
     }
 }

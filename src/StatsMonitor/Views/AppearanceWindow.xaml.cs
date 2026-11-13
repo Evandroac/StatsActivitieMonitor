@@ -10,5 +10,6 @@ public partial class AppearanceWindow : Window
         InitializeComponent();
         DataContext = vm;
         vm.Saved += Close;
+        Closed += (_, _) => { if (!vm.IsSaved) vm.Revert(); };
     }
 }

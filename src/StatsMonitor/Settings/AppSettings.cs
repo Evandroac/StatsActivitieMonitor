@@ -68,6 +68,17 @@ public sealed class SettingsService
         }
     }
 
+    public string Snapshot() => JsonSerializer.Serialize(Current, Options);
+
+    // Copies the snapshot back into the live instance so existing references stay valid.
+    public void Restore(string snapshot)
+    {
+        var old = JsonSerializer.Deserialize<AppSettings>(snapshot);
+        if (old is null) return;
+        foreach (var p in typeof(AppSettings).GetProperties())
+            p.SetValue(Current, p.GetValue(old));
+    }
+
     public void Save()
     {
         try
