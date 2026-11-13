@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -67,6 +67,29 @@ public partial class GadgetWindow : Window
         FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
         FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
         FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
+
+        if (taskbar) ReserveTaskbarWidths(s);
+    }
+
+    // Fixed slot per indicator (worst-case text) so the widget doesn't resize on every update.
+    private void ReserveTaskbarWidths(Settings.AppSettings s)
+    {
+        double Measure(string text)
+        {
+            var ft = new System.Windows.Media.FormattedText(text, System.Globalization.CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new System.Windows.Media.Typeface(TCpu.FontFamily, TCpu.FontStyle, TCpu.FontWeight, TCpu.FontStretch),
+                TCpu.FontSize, System.Windows.Media.Brushes.Black,
+                System.Windows.Media.VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            return Math.Ceiling(ft.WidthIncludingTrailingWhitespace);
+        }
+
+        string temp = " | 100°C";
+        TCpu.MinWidth = Measure("CPU 100%" + (s.ShowTemperatures ? temp : ""));
+        TGpu.MinWidth = Measure("GPU 100%" + (s.ShowTemperatures ? temp : ""));
+        TRam.MinWidth = Measure("RAM 100%");
+        TVram.MinWidth = Measure("VRAM 100%");
+        TNet.MinWidth = Measure("NET ↓ 999.9 Mbps ↑ 999.9 Mbps");
     }
 
     private void Reposition()
