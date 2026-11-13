@@ -1,6 +1,7 @@
 ﻿<Window x:Class="StatsMonitor.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:h="clr-namespace:StatsMonitor.Helpers"
         Title="Configurações" Width="460" SizeToContent="Height" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" Background="{DynamicResource WindowBg}" FontFamily="Segoe UI">
     <Window.Resources>
@@ -13,16 +14,16 @@
         <TextBlock Text="Geral" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="Intervalo de atualização (s):" VerticalAlignment="Center" Width="200"/>
-            <TextBox Style="{StaticResource Field}" Text="{Binding IntervalSeconds, StringFormat=0.##}"/>
+            <TextBox Style="{StaticResource Field}" h:Hint.Text="1" ToolTip="Segundos entre atualizações (mínimo 0,25; máximo 60)" Text="{Binding IntervalSeconds, StringFormat=0.##}"/>
         </StackPanel>
-        <CheckBox Content="Iniciar com o Windows" IsChecked="{Binding RunAtStartup}"/>
-        <CheckBox Content="Iniciar minimizado" IsChecked="{Binding StartMinimized}"/>
-        <CheckBox Content="Exibir temperaturas" IsChecked="{Binding ShowTemperatures}"/>
-        <CheckBox Content="Exibir gadget" IsChecked="{Binding ShowGadget}"/>
-        <CheckBox Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>
+        <CheckBox ToolTip="Abre o Stats Monitor automaticamente ao entrar no Windows" Content="Iniciar com o Windows" IsChecked="{Binding RunAtStartup}"/>
+        <CheckBox ToolTip="Abre direto no modo minimizado (gadget)" Content="Iniciar minimizado" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox ToolTip="Mostra ou oculta os valores de temperatura" Content="Exibir temperaturas" IsChecked="{Binding ShowTemperatures}"/>
+        <CheckBox ToolTip="Mostra o gadget quando o app é minimizado" Content="Exibir gadget" IsChecked="{Binding ShowGadget}"/>
+        <CheckBox ToolTip="Mantém o gadget na tela mesmo com a janela principal aberta" Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>
         <TextBlock Text="Exibição do gadget ao minimizar" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
-        <RadioButton GroupName="GadgetMode" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="Gadget solto sobre a tela, que pode ser arrastado" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="Gadget compacto ao lado da área de notificação" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
 
         <TextBlock Text="Painéis exibidos" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
@@ -31,19 +32,19 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <TextBlock Text="Janela principal" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
-                <CheckBox Content="CPU" IsChecked="{Binding ShowCpuMain}"/>
-                <CheckBox Content="GPU" IsChecked="{Binding ShowGpuMain}"/>
-                <CheckBox Content="Memória RAM" IsChecked="{Binding ShowRamMain}"/>
-                <CheckBox Content="Memória VRAM" IsChecked="{Binding ShowVramMain}"/>
-                <CheckBox Content="Rede / Internet" IsChecked="{Binding ShowNetworkMain}"/>
+                <CheckBox Content="CPU" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowCpuMain}"/>
+                <CheckBox Content="GPU" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowGpuMain}"/>
+                <CheckBox Content="Memória RAM" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowRamMain}"/>
+                <CheckBox Content="Memória VRAM" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowVramMain}"/>
+                <CheckBox Content="Rede / Internet" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowNetworkMain}"/>
             </StackPanel>
             <StackPanel Grid.Column="1">
                 <TextBlock Text="Gadget (minimizado)" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
-                <CheckBox Content="CPU" IsChecked="{Binding ShowCpuGadget}"/>
-                <CheckBox Content="GPU" IsChecked="{Binding ShowGpuGadget}"/>
-                <CheckBox Content="Memória RAM" IsChecked="{Binding ShowRamGadget}"/>
-                <CheckBox Content="Memória VRAM" IsChecked="{Binding ShowVramGadget}"/>
-                <CheckBox Content="Rede / Internet" IsChecked="{Binding ShowNetworkGadget}"/>
+                <CheckBox Content="CPU" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowCpuGadget}"/>
+                <CheckBox Content="GPU" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowGpuGadget}"/>
+                <CheckBox Content="Memória RAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowRamGadget}"/>
+                <CheckBox Content="Memória VRAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowVramGadget}"/>
+                <CheckBox Content="Rede / Internet" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowNetworkGadget}"/>
             </StackPanel>
         </Grid>
 
@@ -58,16 +59,16 @@
             <TextBlock Grid.Column="1" Text="Atenção" Style="{StaticResource Caption}"/>
             <TextBlock Grid.Column="2" Text="Crítica" Style="{StaticResource Caption}"/>
             <TextBlock Grid.Row="1" Text="CPU" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Field}" Margin="0,3" Text="{Binding CpuWarnTemp}"/>
-            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource Field}" Margin="0,3" Text="{Binding CpuCritTemp}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Field}" Margin="0,3" h:Hint.Text="°C" ToolTip="Temperatura (°C) a partir da qual o valor fica em atenção" Text="{Binding CpuWarnTemp}"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource Field}" Margin="0,3" h:Hint.Text="°C" ToolTip="Temperatura (°C) a partir da qual o valor fica crítico" Text="{Binding CpuCritTemp}"/>
             <TextBlock Grid.Row="2" Text="GPU" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource Field}" Margin="0,3" Text="{Binding GpuWarnTemp}"/>
-            <TextBox Grid.Row="2" Grid.Column="2" Style="{StaticResource Field}" Margin="0,3" Text="{Binding GpuCritTemp}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource Field}" Margin="0,3" h:Hint.Text="°C" ToolTip="Temperatura (°C) a partir da qual o valor fica em atenção" Text="{Binding GpuWarnTemp}"/>
+            <TextBox Grid.Row="2" Grid.Column="2" Style="{StaticResource Field}" Margin="0,3" h:Hint.Text="°C" ToolTip="Temperatura (°C) a partir da qual o valor fica crítico" Text="{Binding GpuCritTemp}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Cancelar" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
-            <Button Content="Aplicar" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
-            <Button Content="Salvar" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
+            <Button Content="Cancelar" ToolTip="Fecha e desfaz a prévia" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
+            <Button Content="Aplicar" ToolTip="Mostra as alterações no app sem salvar" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
+            <Button Content="Salvar" ToolTip="Aplica, grava e fecha" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
         </StackPanel>
     </StackPanel>
 </Window>

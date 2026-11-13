@@ -45,7 +45,7 @@ public sealed class ColorOption : ObservableObject
     public Brush Preview => new SolidColorBrush(Current);
     public string DefaultHex => _default().ToString();
 
-    public void Refresh() { Raise(nameof(Preview)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B)); }
+    public void Refresh() { Raise(nameof(Preview)); Raise(nameof(DefaultHex)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B)); }
     public void Reset() => Hex = "";
 }
 

@@ -1,4 +1,4 @@
-<Window x:Class="StatsMonitor.Views.MainWindow"
+﻿<Window x:Class="StatsMonitor.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:StatsMonitor.Controls"
@@ -98,9 +98,9 @@
 
         <WrapPanel Margin="6,0,6,6">
             <TextBlock Text="Monitor" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,24,4"/>
-            <Button Content="⚙  Configurações" Style="{StaticResource PillButton}" Click="OnOpenSettings" Margin="0,0,8,4"/>
-            <Button Content="🎨  Personalização" Style="{StaticResource PillButton}" Click="OnOpenAppearance" Margin="0,0,8,4"/>
-            <Button Content="🛡  Executar como administrador" Style="{StaticResource PillButton}" Click="OnRunAsAdmin" Margin="0,0,0,4"/>
+            <Button Content="⚙  Configurações" Style="{StaticResource PillButton}" ToolTip="Intervalo, painéis exibidos, gadget e limites de temperatura" Click="OnOpenSettings" Margin="0,0,8,4"/>
+            <Button Content="🎨  Personalização" Style="{StaticResource PillButton}" ToolTip="Temas, cores e presets de personalização" Click="OnOpenAppearance" Margin="0,0,8,4"/>
+            <Button Content="🛡  Executar como administrador" Style="{StaticResource PillButton}" ToolTip="Reabre o app com privilégios de administrador (necessário para temperaturas)" Click="OnRunAsAdmin" Margin="0,0,0,4"/>
         </WrapPanel>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
