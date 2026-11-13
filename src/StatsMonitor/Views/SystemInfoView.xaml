@@ -8,7 +8,7 @@
             <Setter Property="Content" Value="📋"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="Padding" Value="3,0"/>
-            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="ToolTip" Value="{h:Tr 'Copiar para a área de transferência'}"/>
@@ -28,19 +28,19 @@
             </Setter>
         </Style>
         <DataTemplate x:Key="FullLine">
-                                            <Grid Margin="0,2">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="220"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}"/>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center"/>
-                                                    <Button Tag="{Binding Value}" Click="OnCopy"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource CopyButton}"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value="N/D"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="-"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
-                                                </StackPanel>
-                                            </Grid>
-                                        </DataTemplate>
-        <DataTemplate x:Key="NameLine"><Border Background="{DynamicResource CardBorder}" CornerRadius="6" Padding="8,5" Margin="0,3"><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource CopyButton}" Tag="{Binding Label}" Click="OnCopy"/><Ellipse DockPanel.Dock="Left" Width="6" Height="6" Fill="{DynamicResource Accent}" Margin="0,0,8,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip="{Binding Label}"/></DockPanel></Border></DataTemplate>
+            <Grid Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <DockPanel>
+                    <Button DockPanel.Dock="Left" Tag="{Binding Value}" Click="OnCopy"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource CopyButton}"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value="N/D"><Setter Property="Visibility" Value="Hidden"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="-"><Setter Property="Visibility" Value="Hidden"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
+                    <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}" VerticalAlignment="Center"/>
+                </DockPanel>
+                <TextBlock Grid.Column="1" Text="{Binding Value}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="NameLine"><Border Background="{DynamicResource CardBorder}" CornerRadius="6" Padding="8,5" Margin="0,3"><DockPanel><Button DockPanel.Dock="Left" Style="{StaticResource CopyButton}" Tag="{Binding Label}" Click="OnCopy"/><Ellipse DockPanel.Dock="Left" Width="6" Height="6" Fill="{DynamicResource Accent}" Margin="0,0,8,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip="{Binding Label}"/></DockPanel></Border></DataTemplate>
     </UserControl.Resources>
     <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
