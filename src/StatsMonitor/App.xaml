@@ -210,10 +210,10 @@
                             <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                                     x:Name="Bd" BorderThickness="1" CornerRadius="6" Padding="{TemplateBinding Padding}">
                                 <Grid>
-                                    <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                    <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="0"/>
                                     <TextBlock x:Name="HintText" Text="{Binding (h:Hint.Text), RelativeSource={RelativeSource TemplatedParent}}"
                                                Foreground="{DynamicResource TextSecondary}" Opacity="0.7" IsHitTestVisible="False"
-                                               VerticalAlignment="Center" Margin="2,0" Visibility="Collapsed"/>
+                                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="1,0,0,0" TextTrimming="CharacterEllipsis" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Visibility="Collapsed"/>
                                 </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -226,6 +226,7 @@
                                 <Trigger Property="Text" Value="">
                                     <Setter TargetName="HintText" Property="Visibility" Value="Visible"/>
                                 </Trigger>
+                                <MultiTrigger><MultiTrigger.Conditions><Condition Property="Text" Value=""/><Condition Property="IsKeyboardFocused" Value="True"/></MultiTrigger.Conditions><Setter TargetName="HintText" Property="Opacity" Value="0.45"/></MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
