@@ -135,7 +135,7 @@ public sealed class SettingsViewModel : ObservableObject
     private double _gpuWarnTemp; public double GpuWarnTemp { get => _gpuWarnTemp; set { if (_gpuWarnTemp != value) { _gpuWarnTemp = value; AutoSave(); } } }
     private double _gpuCritTemp; public double GpuCritTemp { get => _gpuCritTemp; set { if (_gpuCritTemp != value) { _gpuCritTemp = value; AutoSave(); } } }
 
-    private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; AutoSave(); } } }
+    private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; Raise(); AutoSave(); } } }
     private bool _notifyAlerts; public bool NotifyAlerts { get => _notifyAlerts; set { if (_notifyAlerts != value) { _notifyAlerts = value; AutoSave(); } } }
     private bool _alertSound; public bool AlertSound { get => _alertSound; set { if (_alertSound != value) { _alertSound = value; AutoSave(); } } }
     private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }

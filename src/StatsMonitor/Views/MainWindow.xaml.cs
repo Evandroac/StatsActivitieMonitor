@@ -543,6 +543,7 @@ public partial class MainWindow : Window
             UpdateGadget();
         });
         var view = new SettingsView(vm, new AppearanceView(avm));
+        avm.ThemePicked += () => vm.FollowSystemTheme = false;
             view.TestAlertRequested += ShowTestAlert;
         view.CloseRequested += ShowMain;
         ShowPage(view, NavSettings);

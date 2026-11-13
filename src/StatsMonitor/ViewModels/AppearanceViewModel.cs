@@ -146,9 +146,16 @@ public sealed class AppearanceViewModel : ObservableObject
             if (!Set(ref _dark, value)) return;
             Raise(nameof(LightTheme));
             foreach (var o in MainOptions.Concat(GadgetOptions)) o.Refresh();
+            _themePicked = true;
+            ThemePicked?.Invoke();
             AutoSave();
         }
     }
+
+    private bool _themePicked;
+
+    /// <summary>Raised when the user picks a theme, which overrides "follow Windows theme".</summary>
+    public event Action? ThemePicked;
 
     public bool LightTheme { get => !_dark; set => DarkTheme = !value; }
 
@@ -260,6 +267,7 @@ public sealed class AppearanceViewModel : ObservableObject
     {
         var s = _service.Current;
         s.DarkTheme = _dark;
+        if (_themePicked) { s.FollowSystemTheme = false; _themePicked = false; }
         s.GadgetOpacity = (int)_gadgetOpacity;
         s.ColorOverrides = MainOptions.Concat(GadgetOptions)
             .Where(o => ThemeHelper.TryParseColor(o.Hex, out _))
