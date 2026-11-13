@@ -15,6 +15,15 @@ public sealed class Sparkline : FrameworkElement
         nameof(Stroke), typeof(Brush), typeof(Sparkline),
         new FrameworkPropertyMetadata(Brushes.DodgerBlue, FrameworkPropertyMetadataOptions.AffectsRender));
 
+    public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(
+        nameof(Maximum), typeof(double), typeof(Sparkline), new FrameworkPropertyMetadata(100.0, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    public static readonly DependencyProperty UnitProperty = DependencyProperty.Register(
+        nameof(Unit), typeof(string), typeof(Sparkline), new PropertyMetadata("%"));
+
+    public double Maximum { get => (double)GetValue(MaximumProperty); set => SetValue(MaximumProperty, value); }
+    public string Unit { get => (string)GetValue(UnitProperty); set => SetValue(UnitProperty, value); }
+
     public IEnumerable? Values { get => (IEnumerable?)GetValue(ValuesProperty); set => SetValue(ValuesProperty, value); }
     public Brush Stroke { get => (Brush)GetValue(StrokeProperty); set => SetValue(StrokeProperty, value); }
 
@@ -43,7 +52,7 @@ public sealed class Sparkline : FrameworkElement
         var values = Values?.Cast<double>().ToList();
         if (values == null || values.Count < 2 || ActualWidth <= 0) return;
         _hover = Math.Clamp((int)Math.Round(e.GetPosition(this).X / (ActualWidth / (values.Count - 1))), 0, values.Count - 1);
-        _tip.Content = StatsMonitor.Helpers.Loc.T("Uso neste ponto: {0}%", values[_hover].ToString("0.0"));
+        _tip.Content = StatsMonitor.Helpers.Loc.T("Uso neste ponto: {0}%", values[_hover].ToString("0.0")).Replace("%", Unit == "%" ? "%" : " " + Unit);
         InvalidateVisual();
     }
 
@@ -79,7 +88,7 @@ public sealed class Sparkline : FrameworkElement
         if (values == null || values.Count < 2 || ActualWidth <= 0 || ActualHeight <= 0) return;
 
         double step = ActualWidth / (values.Count - 1);
-        Point P(int i) => new(i * step, ActualHeight - Math.Clamp(values[i], 0, 100) / 100 * (ActualHeight - 2) - 1);
+        Point P(int i) => new(i * step, ActualHeight - Math.Clamp(values[i], 0, Maximum) / Math.Max(Maximum, 0.0001) * (ActualHeight - 2) - 1);
 
         var line = new StreamGeometry();
         using (var ctx = line.Open())
