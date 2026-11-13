@@ -29,6 +29,12 @@ public partial class SystemInfoView : UserControl
     {
         InitializeComponent();
         IsPeripherals = peripherals;
+        if (peripherals)
+        {
+            var panel = new FrameworkElementFactory(typeof(System.Windows.Controls.Primitives.UniformGrid));
+            panel.SetValue(System.Windows.Controls.Primitives.UniformGrid.ColumnsProperty, 2);
+            Groups.ItemsPanel = new ItemsPanelTemplate(panel);
+        }
         
         void SetTitle() => PageTitle.Text = Loc.T(peripherals ? "Periféricos" : "Sistema");
         SetTitle();

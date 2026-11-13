@@ -40,7 +40,7 @@
                                                 </StackPanel>
                                             </Grid>
                                         </DataTemplate>
-        <DataTemplate x:Key="NameLine"><StackPanel Orientation="Horizontal" Margin="0,2"><TextBlock Text="{Binding Label}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Label}" Click="OnCopy"/></StackPanel></DataTemplate>
+        <DataTemplate x:Key="NameLine"><Border Background="{DynamicResource CardBorder}" CornerRadius="6" Padding="8,5" Margin="0,3"><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource CopyButton}" Tag="{Binding Label}" Click="OnCopy"/><Ellipse DockPanel.Dock="Left" Width="6" Height="6" Fill="{DynamicResource Accent}" Margin="0,0,8,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip="{Binding Label}"/></DockPanel></Border></DataTemplate>
     </UserControl.Resources>
     <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
@@ -60,7 +60,7 @@
                     <DataTemplate>
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><TextBlock Text="{Binding Lines.Count, StringFormat=({0})}" Style="{StaticResource Caption}" Margin="6,0,0,0" VerticalAlignment="Center"/></StackPanel>
                                 <ItemsControl ItemsSource="{Binding Lines}"><ItemsControl.ItemTemplate><DataTemplate><ContentControl Content="{Binding}" ContentTemplate="{StaticResource FullLine}"><ContentControl.Style><Style TargetType="ContentControl"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value=""><Setter Property="ContentTemplate" Value="{StaticResource NameLine}"/></DataTrigger></Style.Triggers></Style></ContentControl.Style></ContentControl></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
                             </StackPanel>
                         </Border>
