@@ -14,9 +14,19 @@ public partial class MainWindow : Window
     public MainWindow(MainViewModel vm, SettingsService settings)
     {
         InitializeComponent();
+        ArrangeCards();
         DataContext = _vm = vm;
         _settings = settings;
         Loaded += (_, _) => { UpdateGadget(); ArrangeCards(); };
+        // Start at (and never shrink below) the size that shows every card without scrolling.
+        ContentRendered += (_, _) =>
+        {
+            if (SizeToContent == SizeToContent.Manual) return;
+            double h = Math.Min(ActualHeight, SystemParameters.WorkArea.Height);
+            SizeToContent = SizeToContent.Manual;
+            MinHeight = h;
+            Height = h;
+        };
         SizeChanged += (_, _) => ArrangeCards();
         StateChanged += (_, _) => UpdateGadget();
         Closed += (_, _) =>
@@ -31,7 +41,7 @@ public partial class MainWindow : Window
     /// <summary>Lays the cards out in 2 columns on wide windows and 1 column on narrow ones.</summary>
     private void ArrangeCards()
     {
-        int cols = ActualWidth >= 760 ? 2 : 1;
+        int cols = (ActualWidth > 0 ? ActualWidth : Width) >= 760 ? 2 : 1;
         if (cols == _columns) return;
         _columns = cols;
 
