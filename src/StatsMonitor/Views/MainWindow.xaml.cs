@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using StatsMonitor.Settings;
 using StatsMonitor.ViewModels;
 
@@ -15,13 +16,46 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = _vm = vm;
         _settings = settings;
-        Loaded += (_, _) => UpdateGadget();
+        Loaded += (_, _) => { UpdateGadget(); ArrangeCards(); };
+        SizeChanged += (_, _) => ArrangeCards();
         StateChanged += (_, _) => UpdateGadget();
         Closed += (_, _) =>
         {
             _gadget?.Close();
             Application.Current.Shutdown();
         };
+    }
+
+    private int _columns;
+
+    /// <summary>Lays the cards out in 2 columns on wide windows and 1 column on narrow ones.</summary>
+    private void ArrangeCards()
+    {
+        int cols = ActualWidth >= 760 ? 2 : 1;
+        if (cols == _columns) return;
+        _columns = cols;
+
+        CardsGrid.ColumnDefinitions.Clear();
+        CardsGrid.RowDefinitions.Clear();
+        for (int c = 0; c < cols; c++) CardsGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+        var cards = new FrameworkElement[] { CpuCard, GpuCard, RamCard, VramCard };
+        int rows = (cards.Length + cols - 1) / cols + 2;
+        for (int r = 0; r < rows; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+        for (int i = 0; i < cards.Length; i++)
+        {
+            Grid.SetRow(cards[i], i / cols);
+            Grid.SetColumn(cards[i], i % cols);
+            Grid.SetColumnSpan(cards[i], 1);
+        }
+        Grid.SetRow(NetCard, rows - 2);
+        Grid.SetRow(FooterCard, rows - 1);
+        foreach (var f in new FrameworkElement[] { NetCard, FooterCard })
+        {
+            Grid.SetColumn(f, 0);
+            Grid.SetColumnSpan(f, cols);
+        }
     }
 
     public void AttachGadget(GadgetWindow gadget)
