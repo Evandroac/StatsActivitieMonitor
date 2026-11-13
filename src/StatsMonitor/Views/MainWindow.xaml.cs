@@ -251,25 +251,31 @@ public partial class MainWindow : Window
         catch (System.Runtime.InteropServices.COMException) { }
     }
 
-    // Collects the visible texts and control states of a page, in on-screen order.
+    // Collects the useful visible texts and control states of a page, in on-screen order (no icons or buttons).
     private static void CopyPage(DependencyObject page)
     {
         var lines = new List<string>();
+        static string Clean(string s) => System.Text.RegularExpressions.Regex.Replace(s.Trim(), @"^[^\p{L}\p{N}\[(]+", "").Trim();
         void Walk(DependencyObject d)
         {
             if (d is UIElement { IsVisible: false }) return;
             switch (d)
             {
                 case System.Windows.Controls.Primitives.ToggleButton { Content: string label } tb when tb is CheckBox or RadioButton:
-                    lines.Add($"{(tb.IsChecked == true ? "[x]" : "[ ]")} {label}");
+                    if (Clean(label) is { Length: > 0 } l) lines.Add($"{(tb.IsChecked == true ? "[x]" : "[ ]")} {l}");
                     return;
-                case TextBlock tx when !string.IsNullOrWhiteSpace(tx.Text):
-                    lines.Add(tx.Text.Trim());
+                case System.Windows.Controls.Primitives.ButtonBase:
+                case System.Windows.Controls.Primitives.Popup:
                     return;
-                case TextBox box when !string.IsNullOrWhiteSpace(box.Text):
-                    lines.Add($"= {box.Text}");
+                case TextBlock tx:
+                    if (Clean(tx.Text) is { Length: > 0 } c) lines.Add(c);
                     return;
-                case Button { Content: string s } when s.Length > 2:
+                case TextBox box:
+                    if (!string.IsNullOrWhiteSpace(box.Text))
+                    {
+                        if (lines.Count > 0 && !lines[^1].EndsWith(':') && !lines[^1].Contains(": ")) lines[^1] += $": {box.Text.Trim()}";
+                        else lines.Add(box.Text.Trim());
+                    }
                     return;
             }
             int n = System.Windows.Media.VisualTreeHelper.GetChildrenCount(d);
@@ -279,7 +285,6 @@ public partial class MainWindow : Window
         try { Clipboard.SetText("Stats Monitor" + Environment.NewLine + string.Join(Environment.NewLine, lines)); }
         catch (System.Runtime.InteropServices.COMException) { }
     }
-
     private void OnRunAsAdmin(object sender, RoutedEventArgs e)
     {
         try
