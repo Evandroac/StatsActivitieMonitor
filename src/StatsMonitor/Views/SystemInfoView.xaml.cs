@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using StatsMonitor.Services;
@@ -17,6 +17,13 @@ public partial class SystemInfoView : UserControl
             _groups = await Task.Run(SystemInfoService.Read);
             Groups.ItemsSource = _groups;
         };
+    }
+
+    private void OnCopy(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string text } || string.IsNullOrWhiteSpace(text)) return;
+        try { Clipboard.SetText(text); }
+        catch (System.Runtime.InteropServices.COMException) { }
     }
 
     private void OnCopyAll(object sender, RoutedEventArgs e)
