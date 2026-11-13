@@ -10,7 +10,20 @@ public partial class SystemInfoView : UserControl
 {
     private List<InfoGroup> _groups = [];
 
+    private Func<Task> _load = () => Task.CompletedTask;
+
     public bool IsPeripherals { get; }
+
+    private async void OnRescan(object sender, RoutedEventArgs e)
+    {
+        RescanButton.IsEnabled = false;
+        try
+        {
+            if (!IsPeripherals) SystemInfoService.Invalidate();
+            await _load();
+        }
+        finally { RescanButton.IsEnabled = true; }
+    }
 
     public SystemInfoView(bool peripherals = false)
     {
@@ -23,6 +36,7 @@ public partial class SystemInfoView : UserControl
             _groups = await (peripherals ? PeripheralInfoService.GetAsync() : SystemInfoService.GetAsync());
             Groups.ItemsSource = _groups;
         }
+        _load = Load;
         Action onLang = async () => { SetTitle(); await Load(); };
         Loaded += async (_, _) => { await Load(); Loc.LanguageChanged += onLang; };
         Unloaded += (_, _) => Loc.LanguageChanged -= onLang;

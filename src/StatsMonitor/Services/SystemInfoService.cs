@@ -17,6 +17,8 @@ public static class SystemInfoService
 
     private static string? _cacheLang;
 
+    public static void Invalidate() => _cache = null;
+
     public static Task<List<InfoGroup>> GetAsync()
     {
         if (_cacheLang != Loc.Lang) { _cache = null; _cacheLang = Loc.Lang; }

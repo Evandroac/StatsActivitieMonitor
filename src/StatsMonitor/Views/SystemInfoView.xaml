@@ -30,6 +30,7 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
+            <Button x:Name="RescanButton" DockPanel.Dock="Right" Content="{h:Tr '🔄  Verificar novamente'}" ToolTip="{h:Tr 'Lê novamente as informações do computador'}" AutomationProperties.Name="{h:Tr 'Verificar novamente'}" Style="{StaticResource PillButton}" VerticalAlignment="Center" Margin="0,0,56,0" Click="OnRescan"/>
             <TextBlock x:Name="PageTitle" Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </DockPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
