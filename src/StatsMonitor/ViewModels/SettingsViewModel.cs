@@ -45,6 +45,8 @@ public sealed class SettingsViewModel : ObservableObject
     private GadgetDisplayMode _gadgetMode;
     public bool GadgetFloating { get => _gadgetMode == GadgetDisplayMode.Floating; set { if (value) _gadgetMode = GadgetDisplayMode.Floating; } }
     public bool GadgetOnTaskbar { get => _gadgetMode == GadgetDisplayMode.Taskbar; set { if (value) _gadgetMode = GadgetDisplayMode.Taskbar; } }
+    public bool GadgetFloatingBar { get => _gadgetMode == GadgetDisplayMode.FloatingBar; set { if (value) _gadgetMode = GadgetDisplayMode.FloatingBar; } }
+    public bool GadgetDockedTop { get => _gadgetMode == GadgetDisplayMode.DockedTop; set { if (value) _gadgetMode = GadgetDisplayMode.DockedTop; } }
     public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set { if (value) _gadgetMode = GadgetDisplayMode.None; } }
     public bool ShowCpuMain { get; set; }
     public bool ShowGpuMain { get; set; }

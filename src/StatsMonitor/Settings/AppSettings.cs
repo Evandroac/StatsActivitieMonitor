@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace StatsMonitor.Settings;
 
-public enum GadgetDisplayMode { Floating, Taskbar, None }
+public enum GadgetDisplayMode { Floating, Taskbar, None, FloatingBar, DockedTop }
 
 public sealed class AppearancePreset
 {

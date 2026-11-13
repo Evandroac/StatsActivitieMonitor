@@ -44,9 +44,13 @@ public partial class SettingsWindow : Window
 
         Fill(FloatingPanel, floating, 13, false);
         Fill(TaskbarPanel, taskbar, 12, true);
+        Fill(BarPanel, taskbar, 12, true);
+        Fill(TopPanel, taskbar, 12, true);
 
         Mark(FloatingBox, FloatingCaption, "Flutuante", vm.GadgetFloating && !off, off);
         Mark(TaskbarBox, TaskbarCaption, "Barra de tarefas", vm.GadgetOnTaskbar && !off, off);
+        Mark(BarBox, BarCaption, "Barra flutuante", vm.GadgetFloatingBar && !off, off);
+        Mark(TopBox, TopCaption, "Faixa no topo", vm.GadgetDockedTop && !off, off);
     }
 
     private static void Fill(Panel panel, List<string> rows, double size, bool horizontal)

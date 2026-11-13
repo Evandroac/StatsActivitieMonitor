@@ -25,7 +25,7 @@ public partial class GadgetWindow : Window
 
         MouseLeftButtonDown += OnMouseDown;
         LocationChanged += (_, _) => SavePosition();
-        SizeChanged += (_, _) => { if (IsVisible && IsTaskbarMode) Reposition(); };
+        SizeChanged += (_, _) => { if (IsVisible && IsFixedPosition) Reposition(); };
 
         // Re-check periodically: other tray widgets may appear/disappear, and the taskbar may cover us.
         var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
@@ -40,6 +40,9 @@ public partial class GadgetWindow : Window
     }
 
     private bool IsTaskbarMode => _settings.Current.GadgetMode == GadgetDisplayMode.Taskbar;
+    private bool IsDockedTop => _settings.Current.GadgetMode == GadgetDisplayMode.DockedTop;
+    private bool IsHorizontalRow => _settings.Current.GadgetMode is GadgetDisplayMode.Taskbar or GadgetDisplayMode.FloatingBar or GadgetDisplayMode.DockedTop;
+    private bool IsFixedPosition => IsTaskbarMode || IsDockedTop;
 
     public void ShowGadget()
     {
@@ -56,12 +59,25 @@ public partial class GadgetWindow : Window
     /// <summary>Switches between the 4-line floating layout and the compact taskbar row.</summary>
     private void ApplyMode()
     {
-        bool taskbar = IsTaskbarMode;
+        bool taskbar = IsHorizontalRow;
+        var mode = _settings.Current.GadgetMode;
         FloatingPanel.Visibility = taskbar ? Visibility.Collapsed : Visibility.Visible;
         TaskbarPanel.Visibility = taskbar ? Visibility.Visible : Visibility.Collapsed;
-        Root.Padding = taskbar ? new Thickness(10, 4, 10, 4) : new Thickness(12, 8, 12, 8);
-        Root.CornerRadius = new CornerRadius(taskbar ? 6 : 10);
-        ToolTip = taskbar ? "Duplo clique para abrir" : "Arraste para mover · duplo clique para abrir";
+        Root.Padding = mode switch
+        {
+            GadgetDisplayMode.Taskbar => new Thickness(10, 4, 10, 4),
+            GadgetDisplayMode.FloatingBar => new Thickness(12, 6, 12, 6),
+            GadgetDisplayMode.DockedTop => new Thickness(14, 5, 14, 5),
+            _ => new Thickness(12, 8, 12, 8),
+        };
+        Root.CornerRadius = mode switch
+        {
+            GadgetDisplayMode.Taskbar => new CornerRadius(6),
+            GadgetDisplayMode.FloatingBar => new CornerRadius(8),
+            GadgetDisplayMode.DockedTop => new CornerRadius(0, 0, 10, 10),
+            _ => new CornerRadius(10),
+        };
+        ToolTip = IsFixedPosition ? "Duplo clique para abrir" : "Arraste para mover · duplo clique para abrir";
 
         var s = _settings.Current;
         static Visibility V(bool b) => b ? Visibility.Visible : Visibility.Collapsed;
@@ -100,6 +116,13 @@ public partial class GadgetWindow : Window
     private void Reposition()
     {
         if (IsTaskbarMode && TryPlaceInTaskbar()) return;
+        if (IsDockedTop)
+        {
+            var area = SystemParameters.WorkArea;
+            Left = area.Left + (area.Width - ActualWidth) / 2;
+            Top = area.Top;
+            return;
+        }
 
         var s = _settings.Current;
         var work = SystemParameters.WorkArea;
@@ -186,13 +209,13 @@ public partial class GadgetWindow : Window
             RestoreRequested?.Invoke(this, EventArgs.Empty);
             return;
         }
-        if (IsTaskbarMode) return;
+        if (IsFixedPosition) return;
         try { DragMove(); } catch (InvalidOperationException) { }
     }
 
     private void SavePosition()
     {
-        if (!IsLoaded || !IsVisible || IsTaskbarMode) return;
+        if (!IsLoaded || !IsVisible || IsFixedPosition) return;
         _settings.Current.GadgetLeft = Left;
         _settings.Current.GadgetTop = Top;
         _settings.Save();
