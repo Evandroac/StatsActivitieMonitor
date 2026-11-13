@@ -23,8 +23,8 @@ public partial class SettingsView : UserControl
         AddHandler(ToggleButton.CheckedEvent, refresh);
         AddHandler(ToggleButton.UncheckedEvent, refresh);
         Action onLang = RefreshPreview;
-        Loaded += (_, _) => { RefreshPreview(); Loc.LanguageChanged += onLang; };
-        Unloaded += (_, _) => Loc.LanguageChanged -= onLang;
+        Loaded += (_, _) => { RefreshPreview(); Loc.LanguageChanged += onLang; Units.Changed += onLang; };
+        Unloaded += (_, _) => { Loc.LanguageChanged -= onLang; Units.Changed -= onLang; };
     }
 
     /// <summary>Persists any pending change (used when navigating away).</summary>
@@ -44,9 +44,9 @@ public partial class SettingsView : UserControl
         var floating = new List<string>();
         var taskbar = new List<string>();
         void Add(bool on, string f, string tb) { if (on) { floating.Add(f); taskbar.Add(tb); } }
-        Add(vm.ShowCpuGadget, $"CPU: 23%{t("52°C")}", $"CPU 23%{t("52°C")}");
+        Add(vm.ShowCpuGadget, $"CPU: 23%{t(Units.Temp(52))}", $"CPU 23%{t(Units.Temp(52))}");
         Add(vm.ShowRamGadget, Loc.T("RAM: 41% | 13,2 GB"), "RAM 41%");
-        Add(vm.ShowGpuGadget, $"GPU: 37%{t("58°C")}", $"GPU 37%{t("58°C")}");
+        Add(vm.ShowGpuGadget, $"GPU: 37%{t(Units.Temp(58))}", $"GPU 37%{t(Units.Temp(58))}");
         Add(vm.ShowVramGadget, $"{Loc.T("Disco")}: 12%", $"{Loc.T("Disco")} 12%");
         Add(vm.ShowFpsGadget, "FPS: 144", "FPS 144");
         Add(vm.ShowNetworkGadget, Loc.T("NET: ↓ 12,3 Mbps ↑ 1,2 Mbps"), Loc.T("NET ↓ 12,3 Mbps ↑ 1,2 Mbps"));

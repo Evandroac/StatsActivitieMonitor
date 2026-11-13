@@ -76,8 +76,8 @@ public sealed class ComponentViewModel : ObservableObject
             _minTemp = _minTemp.HasValue ? Math.Min(_minTemp.Value, temp.Value) : temp.Value;
             _maxTemp = _maxTemp.HasValue ? Math.Max(_maxTemp.Value, temp.Value) : temp.Value;
         }
-        TempText = temp.HasValue ? $"{temp.Value:0}°C" : NotAvailable;
-        MinMaxText = _minTemp.HasValue ? Loc.T("mín {0:0}°C · máx {1:0}°C", _minTemp!.Value, _maxTemp!.Value) : NotAvailable;
+        TempText = temp.HasValue ? Units.Temp(temp.Value) : NotAvailable;
+        MinMaxText = _minTemp.HasValue ? Loc.T("mín {0} · máx {1}", Units.Temp(_minTemp!.Value), Units.Temp(_maxTemp!.Value)) : NotAvailable;
         RefreshBrush();
 
         History.RemoveAt(0);

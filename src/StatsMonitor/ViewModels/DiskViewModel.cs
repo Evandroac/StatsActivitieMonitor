@@ -33,7 +33,7 @@ public sealed class DiskViewModel : ObservableObject
         {
             var d = s.Disks[i];
             Drives[i].Set(d.Name,
-                d.Temp is { } t ? $"{t:0}°C" : NA,
+                d.Temp is { } t ? Units.Temp(t) : NA,
                 Speed(d.ReadBps), Speed(d.WriteBps),
                 d.Activity is { } a ? $"{a:0}%" : NA,
                 d.Health is { } hl ? Loc.T(hl) : NA,

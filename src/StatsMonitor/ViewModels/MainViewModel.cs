@@ -32,6 +32,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _monitor.SnapshotUpdated += OnSnapshot;
         _monitor.ErrorOccurred += OnError;
         Loc.LanguageChanged += () => { if (_last is { } l) Apply(l); if (_lastNet is { } n) Network.Update(n); };
+        Units.Changed += () => { if (_last is { } l) Apply(l); };
     }
 
     private DetailItem? _gpuMemClock, _gpuVram, _gpuPower, _gpuFan;

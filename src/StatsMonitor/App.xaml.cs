@@ -33,6 +33,7 @@ public partial class App : Application
         var settings = new SettingsService();
         settings.Load();
         Loc.SetLanguage(settings.Current.Language);
+        Units.SetFahrenheit(settings.Current.TempUnit == "F");
         ThemeHelper.Apply(settings.Current);
 
         _viewModel = new MainViewModel(new LibreHardwareMonitorService(), settings);

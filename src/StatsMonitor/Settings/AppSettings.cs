@@ -62,6 +62,7 @@ public sealed class AppSettings
 
     public bool SidebarPinned { get; set; }
     public string Language { get; set; } = "pt";
+    public string TempUnit { get; set; } = "C";
     public bool WindowMaximized { get; set; } = true;
     public double? WindowLeft { get; set; }
     public double? WindowTop { get; set; }

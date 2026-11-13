@@ -16,6 +16,7 @@ public sealed class SettingsViewModel : ObservableObject
         _onApplied = onApplied;
         Load(service.Current);
         _language = service.Current.Language == "en" ? "en" : "pt";
+        _fahrenheit = service.Current.TempUnit == "F";
         _loading = false;
         _timer.Tick += (_, _) => Flush();
     }
@@ -58,6 +59,18 @@ public sealed class SettingsViewModel : ObservableObject
         if (!value || _language == lang) return;
         _language = lang;
         Loc.SetLanguage(lang);
+        AutoSave();
+    }
+
+    private bool _fahrenheit;
+    public bool UnitC { get => !_fahrenheit; set => SetUnit(value, false); }
+    public bool UnitF { get => _fahrenheit; set => SetUnit(value, true); }
+
+    private void SetUnit(bool value, bool fahrenheit)
+    {
+        if (!value || _fahrenheit == fahrenheit) return;
+        _fahrenheit = fahrenheit;
+        Units.SetFahrenheit(fahrenheit);
         AutoSave();
     }
 
@@ -126,6 +139,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = _gadgetMode;
         s.Language = _language;
+        s.TempUnit = _fahrenheit ? "F" : "C";
         s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
         s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;
         s.ShowCpuGadget = ShowCpuGadget; s.ShowGpuGadget = ShowGpuGadget; s.ShowRamGadget = ShowRamGadget;

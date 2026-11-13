@@ -31,6 +31,11 @@
             <RadioButton GroupName="Lang" Content="Português" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" IsChecked="{Binding LangPt}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
             <RadioButton GroupName="Lang" Content="English" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" IsChecked="{Binding LangEn}" Foreground="{DynamicResource TextPrimary}"/>
         </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr '🌡️  Unidade de temperatura:'}" VerticalAlignment="Center" Width="200"/>
+            <RadioButton GroupName="Unit" Content="°C (Celsius)" ToolTip="{h:Tr 'Unidade de exibição das temperaturas'}" IsChecked="{Binding UnitC}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
+            <RadioButton GroupName="Unit" Content="°F (Fahrenheit)" ToolTip="{h:Tr 'Unidade de exibição das temperaturas'}" IsChecked="{Binding UnitF}" Foreground="{DynamicResource TextPrimary}"/>
+        </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
