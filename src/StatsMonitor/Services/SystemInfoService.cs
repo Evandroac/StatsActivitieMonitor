@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Management;
 using System.Runtime.InteropServices;
 
@@ -11,6 +11,10 @@ public sealed record InfoLine(string Label, string Value);
 public static class SystemInfoService
 {
     private const string NA = "N/D";
+
+    private static Task<List<InfoGroup>>? _cache;
+
+    public static Task<List<InfoGroup>> GetAsync() => _cache ??= Task.Run(Read);
 
     public static List<InfoGroup> Read()
     {

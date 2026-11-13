@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using StatsMonitor.Helpers;
 using StatsMonitor.Settings;
 using StatsMonitor.ViewModels;
 
@@ -19,6 +20,7 @@ public partial class MainWindow : Window
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();
+        if (settings.Current.SidebarPinned) { NavPin.Tag = "active"; SetMenu(true); }
         ArrangeCards();
         Loaded += (_, _) => UpdateGadget();
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
@@ -209,12 +211,78 @@ public partial class MainWindow : Window
 
     private bool _menuOpen;
 
-    private void OnToggleMenu(object sender, RoutedEventArgs e)
+    private void OnToggleMenu(object sender, RoutedEventArgs e) => SetMenu(!_menuOpen);
+
+    private void SetMenu(bool open)
     {
-        _menuOpen = !_menuOpen;
-        NavPanel.Width = _menuOpen ? 200 : 48;
-        var v = _menuOpen ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
+        _menuOpen = open;
+        NavPanel.Width = open ? 220 : 48;
+        var v = open ? Visibility.Visible : Visibility.Collapsed;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = LblPin.Visibility = v;
+        SearchBox.Visibility = v;
+        if (!open) SearchPopup.IsOpen = false;
+    }
+
+    // Saved preference: pinned keeps the menu expanded, unpinned keeps it collapsed.
+    private void OnTogglePin(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.SidebarPinned = !_settings.Current.SidebarPinned;
+        _settings.Save();
+        NavPin.Tag = _settings.Current.SidebarPinned ? "active" : null;
+        SetMenu(_settings.Current.SidebarPinned);
+    }
+
+    private void OnSearchIcon(object sender, RoutedEventArgs e)
+    {
+        SetMenu(true);
+        SearchBox.Focus();
+    }
+
+    private void OnSearchChanged(object sender, TextChangedEventArgs e)
+    {
+        _ = SearchIndex.LoadSystemAsync();
+        var results = SearchIndex.Search(SearchBox.Text);
+        SearchList.ItemsSource = results;
+        SearchList.SelectedIndex = -1;
+        SearchPopup.IsOpen = results.Count > 0;
+    }
+
+    private void OnSearchKey(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case System.Windows.Input.Key.Down:
+                SearchList.SelectedIndex = Math.Min(SearchList.SelectedIndex + 1, SearchList.Items.Count - 1);
+                e.Handled = true; break;
+            case System.Windows.Input.Key.Up:
+                SearchList.SelectedIndex = Math.Max(SearchList.SelectedIndex - 1, 0);
+                e.Handled = true; break;
+            case System.Windows.Input.Key.Enter:
+                if (SearchList.Items.Count > 0) GoToResult((SearchResult)SearchList.Items[Math.Max(SearchList.SelectedIndex, 0)]);
+                e.Handled = true; break;
+            case System.Windows.Input.Key.Escape:
+                SearchPopup.IsOpen = false; e.Handled = true; break;
+        }
+    }
+
+    private void OnSearchClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        var item = ItemsControl.ContainerFromElement(SearchList, (DependencyObject)e.OriginalSource) as ListBoxItem;
+        if (item?.DataContext is SearchResult r) GoToResult(r);
+    }
+
+    private void GoToResult(SearchResult r)
+    {
+        SearchPopup.IsOpen = false;
+        switch (r.Page)
+        {
+            case SearchPage.Main: ShowMain(); break;
+            case SearchPage.System: if (PageHost.Content is not SystemInfoView) OnOpenSystem(this, new RoutedEventArgs()); break;
+            case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
+            case SearchPage.Appearance: if (PageHost.Content is not AppearanceView) OnOpenAppearance(this, new RoutedEventArgs()); break;
+        }
+        FrameworkElement root = r.Page == SearchPage.Main ? MainPage : PageHost;
+        SearchHighlighter.Show(root, r.Match);
     }
 
     private void OnNavMain(object sender, RoutedEventArgs e) => ShowMain();

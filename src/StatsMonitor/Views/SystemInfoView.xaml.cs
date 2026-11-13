@@ -14,7 +14,7 @@ public partial class SystemInfoView : UserControl
         InitializeComponent();
         Loaded += async (_, _) =>
         {
-            _groups = await Task.Run(SystemInfoService.Read);
+            _groups = await SystemInfoService.GetAsync();
             Groups.ItemsSource = _groups;
         };
     }
