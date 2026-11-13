@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using StatsMonitor.Settings;
 
@@ -24,6 +24,8 @@ public static class ThemeHelper
                 Application.Current.Resources[key] = Frozen(c);
         }
 
+        ApplyCardChrome(dark);
+
         Application.Current.Resources.Remove("GadgetBg");
         var baseColor = s.ColorOverrides.TryGetValue("GadgetBg", out var gh) && TryParseColor(gh, out var gc)
             ? gc
@@ -31,6 +33,33 @@ public static class ThemeHelper
         if (s.GadgetOpacity is { } pct) baseColor.A = (byte)Math.Round(Math.Clamp(pct, 10, 100) * 255 / 100.0);
         else if (!s.ColorOverrides.ContainsKey("GadgetBg")) return;
         Application.Current.Resources["GadgetBg"] = Frozen(baseColor);
+    }
+
+    // Card fill/edge/shadow derive from the active theme colors (including user overrides).
+    private static void ApplyCardChrome(bool dark)
+    {
+        var res = Application.Current.Resources;
+        Color Get(string k, Color fb) => res[k] is SolidColorBrush b ? b.Color : fb;
+        var bg = Get("CardBg", Colors.Gray);
+        var border = Get("CardBorder", Colors.DimGray);
+        var accent = Get("Accent", Colors.DodgerBlue);
+        Color Mix(Color a, Color b, double k) => Color.FromRgb(
+            (byte)(a.R + (b.R - a.R) * k), (byte)(a.G + (b.G - a.G) * k), (byte)(a.B + (b.B - a.B) * k));
+
+        var fill = new LinearGradientBrush(Mix(bg, accent, dark ? 0.07 : 0.045), bg, new Point(0, 0), new Point(0.9, 1));
+        var edge = new LinearGradientBrush(Mix(border, accent, dark ? 0.55 : 0.45), border, new Point(0, 0), new Point(0, 1));
+        var shadow = new System.Windows.Media.Effects.DropShadowEffect
+        {
+            Color = dark ? Mix(Colors.Black, accent, 0.25) : Mix(Color.FromRgb(40, 55, 90), accent, 0.2),
+            BlurRadius = dark ? 16 : 14,
+            ShadowDepth = dark ? 2 : 3,
+            Direction = 270,
+            Opacity = dark ? 0.55 : 0.16,
+        };
+        fill.Freeze(); edge.Freeze(); shadow.Freeze();
+        res["CardFill"] = fill;
+        res["CardEdge"] = edge;
+        res["CardEffect"] = shadow;
     }
 
     public static readonly string[] ColorKeys =
