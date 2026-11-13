@@ -47,11 +47,12 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="220"/>
                                                     <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap"/>
-                                                <Button Grid.Column="2" Style="{StaticResource CopyButton}" Tag="{Binding Value}" VerticalAlignment="Top" Click="OnCopy"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center"/>
+                                                    <Button Style="{StaticResource CopyButton}" Tag="{Binding Value}" Click="OnCopy"/>
+                                                </StackPanel>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
