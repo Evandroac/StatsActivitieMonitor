@@ -16,19 +16,20 @@ public partial class SystemInfoView : UserControl
 
     private async void OnRescan(object sender, RoutedEventArgs e)
     {
-        RescanButton.IsEnabled = false;
+        RescanButton.IsEnabled = RescanPanelButton.IsEnabled = false;
         try
         {
             if (!IsPeripherals) SystemInfoService.Invalidate();
             await _load();
         }
-        finally { RescanButton.IsEnabled = true; }
+        finally { RescanButton.IsEnabled = RescanPanelButton.IsEnabled = true; }
     }
 
     public SystemInfoView(bool peripherals = false)
     {
         InitializeComponent();
         IsPeripherals = peripherals;
+        if (peripherals) { ActionsPanel.Visibility = Visibility.Visible; RescanButton.Visibility = Visibility.Collapsed; }
         void SetTitle() => PageTitle.Text = Loc.T(peripherals ? "Periféricos" : "Sistema");
         SetTitle();
         async Task Load()
