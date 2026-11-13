@@ -3,16 +3,25 @@ using StatsMonitor.ViewModels;
 
 namespace StatsMonitor.Views;
 
-public partial class AppearanceWindow : Window
+public partial class AppearanceView : System.Windows.Controls.UserControl
 {
-    public AppearanceWindow(AppearanceViewModel vm)
+    public event Action? CloseRequested;
+
+    public AppearanceView(AppearanceViewModel vm)
     {
         InitializeComponent();
         DataContext = vm;
-        vm.Saved += Close;
-        MaxHeight = SystemParameters.WorkArea.Height;
-        Closed += (_, _) => { if (!vm.IsSaved) vm.Revert(); };
+        vm.Saved += () => CloseRequested?.Invoke();
     }
+
+    private void OnCancel(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is AppearanceViewModel vm) vm.Revert();
+        CloseRequested?.Invoke();
+    }
+
+    /// <summary>Discards anything not applied or saved (used when navigating away).</summary>
+    public void Discard() { if (DataContext is AppearanceViewModel { IsSaved: false } vm) vm.Revert(); }
 
     private bool _autoFilling;
 

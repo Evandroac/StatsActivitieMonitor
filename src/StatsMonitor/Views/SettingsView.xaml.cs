@@ -6,17 +6,17 @@ using StatsMonitor.ViewModels;
 
 namespace StatsMonitor.Views;
 
-public partial class SettingsWindow : Window
+public partial class SettingsView : UserControl
 {
     private readonly SettingsViewModel _vm;
 
-    public SettingsWindow(SettingsViewModel vm)
+    public event Action? CloseRequested;
+
+    public SettingsView(SettingsViewModel vm)
     {
         InitializeComponent();
         DataContext = _vm = vm;
-        MaxHeight = SystemParameters.WorkArea.Height;
-        vm.Saved += Close;
-        Closed += (_, _) => { if (!vm.IsSaved) vm.Revert(); };
+        vm.Saved += () => CloseRequested?.Invoke();
 
         // Refresh after the bindings have pushed the new value into the view model.
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
@@ -24,6 +24,15 @@ public partial class SettingsWindow : Window
         AddHandler(ToggleButton.UncheckedEvent, refresh);
         Loaded += (_, _) => RefreshPreview();
     }
+
+    private void OnCancel(object sender, RoutedEventArgs e)
+    {
+        _vm.Revert();
+        CloseRequested?.Invoke();
+    }
+
+    /// <summary>Discards anything not applied or saved (used when navigating away).</summary>
+    public void Discard() { if (!_vm.IsSaved) _vm.Revert(); }
 
     private void RefreshPreview()
     {

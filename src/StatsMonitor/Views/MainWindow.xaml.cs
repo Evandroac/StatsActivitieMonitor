@@ -75,10 +75,13 @@ public partial class MainWindow : Window
         Height = h;
     }
 
+    private bool _panelRefitPending;
+
     private void ApplyPanelSettings()
     {
         ArrangeCards(force: true);
         if (WindowState != WindowState.Normal) return;
+        if (MainPage.Visibility != Visibility.Visible) { _panelRefitPending = true; return; }
         MinHeight = 0;
         SizeToContent = SizeToContent.Height;
         Dispatcher.BeginInvoke(FitToContent, System.Windows.Threading.DispatcherPriority.Loaded);
@@ -173,6 +176,48 @@ public partial class MainWindow : Window
         }
     }
 
+    private bool _menuOpen;
+
+    private void OnToggleMenu(object sender, RoutedEventArgs e)
+    {
+        _menuOpen = !_menuOpen;
+        NavPanel.Width = _menuOpen ? 200 : 48;
+        var v = _menuOpen ? Visibility.Visible : Visibility.Collapsed;
+        LblMenu.Visibility = LblMain.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
+    }
+
+    private void OnNavMain(object sender, RoutedEventArgs e) => ShowMain();
+
+    // Leaving Settings/Personalization discards whatever was not applied or saved.
+    private void ShowMain()
+    {
+        switch (PageHost.Content)
+        {
+            case SettingsView s: s.Discard(); break;
+            case AppearanceView a: a.Discard(); break;
+        }
+        PageHost.Content = null;
+        PageHost.Visibility = Visibility.Collapsed;
+        MainPage.Visibility = Visibility.Visible;
+        SetActiveNav(NavMain);
+        if (_panelRefitPending) { _panelRefitPending = false; ApplyPanelSettings(); }
+    }
+
+    private void ShowPage(FrameworkElement view, Button nav)
+    {
+        if (PageHost.Content is SettingsView s) s.Discard();
+        else if (PageHost.Content is AppearanceView a) a.Discard();
+        PageHost.Content = view;
+        PageHost.Visibility = Visibility.Visible;
+        MainPage.Visibility = Visibility.Collapsed;
+        SetActiveNav(nav);
+    }
+
+    private void SetActiveNav(Button active)
+    {
+        foreach (var b in new[] { NavMain, NavSettings, NavAppearance }) b.Tag = b == active ? "active" : null;
+    }
+
     private void OnOpenAppearance(object sender, RoutedEventArgs e)
     {
         var vm = new AppearanceViewModel(_settings, () =>
@@ -180,7 +225,9 @@ public partial class MainWindow : Window
             _vm.ApplySettings();
             UpdateGadget();
         });
-        new AppearanceWindow(vm) { Owner = this }.ShowDialog();
+        var view = new AppearanceView(vm);
+        view.CloseRequested += ShowMain;
+        ShowPage(view, NavAppearance);
     }
 
     private void OnOpenSettings(object sender, RoutedEventArgs e)
@@ -191,6 +238,8 @@ public partial class MainWindow : Window
             ApplyPanelSettings();
             UpdateGadget();
         });
-        new SettingsWindow(vm) { Owner = this }.ShowDialog();
+        var view = new SettingsView(vm);
+        view.CloseRequested += ShowMain;
+        ShowPage(view, NavSettings);
     }
 }
