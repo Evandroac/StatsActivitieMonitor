@@ -10,6 +10,10 @@ public sealed class HardwareSnapshot
     public double? CpuLoad { get; init; }
     public double? CpuClockMhz { get; init; }
     public double? CpuTemp { get; init; }
+    public double? CpuPowerW { get; init; }
+    public double? CpuVoltage { get; init; }
+    public double? CpuHottestCoreTemp { get; init; }
+    public IReadOnlyList<double> CpuCoreLoads { get; init; } = [];
 
     public double? RamTotalGb { get; init; }
     public double? RamUsedGb { get; init; }
@@ -23,6 +27,10 @@ public sealed class HardwareSnapshot
     public double? GpuMemClockMhz { get; init; }
     public double? GpuPowerW { get; init; }
     public double? GpuFanRpm { get; init; }
+    public double? GpuHotSpotTemp { get; init; }
+    public double? GpuVoltage { get; init; }
+    public double? GpuMemControllerLoad { get; init; }
+    public double? GpuVideoEngineLoad { get; init; }
 
     public double? VramTotalGb { get; init; }
     public double? VramUsedGb { get; init; }
@@ -39,7 +47,8 @@ public sealed class HardwareSnapshot
 }
 
 /// <summary>Physical drive (HD/SSD/NVMe) readings.</summary>
-public sealed record DiskSnapshot(string Name, double? Temp, double? ReadBps, double? WriteBps, double? Activity, double? LifePercent, string? Health);
+public sealed record DiskSnapshot(string Name, double? Temp, double? ReadBps, double? WriteBps, double? Activity, double? LifePercent, string? Health,
+    double? TotalReadGb = null, double? TotalWrittenGb = null, double? PowerOnHours = null);
 
 /// <summary>Logical volume (drive letter) capacity.</summary>
 public sealed record VolumeSnapshot(string Name, double TotalGb, double FreeGb);

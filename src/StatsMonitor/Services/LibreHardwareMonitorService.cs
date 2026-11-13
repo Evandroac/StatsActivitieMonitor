@@ -139,6 +139,12 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             CpuLoad = Value(cpu, SensorType.Load, "CPU Total"),
             CpuClockMhz = CpuClock(cpu),
             CpuTemp = CpuTemperature(cpu),
+            CpuPowerW = Value(cpu, SensorType.Power, "CPU Package") ?? Like(cpu!, SensorType.Power, "package"),
+            CpuVoltage = cpu is null ? null : Like(cpu, SensorType.Voltage, "core"),
+            CpuHottestCoreTemp = cpu?.Sensors
+                .Where(x => x.SensorType == SensorType.Temperature && x.Name.Contains("Core #", StringComparison.OrdinalIgnoreCase) && Valid(x.SensorType, x.Value).HasValue)
+                .Select(x => (double?)x.Value!.Value).Max(),
+            CpuCoreLoads = CoreLoads(cpu),
 
             RamTotalGb = ramTotal,
             RamUsedGb = ramUsed,
@@ -154,6 +160,10 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
                         ?? Value(gpu, SensorType.Power, "GPU Power")
                         ?? Max(gpu, SensorType.Power, _ => true),
             GpuFanRpm = Max(gpu, SensorType.Fan, _ => true),
+            GpuHotSpotTemp = Value(gpu, SensorType.Temperature, "GPU Hot Spot"),
+            GpuVoltage = gpu is null ? null : Like(gpu, SensorType.Voltage, "gpu"),
+            GpuMemControllerLoad = Value(gpu, SensorType.Load, "GPU Memory Controller"),
+            GpuVideoEngineLoad = Value(gpu, SensorType.Load, "GPU Video Engine"),
             GpuTemp = Value(gpu, SensorType.Temperature, "GPU Core")
                       ?? Value(gpu, SensorType.Temperature, "GPU Hot Spot")
                       ?? FirstValue(gpu, SensorType.Temperature),
@@ -225,9 +235,21 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
                 var perf = DiskPerfService.Find(name);
                 read ??= perf?.ReadBps; write ??= perf?.WriteBps; activity ??= perf?.Activity;
             }
-            list.Add(new DiskSnapshot(name, FirstValue(d, SensorType.Temperature), read, write, activity, life, health));
+            double? hours = d.Sensors.FirstOrDefault(x => x.Name.Contains("Power On Hours", StringComparison.OrdinalIgnoreCase) && x.Value.HasValue)?.Value;
+            list.Add(new DiskSnapshot(name, FirstValue(d, SensorType.Temperature), read, write, activity, life, health,
+                Like(d, SensorType.Data, "data read"), Like(d, SensorType.Data, "data written"), hours));
         }
         return list;
+    }
+
+    private static List<double> CoreLoads(IHardware? cpu)
+    {
+        if (cpu is null) return [];
+        var rx = new System.Text.RegularExpressions.Regex(@"Core #(\d+)(?: Thread #\d+)?$");
+        return cpu.Sensors
+            .Where(x => x.SensorType == SensorType.Load && x.Value.HasValue && !x.Name.Contains("Thread", StringComparison.OrdinalIgnoreCase) && rx.IsMatch(x.Name))
+            .OrderBy(x => int.Parse(rx.Match(x.Name).Groups[1].Value))
+            .Select(x => (double)x.Value!.Value).ToList();
     }
 
     private static double? Like(IHardware hw, SensorType type, string part) =>

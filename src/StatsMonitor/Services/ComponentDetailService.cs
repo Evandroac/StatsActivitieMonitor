@@ -43,7 +43,7 @@ public static class ComponentDetailService
             if (!StaticCache.TryGetValue(kind, out task!)) StaticCache[kind] = task = Wmi.RunAsync(() => ReadStatic(kind), Wmi.Unavailable());
         }
         var statics = await task;
-        var live = kind == ComponentKind.Network ? await Task.Run(() => Live(kind, snap, net)) : Live(kind, snap, net);
+        var live = kind is ComponentKind.Network or ComponentKind.Cpu or ComponentKind.Memory ? await Task.Run(() => Live(kind, snap, net)) : Live(kind, snap, net);
         return [.. live, .. statics];
     }
 
@@ -94,7 +94,26 @@ public static class ComponentDetailService
                 new(T("Identificadores", "Handles"), counts is { } c3 ? c3.Handles.ToString("N0") : NA),
                 new(T("Tempo de atividade do sistema", "System uptime"), s is null ? NA : Uptime(s.Uptime)),
             ]),
+            .. CpuExtras(s),
+            new(T("Processos que mais usam CPU", "Top CPU processes"), Processes.TopCpu()),
         ];
+    }
+
+    private static List<InfoGroup> CpuExtras(HardwareSnapshot? s)
+    {
+        var result = new List<InfoGroup>();
+        var extra = new List<InfoLine>();
+        if (s?.CpuPowerW is { } w) extra.Add(new(T("Consumo do pacote", "Package power"), $"{w:0.0} W"));
+        if (s?.CpuVoltage is { } v) extra.Add(new(T("Tensão do núcleo", "Core voltage"), $"{v:0.000} V"));
+        if (s?.CpuHottestCoreTemp is { } t) extra.Add(new(T("Núcleo mais quente", "Hottest core"), Temp(t)));
+        if (extra.Count > 0) result.Add(new(T("Energia e temperatura", "Power and temperature"), extra));
+        if (s?.CpuCoreLoads is { Count: > 0 } loads)
+        {
+            var lines = loads.Select((l, i) => new InfoLine($"{T("Núcleo", "Core")} {i + 1}", Pct(l))).ToList();
+            lines.Insert(0, new(T("Núcleo mais ocupado", "Busiest core"), $"{T("Núcleo", "Core")} {loads.ToList().IndexOf(loads.Max()) + 1} · {Pct(loads.Max())}"));
+            result.Add(new(T("Uso por núcleo", "Per-core usage"), lines));
+        }
+        return result;
     }
 
     private static List<InfoGroup> StaticCpu()
@@ -166,6 +185,10 @@ public static class ComponentDetailService
             new(T("Temperatura", "Temperature"), Temp(s?.GpuTemp)),
             new(T("Consumo energético", "Power draw"), s?.GpuPowerW is { } w ? $"{w:0.0} W" : NA),
             new(T("Ventoinha", "Fan"), s?.GpuFanRpm is { } f ? $"{f:0} RPM" : NA),
+            new(T("Temperatura do hot spot", "Hot spot temperature"), Temp(s?.GpuHotSpotTemp)),
+            new(T("Tensão", "Voltage"), s?.GpuVoltage is { } gv ? $"{gv:0.000} V" : NA),
+            new(T("Controlador de memória", "Memory controller"), Pct(s?.GpuMemControllerLoad)),
+            new(T("Motor de vídeo (codificação)", "Video engine (encode)"), Pct(s?.GpuVideoEngineLoad)),
         ]),
         new(T("Memória de vídeo (VRAM)", "Video memory (VRAM)"),
         [
@@ -236,6 +259,7 @@ public static class ComponentDetailService
             ]),
         };
 
+        groups.Add(new(T("Processos que mais usam memória", "Top memory processes"), Processes.TopMemory()));
         var m = new MemoryStatusEx { Length = (uint)Marshal.SizeOf<MemoryStatusEx>() };
         if (GlobalMemoryStatusEx(ref m))
         {
@@ -318,6 +342,9 @@ public static class ComponentDetailService
                 new(T("Tempo de atividade", "Active time"), Pct(d.Activity)),
                 new(T("Vida útil restante", "Remaining life"), Pct(d.LifePercent)),
                 new(T("Saúde (S.M.A.R.T.)", "Health (S.M.A.R.T.)"), d.Health ?? NA),
+                new(T("Total lido", "Total read"), d.TotalReadGb is { } tr ? $"{tr:0.0} GB" : NA),
+                new(T("Total gravado", "Total written"), d.TotalWrittenGb is { } tw ? $"{tw:0.0} GB" : NA),
+                new(T("Horas ligado", "Power-on hours"), d.PowerOnHours is { } ph ? $"{ph:N0} h" : NA),
             ]));
         }
 
@@ -329,6 +356,17 @@ public static class ComponentDetailService
             vols.Add(new(v.Name, $"{v.FreeGb:0.0} GB {T("livres de", "free of")} {v.TotalGb:0.0} GB · {used / Math.Max(v.TotalGb, 0.01) * 100:0}% {T("usado", "used")}{(fs.Length > 0 ? " · " + fs : "")}"));
         }
         if (vols.Count > 0) groups.Add(new(T("Volumes (unidades)", "Volumes (drives)"), vols));
+        if (s?.Volumes is { Count: > 0 } all)
+        {
+            double tot = all.Sum(v => v.TotalGb), free = all.Sum(v => v.FreeGb);
+            var fullest = all.OrderBy(v => v.FreeGb / Math.Max(v.TotalGb, 0.01)).First();
+            groups.Insert(0, new(T("Resumo de armazenamento", "Storage summary"),
+            [
+                new(T("Capacidade total", "Total capacity"), $"{tot:0.0} GB"),
+                new(T("Espaço livre total", "Total free space"), $"{free:0.0} GB ({free / Math.Max(tot, 0.01) * 100:0}%)"),
+                new(T("Volume mais cheio", "Fullest volume"), $"{fullest.Name} · {(1 - fullest.FreeGb / Math.Max(fullest.TotalGb, 0.01)) * 100:0}% {T("usado", "used")}"),
+            ]));
+        }
         if (groups.Count == 0) groups.Add(new(T("Discos em tempo real", "Disks in real time"), [new(T("Disco", "Disk"), NA)]));
         return groups;
     }
@@ -484,6 +522,52 @@ public static class ComponentDetailService
     }
 
     #endregion
+
+    private static class Processes
+    {
+        private static readonly Dictionary<int, TimeSpan> Last = [];
+        private static DateTime _at;
+        private static List<InfoLine> _cpu = [];
+
+        public static List<InfoLine> TopMemory()
+        {
+            var list = new List<(string Name, long Bytes)>();
+            foreach (var p in System.Diagnostics.Process.GetProcesses())
+            {
+                using (p) { try { list.Add((p.ProcessName, p.WorkingSet64)); } catch { } }
+            }
+            return list.GroupBy(x => x.Name).Select(g => (Name: g.Key, Bytes: g.Sum(x => x.Bytes)))
+                .OrderByDescending(x => x.Bytes).Take(5)
+                .Select(x => new InfoLine(x.Name, $"{x.Bytes / 1048576.0:N0} MB")).ToList();
+        }
+
+        public static List<InfoLine> TopCpu()
+        {
+            lock (Last)
+            {
+                var now = DateTime.UtcNow;
+                var current = new Dictionary<int, (string Name, TimeSpan Cpu)>();
+                foreach (var p in System.Diagnostics.Process.GetProcesses())
+                {
+                    using (p) { try { current[p.Id] = (p.ProcessName, p.TotalProcessorTime); } catch { } }
+                }
+                double elapsed = (now - _at).TotalSeconds;
+                if (_at != default && elapsed >= 0.5)
+                {
+                    _cpu = current.Where(c => Last.ContainsKey(c.Key))
+                        .Select(c => (c.Value.Name, Pct: (c.Value.Cpu - Last[c.Key]).TotalSeconds / elapsed / Environment.ProcessorCount * 100))
+                        .GroupBy(x => x.Name).Select(g => (Name: g.Key, Pct: g.Sum(x => x.Pct)))
+                        .Where(x => x.Pct > 0.05).OrderByDescending(x => x.Pct).Take(5)
+                        .Select(x => new InfoLine(x.Name, $"{x.Pct:0.0}%")).ToList();
+                }
+                else if (_at != default) return _cpu;
+                Last.Clear();
+                foreach (var c in current) Last[c.Key] = c.Value.Cpu;
+                _at = now;
+                return _cpu.Count > 0 ? _cpu : [new(T("Medindo…", "Measuring…"), "")];
+            }
+        }
+    }
 
     #region Formatting
 
