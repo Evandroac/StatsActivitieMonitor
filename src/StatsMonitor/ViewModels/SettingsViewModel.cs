@@ -50,13 +50,12 @@ public sealed class SettingsViewModel : ObservableObject
     }
 
     private string _language = "pt";
-    public bool LangPt { get => _language == "pt"; set => SetLanguage(value, "pt"); }
-    public bool LangEn { get => _language == "en"; set => SetLanguage(value, "en"); }
+    public string Language { get => _language; set => SetLanguage(value); }
 
     // The language switches instantly; persistence follows the usual debounce.
-    private void SetLanguage(bool value, string lang)
+    private void SetLanguage(string? lang)
     {
-        if (!value || _language == lang) return;
+        if (lang is not ("pt" or "en") || _language == lang) return;
         _language = lang;
         Loc.SetLanguage(lang);
         AutoSave();

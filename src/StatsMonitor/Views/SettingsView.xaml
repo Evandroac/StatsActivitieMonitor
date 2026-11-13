@@ -28,8 +28,10 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
-            <RadioButton GroupName="Lang" Content="Português" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" IsChecked="{Binding LangPt}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
-            <RadioButton GroupName="Lang" Content="English" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" IsChecked="{Binding LangEn}" Foreground="{DynamicResource TextPrimary}"/>
+            <ComboBox Width="160" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" SelectedValuePath="Tag" SelectedValue="{Binding Language, Mode=TwoWay}">
+                <ComboBoxItem Content="Português" Tag="pt"/>
+                <ComboBoxItem Content="English" Tag="en"/>
+            </ComboBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌡️  Unidade de temperatura:'}" VerticalAlignment="Center" Width="200"/>
