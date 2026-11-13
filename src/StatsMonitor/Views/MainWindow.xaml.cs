@@ -147,6 +147,13 @@ public partial class MainWindow : Window
         Activate();
     }
 
+    private void OnCopy(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string text } || string.IsNullOrWhiteSpace(text)) return;
+        try { Clipboard.SetText(text); }
+        catch (System.Runtime.InteropServices.COMException) { }
+    }
+
     private void OnRunAsAdmin(object sender, RoutedEventArgs e)
     {
         try

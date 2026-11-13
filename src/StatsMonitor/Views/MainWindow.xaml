@@ -6,7 +6,29 @@
         Background="{DynamicResource WindowBg}" FontFamily="Segoe UI"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <Style x:Key="TempRow" TargetType="TextBlock">
+        <Style x:Key="CopyButton" TargetType="Button">
+            <Setter Property="Content" Value="📋"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="3,0"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="ToolTip" Value="Copiar para a área de transferência"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource CardBorder}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>        <Style x:Key="TempRow" TargetType="TextBlock">
             <Setter Property="Visibility" Value="Collapsed"/>
             <Style.Triggers>
                 <MultiDataTrigger>
@@ -132,25 +154,25 @@
                 </DockPanel>
                 <WrapPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
-                        <TextBlock Text="↓ Download" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="↓ Download" Style="{StaticResource Caption}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Download}" Click="OnCopy"/></StackPanel>
                         <TextBlock Text="{Binding Download}" FontSize="20" FontWeight="SemiBold"/>
                         <TextBlock Style="{StaticResource Caption}" Text="{Binding TotalReceived, StringFormat=Sessão: {0}}"/>
                     </StackPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
-                        <TextBlock Text="↑ Upload" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="↑ Upload" Style="{StaticResource Caption}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Upload}" Click="OnCopy"/></StackPanel>
                         <TextBlock Text="{Binding Upload}" FontSize="20" FontWeight="SemiBold"/>
                         <TextBlock Style="{StaticResource Caption}" Text="{Binding TotalSent, StringFormat=Sessão: {0}}"/>
                     </StackPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
-                        <TextBlock Text="Latência" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="Latência" Style="{StaticResource Caption}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Latency}" Click="OnCopy"/></StackPanel>
                         <TextBlock Text="{Binding Latency}" FontSize="20" FontWeight="SemiBold"/>
                         <TextBlock Style="{StaticResource Caption}" Text="{Binding Link, StringFormat=Link: {0}}"/>
                     </StackPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
-                        <TextBlock Text="Conexão" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="Conexão" Style="{StaticResource Caption}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Adapter}" Click="OnCopy"/></StackPanel>
                         <TextBlock Text="{Binding Adapter}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Adapter}"/>
-                        <TextBlock Style="{StaticResource Caption}" Text="{Binding Ip, StringFormat=IP: {0}}"/>
-                        <TextBlock Style="{StaticResource Caption}" Text="{Binding Gateway, StringFormat=Gateway: {0}}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Style="{StaticResource Caption}" Text="{Binding Ip, StringFormat=IP: {0}}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Ip}" Click="OnCopy"/></StackPanel>
+                        <StackPanel Orientation="Horizontal"><TextBlock Style="{StaticResource Caption}" Text="{Binding Gateway, StringFormat=Gateway: {0}}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Gateway}" Click="OnCopy"/></StackPanel>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
