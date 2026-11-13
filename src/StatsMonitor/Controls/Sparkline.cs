@@ -28,8 +28,35 @@ public sealed class Sparkline : FrameworkElement
 
     private void OnChanged(object? sender, NotifyCollectionChangedEventArgs e) => InvalidateVisual();
 
+    private readonly System.Windows.Controls.ToolTip _tip = new() { Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse };
+    private int _hover = -1;
+
+    public Sparkline()
+    {
+        ToolTip = _tip;
+        System.Windows.Controls.ToolTipService.SetShowDuration(this, 60000);
+    }
+
+    protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        var values = Values?.Cast<double>().ToList();
+        if (values == null || values.Count < 2 || ActualWidth <= 0) return;
+        _hover = Math.Clamp((int)Math.Round(e.GetPosition(this).X / (ActualWidth / (values.Count - 1))), 0, values.Count - 1);
+        _tip.Content = $"Uso neste ponto: {values[_hover]:0.0}%";
+        InvalidateVisual();
+    }
+
+    protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
+    {
+        base.OnMouseLeave(e);
+        _hover = -1;
+        InvalidateVisual();
+    }
+
     protected override void OnRender(DrawingContext dc)
     {
+        dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, ActualWidth, ActualHeight));
         var values = Values?.Cast<double>().ToList();
         if (values == null || values.Count < 2 || ActualWidth <= 0 || ActualHeight <= 0) return;
 
@@ -57,5 +84,12 @@ public sealed class Sparkline : FrameworkElement
         fill.Opacity = 0.18;
         dc.DrawGeometry(fill, null, area);
         dc.DrawGeometry(null, new Pen(Stroke, 1.6) { LineJoin = PenLineJoin.Round }, line);
+
+        if (_hover >= 0 && _hover < values.Count)
+        {
+            var p = P(_hover);
+            dc.DrawLine(new Pen(Stroke, 1) { DashStyle = DashStyles.Dot }, new Point(p.X, 0), new Point(p.X, ActualHeight));
+            dc.DrawEllipse(Stroke, null, p, 3.5, 3.5);
+        }
     }
 }
