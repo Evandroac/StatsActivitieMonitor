@@ -333,7 +333,7 @@
                     </StackPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
                         <TextBlock Text="{h:Tr 'Conexão'}" Style="{StaticResource Caption}"/>
-                        <StackPanel Orientation="Horizontal"><Button Style="{StaticResource CopyButton}" Tag="{Binding Adapter}" Click="OnCopy"/><TextBlock Text="{Binding Adapter}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Adapter}" VerticalAlignment="Center"/></StackPanel>
+                        <TextBlock Text="{Binding Adapter}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Adapter}" VerticalAlignment="Center"/>
                         <StackPanel Orientation="Horizontal"><Button Style="{StaticResource CopyButton}" Tag="{Binding Ip}" Click="OnCopy"/><TextBlock Style="{StaticResource Caption}" Text="{Binding Ip, StringFormat=IP: {0}}" VerticalAlignment="Center"/></StackPanel>
                         <StackPanel Orientation="Horizontal"><Button Style="{StaticResource CopyButton}" Tag="{Binding Gateway}" Click="OnCopy"/><TextBlock Style="{StaticResource Caption}" Text="{Binding Gateway, StringFormat=Gateway: {0}}" VerticalAlignment="Center"/></StackPanel>
                     </StackPanel>
