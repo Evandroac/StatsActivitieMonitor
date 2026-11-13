@@ -89,7 +89,11 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
         }
 
         var cpu = all.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
-        var mem = all.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
+        // LibreHardwareMonitor exposes both physical ("Total Memory") and "Virtual Memory" (RAM + pagefile).
+        var mems = all.Where(h => h.HardwareType == HardwareType.Memory).ToList();
+        var mem = mems.FirstOrDefault(h => h.Name.Contains("Total", StringComparison.OrdinalIgnoreCase))
+                  ?? mems.FirstOrDefault(h => !h.Name.Contains("Virtual", StringComparison.OrdinalIgnoreCase))
+                  ?? mems.FirstOrDefault();
         // Prefer the discrete GPU (largest VRAM) over integrated graphics.
         var gpu = all.Where(h => h.HardwareType is HardwareType.GpuNvidia or HardwareType.GpuAmd or HardwareType.GpuIntel)
                      .OrderByDescending(h => Value(h, SensorType.SmallData, "GPU Memory Total") ?? 0)
