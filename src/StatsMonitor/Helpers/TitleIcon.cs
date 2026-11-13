@@ -14,6 +14,8 @@ public sealed class TitleIcon : IValueConverter
         ("ram", "🧩"), ("memória", "🧩"), ("memory", "🧩"), ("disk", "💽"), ("storage", "💽"), ("disco", "💽"), ("armazen", "💽"),
         ("rede", "🌐"), ("network", "🌐"), ("computer", "💻"), ("board", "🔌"), ("processor", "🧠"), ("internet", "🌐"), ("computador", "💻"), ("sistema", "🪟"),
         ("placa", "🔌"), ("bios", "🔌"),
+        ("monitor", "🖥️"), ("teclad", "⌨️"), ("keyboard", "⌨️"), ("mouse", "🖱️"), ("áudio", "🔊"), ("audio", "🔊"), ("câmera", "📷"), ("camera", "📷"),
+        ("impressora", "🖨️"), ("printer", "🖨️"), ("bluetooth", "📶"), ("usb", "🔌"),
     };
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

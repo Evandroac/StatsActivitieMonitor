@@ -30,7 +30,7 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
-            <TextBlock Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock x:Name="PageTitle" Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </DockPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl x:Name="Groups">

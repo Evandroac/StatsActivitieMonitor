@@ -95,6 +95,8 @@ public static class SystemInfoService
         return groups;
     }
 
+    internal static IEnumerable<ManagementBaseObject> AllOf(string cls, params string[] props) => All(cls, props);
+
     private static IEnumerable<ManagementBaseObject> All(string cls, params string[] props)
     {
         var list = new List<ManagementBaseObject>();

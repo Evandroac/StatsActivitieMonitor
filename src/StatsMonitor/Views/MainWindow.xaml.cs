@@ -397,7 +397,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
         SearchBox.Visibility = v;
         if (!open) SearchPopup.IsOpen = false;
     }
@@ -464,7 +464,7 @@ public partial class MainWindow : Window
         switch (r.Page)
         {
             case SearchPage.Main: ShowMain(); break;
-            case SearchPage.System: if (PageHost.Content is not SystemInfoView) OnOpenSystem(this, new RoutedEventArgs()); break;
+            case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false }) OnOpenSystem(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Appearance: if (PageHost.Content is not AppearanceView) OnOpenAppearance(this, new RoutedEventArgs()); break;
         }
@@ -501,10 +501,12 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavSettings, NavAppearance }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavPeripherals, NavSettings, NavAppearance }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenSystem(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(), NavSystem);
+
+    private void OnOpenPeripherals(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(peripherals: true), NavPeripherals);
 
     private void OnOpenAppearance(object sender, RoutedEventArgs e)
     {

@@ -10,15 +10,20 @@ public partial class SystemInfoView : UserControl
 {
     private List<InfoGroup> _groups = [];
 
-    public SystemInfoView()
+    public bool IsPeripherals { get; }
+
+    public SystemInfoView(bool peripherals = false)
     {
         InitializeComponent();
+        IsPeripherals = peripherals;
+        void SetTitle() => PageTitle.Text = Loc.T(peripherals ? "Periféricos" : "Sistema");
+        SetTitle();
         async Task Load()
         {
-            _groups = await SystemInfoService.GetAsync();
+            _groups = await (peripherals ? PeripheralInfoService.GetAsync() : SystemInfoService.GetAsync());
             Groups.ItemsSource = _groups;
         }
-        Action onLang = async () => { await Load(); };
+        Action onLang = async () => { SetTitle(); await Load(); };
         Loaded += async (_, _) => { await Load(); Loc.LanguageChanged += onLang; };
         Unloaded += (_, _) => Loc.LanguageChanged -= onLang;
     }
