@@ -1,0 +1,21 @@
+<UserControl x:Class="StatsMonitor.Views.NumericBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="90" Height="26" HorizontalAlignment="Left">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/><RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBox x:Name="Box" Grid.RowSpan="2" Padding="4,0,4,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
+                 PreviewTextInput="OnPreviewTextInput" PreviewKeyDown="OnPreviewKeyDown" LostFocus="OnLostFocus"
+                 MouseWheel="OnMouseWheel" DataObject.Pasting="OnPasting"/>
+        <RepeatButton Grid.Column="1" Content="▴" FontSize="9" Click="OnUp" Focusable="False" Padding="0" Margin="1,0,0,0"
+                      Foreground="{DynamicResource TextPrimary}" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}"/>
+        <RepeatButton Grid.Column="1" Grid.Row="1" Content="▾" FontSize="9" Click="OnDown" Focusable="False" Padding="0" Margin="1,0,0,0"
+                      Foreground="{DynamicResource TextPrimary}" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource CardBorder}"/>
+    </Grid>
+</UserControl>
