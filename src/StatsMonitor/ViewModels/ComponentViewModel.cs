@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Media;
 using StatsMonitor.Helpers;
 
@@ -11,6 +12,7 @@ public sealed class ComponentViewModel : ObservableObject
     public const string NotAvailable = "N/D";
 
     private readonly Func<double?, Brush> _tempBrush;
+    private readonly Func<double?, int>? _level;
     private double? _minTemp, _maxTemp, _temp;
 
     private double _load;
@@ -20,9 +22,10 @@ public sealed class ComponentViewModel : ObservableObject
     private Brush _tempBrushValue = Brushes.Gray;
     private bool _showTemperature = true;
 
-    public ComponentViewModel(string title, Func<double?, Brush> tempBrush)
+    public ComponentViewModel(string title, Func<double?, Brush> tempBrush, Func<double?, int>? level = null)
     {
         Title = title;
+        _level = level;
         _tempBrush = tempBrush;
         for (int i = 0; i < HistoryLength; i++) History.Add(0);
     }
@@ -50,7 +53,7 @@ public sealed class ComponentViewModel : ObservableObject
     public bool ShowTemperature
     {
         get => _showTemperature;
-        set { if (Set(ref _showTemperature, value)) Raise(nameof(GadgetTemp)); }
+        set { if (Set(ref _showTemperature, value)) { Raise(nameof(GadgetTemp)); RefreshBrush(); } }
     }
 
     /// <summary>Temperature suffix for the compact gadget, empty when temperatures are hidden.</summary>
@@ -81,7 +84,35 @@ public sealed class ComponentViewModel : ObservableObject
         History.Add(load ?? 0);
     }
 
-    public void RefreshBrush() => TempBrush = _tempBrush(_temp);
+    private int _alertLevel;
+    private Brush _alertBackground = Brushes.Transparent, _alertBorder = Brushes.Transparent;
+    /// <summary>0 = normal/unknown, 1 = warning, 2 = critical.</summary>
+    public int AlertLevel { get => _alertLevel; private set => Set(ref _alertLevel, value); }
+    public Brush AlertBackground { get => _alertBackground; private set => Set(ref _alertBackground, value); }
+    public Brush AlertBorder { get => _alertBorder; private set => Set(ref _alertBorder, value); }
+
+    public void RefreshBrush()
+    {
+        TempBrush = _tempBrush(_temp);
+        int lvl = _level is null || !_showTemperature ? 0 : Math.Max(0, _level(_temp));
+        if (lvl == 0 || TempBrush is not SolidColorBrush sb)
+        {
+            AlertLevel = 0;
+            return;
+        }
+        var card = (Application.Current?.TryFindResource("CardBg") as SolidColorBrush)?.Color ?? Color.FromRgb(30, 30, 30);
+        var c = sb.Color;
+        double k = lvl == 2 ? 0.34 : 0.20;
+        Color Mix(double a) => Color.FromRgb(
+            (byte)(card.R + (c.R - card.R) * a), (byte)(card.G + (c.G - card.G) * a), (byte)(card.B + (c.B - card.B) * a));
+        var g = new LinearGradientBrush(Mix(k), Mix(k * 0.25), new Point(0, 0), new Point(1, 1));
+        g.Freeze();
+        var border = new SolidColorBrush(Color.FromArgb(lvl == 2 ? (byte)230 : (byte)170, c.R, c.G, c.B));
+        border.Freeze();
+        AlertBackground = g;
+        AlertBorder = border;
+        AlertLevel = lvl;
+    }
 
     public static string Gb(double? v) => v.HasValue ? $"{v.Value:0.0} GB" : NotAvailable;
 }

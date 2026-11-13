@@ -23,8 +23,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         _monitor = monitor;
         _settingsService = settingsService;
-        Cpu = new ComponentViewModel("CPU", t => Level(t, S.CpuWarnTemp, S.CpuCritTemp).brush);
-        Gpu = new ComponentViewModel("GPU", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush);
+        Cpu = new ComponentViewModel("CPU", t => Level(t, S.CpuWarnTemp, S.CpuCritTemp).brush, t => Level(t, S.CpuWarnTemp, S.CpuCritTemp).level);
+        Gpu = new ComponentViewModel("GPU", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush, t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).level);
         Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush) { HasTemperature = false };
 
         InitCpuDetails();

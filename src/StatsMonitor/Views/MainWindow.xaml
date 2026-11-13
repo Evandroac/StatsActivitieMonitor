@@ -72,7 +72,23 @@
         </Style>
         <!-- CPU / GPU -->
         <DataTemplate x:Key="ProcessorTemplate">
-            <Border Style="{StaticResource Card}">
+            <Border>
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AlertLevel}" Value="1">
+                                <Setter Property="Background" Value="{Binding AlertBackground}"/>
+                                <Setter Property="BorderBrush" Value="{Binding AlertBorder}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding AlertLevel}" Value="2">
+                                <Setter Property="Background" Value="{Binding AlertBackground}"/>
+                                <Setter Property="BorderBrush" Value="{Binding AlertBorder}"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Setter Property="Effect"><Setter.Value><DropShadowEffect Color="#FF4D4F" BlurRadius="18" ShadowDepth="0" Opacity="0.45"/></Setter.Value></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,2,0,10"><TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Name}" Click="OnCopy"/></StackPanel>
