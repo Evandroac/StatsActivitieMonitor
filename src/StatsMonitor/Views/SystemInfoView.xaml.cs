@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using StatsMonitor.Helpers;
 using StatsMonitor.Services;
 
 namespace StatsMonitor.Views;
@@ -12,11 +13,14 @@ public partial class SystemInfoView : UserControl
     public SystemInfoView()
     {
         InitializeComponent();
-        Loaded += async (_, _) =>
+        async Task Load()
         {
             _groups = await SystemInfoService.GetAsync();
             Groups.ItemsSource = _groups;
-        };
+        }
+        Action onLang = async () => { await Load(); };
+        Loaded += async (_, _) => { await Load(); Loc.LanguageChanged += onLang; };
+        Unloaded += (_, _) => Loc.LanguageChanged -= onLang;
     }
 
     private void OnCopy(object sender, RoutedEventArgs e)

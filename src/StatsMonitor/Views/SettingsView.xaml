@@ -14,37 +14,42 @@
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
     <Border Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="180" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <StackPanel>
-            <TextBlock Text="AÇÕES" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
-            <TextBlock Text="As alterações são salvas automaticamente." Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
-            <Button Content="↺  Restaurar padrões" ToolTip="Volta todas as configurações ao padrão" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
+            <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
+            <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
+            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
         </StackPanel>
     </Border>
     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="20,20,20,20">
-        <TextBlock Text="⚙️  Geral" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <TextBlock Text="{h:Tr '⚙️  Geral'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
-            <TextBlock Text="Intervalo de atualização (s):" VerticalAlignment="Center" Width="200"/>
-            <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="Segundos entre atualizações (mínimo 0,25; máximo 60)" Value="{Binding IntervalSeconds}"/>
+            <TextBlock Text="{h:Tr 'Intervalo de atualização (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="{h:Tr 'Segundos entre atualizações (mínimo 0,25; máximo 60)'}" Value="{Binding IntervalSeconds}"/>
         </StackPanel>
-        <CheckBox ToolTip="Abre o Stats Monitor automaticamente ao entrar no Windows" Content="Iniciar com o Windows" IsChecked="{Binding RunAtStartup}"/>
-        <CheckBox ToolTip="Abre direto no modo minimizado (gadget)" Content="Iniciar minimizado" IsChecked="{Binding StartMinimized}"/>
-        <CheckBox ToolTip="Mostra ou oculta os valores de temperatura" Content="Exibir temperaturas" IsChecked="{Binding ShowTemperatures}"/>
-        <CheckBox ToolTip="Mostra o gadget quando o app é minimizado" Content="Exibir gadget" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
+            <RadioButton GroupName="Lang" Content="Português" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" IsChecked="{Binding LangPt}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
+            <RadioButton GroupName="Lang" Content="English" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" IsChecked="{Binding LangEn}" Foreground="{DynamicResource TextPrimary}"/>
+        </StackPanel>
+        <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
+        <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
+        <CheckBox ToolTip="{h:Tr 'Mostra o gadget quando o app é minimizado'}" Content="{h:Tr 'Exibir gadget'}" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
         <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
-        <CheckBox ToolTip="Mantém o gadget na tela mesmo com a janela principal aberta" Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>
-        <TextBlock Text="Exibição do gadget ao minimizar" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="Gadget solto sobre a tela, que pode ser arrastado" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="Gadget compacto ao lado da área de notificação" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="Barra horizontal de uma linha, solta sobre a tela e arrastável" Content="Barra horizontal flutuante (arrastável)" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="Faixa horizontal fixa, centralizada no topo da tela" Content="Faixa fixa no topo da tela" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="Ao minimizar, o app apenas minimiza, sem exibir gadget" Content="Não fazer nada (sem gadget)" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="Mostra como o gadget ficará no modo escolhido, com os indicadores marcados">
+        <CheckBox ToolTip="{h:Tr 'Mantém o gadget na tela mesmo com a janela principal aberta'}" Content="{h:Tr 'Manter gadget sempre visível'}" IsChecked="{Binding AlwaysShowGadget}"/>
+        <TextBlock Text="{h:Tr 'Exibição do gadget ao minimizar'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget compacto ao lado da área de notificação'}" Content="{h:Tr 'Na barra de tarefas, canto direito (widget)'}" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="{h:Tr 'Mostra como o gadget ficará no modo escolhido, com os indicadores marcados'}">
             <StackPanel>
                 <DockPanel>
                     <Border DockPanel.Dock="Right" CornerRadius="10" Padding="10,2" Background="{DynamicResource Accent}" VerticalAlignment="Center">
                         <TextBlock x:Name="ModeBadge" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
                     </Border>
-                    <TextBlock Text="👁  Pré-visualização" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="{h:Tr '👁  Pré-visualização'}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </DockPanel>
                 <Viewbox MaxWidth="480" Margin="0,12,0,0" Stretch="Uniform">
                     <StackPanel Width="520">
@@ -77,7 +82,7 @@
                                         <WrapPanel x:Name="TopPanel" MaxWidth="440"/>
                                     </Border>
                                     <Border x:Name="OffBox" Background="#99000000" CornerRadius="8" Padding="12,6" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <TextBlock x:Name="OffText" Text="Sem gadget neste modo" Foreground="White"/>
+                                        <TextBlock x:Name="OffText" Text="{h:Tr 'Sem gadget neste modo'}" Foreground="White"/>
                                     </Border>
                                 </Grid>
                             </Border>
@@ -89,31 +94,31 @@
             </StackPanel>
         </Border>
         </StackPanel>
-        <TextBlock Text="🧩  Painéis exibidos" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <TextBlock Text="{h:Tr '🧩  Painéis exibidos'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel>
-                <TextBlock Text="Janela principal" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
-                <CheckBox Content="CPU" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowCpuMain}"/>
-                <CheckBox Content="GPU" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowGpuMain}"/>
-                <CheckBox Content="Memória RAM" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowRamMain}"/>
-                <CheckBox Content="Discos" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowVramMain}"/>
-                <CheckBox Content="Rede / Internet" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowNetworkMain}"/>
+                <TextBlock Text="{h:Tr 'Janela principal'}" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
+                <CheckBox Content="{h:Tr 'CPU'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowCpuMain}"/>
+                <CheckBox Content="{h:Tr 'GPU'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowGpuMain}"/>
+                <CheckBox Content="{h:Tr 'Memória RAM'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowRamMain}"/>
+                <CheckBox Content="{h:Tr 'Discos'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowVramMain}"/>
+                <CheckBox Content="{h:Tr 'Rede / Internet'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowNetworkMain}"/>
             </StackPanel>
             <StackPanel Grid.Column="1">
-                <TextBlock Text="Gadget (minimizado)" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
-                <CheckBox Content="CPU" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowCpuGadget}"/>
-                <CheckBox Content="GPU" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowGpuGadget}"/>
-                <CheckBox Content="Memória RAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowRamGadget}"/>
-                <CheckBox Content="Discos" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowVramGadget}"/>
-                <CheckBox Content="Rede / Internet" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowNetworkGadget}"/>
-                <CheckBox Content="FPS (em jogos)" ToolTip="Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador." IsChecked="{Binding ShowFpsGadget}"/>
+                <TextBlock Text="{h:Tr 'Gadget (minimizado)'}" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
+                <CheckBox Content="{h:Tr 'CPU'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowCpuGadget}"/>
+                <CheckBox Content="{h:Tr 'GPU'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowGpuGadget}"/>
+                <CheckBox Content="{h:Tr 'Memória RAM'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowRamGadget}"/>
+                <CheckBox Content="{h:Tr 'Discos'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowVramGadget}"/>
+                <CheckBox Content="{h:Tr 'Rede / Internet'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowNetworkGadget}"/>
+                <CheckBox Content="{h:Tr 'FPS (em jogos)'}" ToolTip="{h:Tr 'Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador.'}" IsChecked="{Binding ShowFpsGadget}"/>
             </StackPanel>
         </Grid>
 
-        <TextBlock Text="🌡️  Alertas de temperatura (°C)" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <TextBlock Text="{h:Tr '🌡️  Alertas de temperatura (°C)'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/><ColumnDefinition Width="110"/><ColumnDefinition Width="110"/>
@@ -121,14 +126,14 @@
             <Grid.RowDefinitions>
                 <RowDefinition/><RowDefinition/><RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="1" Text="Atenção" Style="{StaticResource Caption}"/>
-            <TextBlock Grid.Column="2" Text="Crítica" Style="{StaticResource Caption}"/>
-            <TextBlock Grid.Row="1" Text="CPU" VerticalAlignment="Center"/>
-            <local:NumericBox Grid.Row="1" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="Temperatura (°C) a partir da qual o valor fica em atenção" Value="{Binding CpuWarnTemp}"/>
-            <local:NumericBox Grid.Row="1" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="Temperatura (°C) a partir da qual o valor fica crítico" Value="{Binding CpuCritTemp}"/>
-            <TextBlock Grid.Row="2" Text="GPU" VerticalAlignment="Center"/>
-            <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="Temperatura (°C) a partir da qual o valor fica em atenção" Value="{Binding GpuWarnTemp}"/>
-            <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="Temperatura (°C) a partir da qual o valor fica crítico" Value="{Binding GpuCritTemp}"/>
+            <TextBlock Grid.Column="1" Text="{h:Tr 'Atenção'}" Style="{StaticResource Caption}"/>
+            <TextBlock Grid.Column="2" Text="{h:Tr 'Crítica'}" Style="{StaticResource Caption}"/>
+            <TextBlock Grid.Row="1" Text="{h:Tr 'CPU'}" VerticalAlignment="Center"/>
+            <local:NumericBox Grid.Row="1" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica em atenção'}" Value="{Binding CpuWarnTemp}"/>
+            <local:NumericBox Grid.Row="1" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica crítico'}" Value="{Binding CpuCritTemp}"/>
+            <TextBlock Grid.Row="2" Text="{h:Tr 'GPU'}" VerticalAlignment="Center"/>
+            <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica em atenção'}" Value="{Binding GpuWarnTemp}"/>
+            <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica crítico'}" Value="{Binding GpuCritTemp}"/>
         </Grid>
     </StackPanel>
     </ScrollViewer>

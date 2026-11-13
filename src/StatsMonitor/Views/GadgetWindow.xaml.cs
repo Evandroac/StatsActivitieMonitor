@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using StatsMonitor.Helpers;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -23,6 +24,7 @@ public partial class GadgetWindow : Window
         _vm = vm;
         vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.FpsActive) && IsVisible) { ApplyMode(); Reposition(); } };
 
+        Loc.LanguageChanged += () => { if (IsVisible) { ApplyMode(); Reposition(); } };
         MouseLeftButtonDown += OnMouseDown;
         LocationChanged += (_, _) => SavePosition();
         SizeChanged += (_, _) => { if (IsVisible && IsFixedPosition) Reposition(); };
@@ -77,7 +79,7 @@ public partial class GadgetWindow : Window
             GadgetDisplayMode.DockedTop => new CornerRadius(0, 0, 10, 10),
             _ => new CornerRadius(10),
         };
-        ToolTip = IsFixedPosition ? "Duplo clique para abrir" : "Arraste para mover · duplo clique para abrir";
+        ToolTip = Loc.T(IsFixedPosition ? "Duplo clique para abrir" : "Arraste para mover · duplo clique para abrir");
 
         var s = _settings.Current;
         static Visibility V(bool b) => b ? Visibility.Visible : Visibility.Collapsed;
@@ -108,7 +110,7 @@ public partial class GadgetWindow : Window
         TCpu.MinWidth = Measure("CPU 100%" + (s.ShowTemperatures ? temp : ""));
         TGpu.MinWidth = Measure("GPU 100%" + (s.ShowTemperatures ? temp : ""));
         TRam.MinWidth = Measure("RAM 100%");
-        TVram.MinWidth = Measure("Disco 100%");
+        TVram.MinWidth = Measure(Loc.T("Disco") + " 100%");
         TFps.MinWidth = Measure("FPS 999");
         TNet.MinWidth = Measure("NET ↓ 999.9 Mbps ↑ 999.9 Mbps");
     }

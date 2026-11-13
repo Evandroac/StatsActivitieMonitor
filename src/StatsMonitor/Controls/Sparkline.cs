@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Media;
@@ -43,7 +43,7 @@ public sealed class Sparkline : FrameworkElement
         var values = Values?.Cast<double>().ToList();
         if (values == null || values.Count < 2 || ActualWidth <= 0) return;
         _hover = Math.Clamp((int)Math.Round(e.GetPosition(this).X / (ActualWidth / (values.Count - 1))), 0, values.Count - 1);
-        _tip.Content = $"Uso neste ponto: {values[_hover]:0.0}%";
+        _tip.Content = StatsMonitor.Helpers.Loc.T("Uso neste ponto: {0}%", values[_hover].ToString("0.0"));
         InvalidateVisual();
     }
 

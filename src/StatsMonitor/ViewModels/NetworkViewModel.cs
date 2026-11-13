@@ -1,4 +1,4 @@
-using StatsMonitor.Helpers;
+﻿using StatsMonitor.Helpers;
 using StatsMonitor.Services;
 
 namespace StatsMonitor.ViewModels;
@@ -6,7 +6,7 @@ namespace StatsMonitor.ViewModels;
 public sealed class NetworkViewModel : ObservableObject
 {
     private const string NA = ComponentViewModel.NotAvailable;
-    private string _status = "Verificando…", _adapter = NA, _ip = NA, _gateway = NA, _link = NA;
+    private string _status = Loc.T("Verificando…"), _adapter = NA, _ip = NA, _gateway = NA, _link = NA;
     private string _down = "0 B/s", _up = "0 B/s", _latency = NA, _totalRx = NA, _totalTx = NA;
     private bool _online;
 
@@ -25,7 +25,7 @@ public sealed class NetworkViewModel : ObservableObject
     public void Update(NetworkSnapshot s)
     {
         Online = s.Connected && s.InternetReachable;
-        Status = !s.Connected ? "Sem conexão" : s.InternetReachable ? "Conectado" : "Sem acesso à internet";
+        Status = !s.Connected ? Loc.T("Sem conexão") : s.InternetReachable ? Loc.T("Conectado") : Loc.T("Sem acesso à internet");
         Adapter = s.Connected ? $"{s.ConnectionType} · {s.AdapterName}" : NA;
         Ip = s.LocalIp ?? NA;
         Gateway = s.Gateway ?? NA;

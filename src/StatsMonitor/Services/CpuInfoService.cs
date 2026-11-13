@@ -1,3 +1,4 @@
+﻿using StatsMonitor.Helpers;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
@@ -83,7 +84,7 @@ public static class CpuInfoService
         return new CpuStaticInfo(
             BaseSpeed(),
             sockets, cores, logical > 0 ? logical : Environment.ProcessorCount,
-            IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) ? "Habilitado" : "Desabilitado",
+            IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) ? Loc.T("Habilitado") : Loc.T("Desabilitado"),
             cache.Count == 0 ? "N/D" : string.Join(" · ", cache.OrderBy(c => c.Key).Select(c => $"L{c.Key}: {Size(c.Value)}")));
     }
 

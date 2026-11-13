@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
 
 namespace StatsMonitor.Helpers;
@@ -19,7 +19,7 @@ public sealed class BoolTextConverter : IValueConverter
     public string FalseText { get; set; } = "";
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is true ? TrueText : FalseText;
+        Loc.T(value is true ? TrueText : FalseText);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
 }

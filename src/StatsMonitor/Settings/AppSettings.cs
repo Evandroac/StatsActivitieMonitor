@@ -61,6 +61,7 @@ public sealed class AppSettings
     public double? GadgetTop { get; set; }
 
     public bool SidebarPinned { get; set; }
+    public string Language { get; set; } = "pt";
     public bool WindowMaximized { get; set; } = true;
     public double? WindowLeft { get; set; }
     public double? WindowTop { get; set; }

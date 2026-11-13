@@ -31,6 +31,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         ApplySettings();
         _monitor.SnapshotUpdated += OnSnapshot;
         _monitor.ErrorOccurred += OnError;
+        Loc.LanguageChanged += () => { if (_last is { } l) Apply(l); if (_lastNet is { } n) Network.Update(n); };
     }
 
     private DetailItem? _gpuMemClock, _gpuVram, _gpuPower, _gpuFan;
@@ -67,6 +68,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _handleItem!.Value = c.Handles.ToString("N0");
     }
 
+    private NetworkSnapshot? _lastNet;
     private AppSettings S => _settingsService.Current;
 
     public ComponentViewModel Cpu { get; }
@@ -94,6 +96,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void OnNetwork(object? sender, NetworkSnapshot s)
     {
+        _lastNet = s;
         Application.Current?.Dispatcher.BeginInvoke(() => Network.Update(s));
     }
 
@@ -127,12 +130,15 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
-            SensorNote = $"Erro de monitoramento: {ex.Message}";
+            SensorNote = Loc.T("Erro de monitoramento: {0}", ex.Message);
         });
     }
 
+    private HardwareSnapshot? _last;
+
     private void Apply(HardwareSnapshot s)
     {
+        _last = s;
         UpdateCounts();
         string NA = ComponentViewModel.NotAvailable;
         _gpuMemClock!.Value = s.GpuMemClockMhz is { } mc ? (mc >= 1000 ? $"{mc / 1000:0.00} GHz" : $"{mc:0} MHz") : NA;
@@ -142,7 +148,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _gpuFan!.Value = s.GpuFanRpm is { } f ? $"{f:0} RPM" : NA;
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
-        Ram.Update("Memória RAM", s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
+        Ram.Update(Loc.T("Memória RAM"), s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
         Disk.Update(s);
 
         UptimeText = s.Uptime.Days > 0
@@ -154,16 +160,16 @@ public sealed class MainViewModel : ObservableObject, IDisposable
                              Level(s.GpuTemp, S.GpuWarnTemp, S.GpuCritTemp).level);
         (StatusText, StatusBrush) = worst switch
         {
-            2 => ("Temperatura crítica", _crit),
-            1 => ("Temperatura elevada", _warn),
-            0 => ("Funcionamento normal", _normal),
-            _ => ("Sem sensores de temperatura", Brushes.Gray),
+            2 => (Loc.T("Temperatura crítica"), _crit),
+            1 => (Loc.T("Temperatura elevada"), _warn),
+            0 => (Loc.T("Funcionamento normal"), _normal),
+            _ => (Loc.T("Sem sensores de temperatura"), Brushes.Gray),
         };
 
         var notes = new List<string>();
         if (!s.CpuTemp.HasValue && !s.IsElevated)
-            notes.Add("Temperatura da CPU indisponível: execute como administrador para acessar este sensor.");
-        if (s.GpuName is null) notes.Add("Nenhuma GPU compatível detectada.");
+            notes.Add(Loc.T("Temperatura da CPU indisponível: execute como administrador para acessar este sensor."));
+        if (s.GpuName is null) notes.Add(Loc.T("Nenhuma GPU compatível detectada."));
         SensorNote = string.Join(" ", notes);
     }
 

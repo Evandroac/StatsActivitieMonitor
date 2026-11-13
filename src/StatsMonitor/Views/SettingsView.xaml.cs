@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using StatsMonitor.Helpers;
 using StatsMonitor.ViewModels;
 
 namespace StatsMonitor.Views;
@@ -21,7 +22,9 @@ public partial class SettingsView : UserControl
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
         AddHandler(ToggleButton.CheckedEvent, refresh);
         AddHandler(ToggleButton.UncheckedEvent, refresh);
-        Loaded += (_, _) => RefreshPreview();
+        Action onLang = RefreshPreview;
+        Loaded += (_, _) => { RefreshPreview(); Loc.LanguageChanged += onLang; };
+        Unloaded += (_, _) => Loc.LanguageChanged -= onLang;
     }
 
     /// <summary>Persists any pending change (used when navigating away).</summary>
@@ -29,7 +32,7 @@ public partial class SettingsView : UserControl
 
     private void OnResetDefaults(object sender, RoutedEventArgs e)
     {
-        if (MessageBox.Show("Restaurar todas as configurações para o padrão?", "Stats Monitor", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+        if (MessageBox.Show(Loc.T("Restaurar todas as configurações para o padrão?"), "Stats Monitor", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
         _vm.ResetDefaults();
         RefreshPreview();
     }
@@ -42,14 +45,14 @@ public partial class SettingsView : UserControl
         var taskbar = new List<string>();
         void Add(bool on, string f, string tb) { if (on) { floating.Add(f); taskbar.Add(tb); } }
         Add(vm.ShowCpuGadget, $"CPU: 23%{t("52°C")}", $"CPU 23%{t("52°C")}");
-        Add(vm.ShowRamGadget, "RAM: 41% | 13,2 GB", "RAM 41%");
+        Add(vm.ShowRamGadget, Loc.T("RAM: 41% | 13,2 GB"), "RAM 41%");
         Add(vm.ShowGpuGadget, $"GPU: 37%{t("58°C")}", $"GPU 37%{t("58°C")}");
-        Add(vm.ShowVramGadget, "Disco: 12%", "Disco 12%");
+        Add(vm.ShowVramGadget, $"{Loc.T("Disco")}: 12%", $"{Loc.T("Disco")} 12%");
         Add(vm.ShowFpsGadget, "FPS: 144", "FPS 144");
-        Add(vm.ShowNetworkGadget, "NET: ↓ 12,3 Mbps ↑ 1,2 Mbps", "NET ↓ 12,3 Mbps ↑ 1,2 Mbps");
+        Add(vm.ShowNetworkGadget, Loc.T("NET: ↓ 12,3 Mbps ↑ 1,2 Mbps"), Loc.T("NET ↓ 12,3 Mbps ↑ 1,2 Mbps"));
 
         bool off = vm.GadgetNone || !vm.ShowGadget;
-        if (floating.Count == 0) { floating.Add("Nenhum indicador"); taskbar.Add("Nenhum indicador"); }
+        if (floating.Count == 0) { floating.Add(Loc.T("Nenhum indicador")); taskbar.Add(Loc.T("Nenhum indicador")); }
 
         Fill(FloatingPanel, floating, 13, false);
         Fill(TaskbarPanel, taskbar, 12, true);
@@ -61,7 +64,7 @@ public partial class SettingsView : UserControl
         BarBox.Visibility = Show(vm.GadgetFloatingBar && !off);
         TopBox.Visibility = Show(vm.GadgetDockedTop && !off);
         OffText.Parent.SetValue(UIElement.VisibilityProperty, Show(off));
-        ModeBadge.Text = off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetOnTaskbar ? "Barra de tarefas" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo";
+        ModeBadge.Text = Loc.T(off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetOnTaskbar ? "Barra de tarefas" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo");
     }
 
     private static Visibility Show(bool v) => v ? Visibility.Visible : Visibility.Collapsed;

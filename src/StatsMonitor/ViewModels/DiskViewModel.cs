@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using StatsMonitor.Helpers;
 using StatsMonitor.Models;
 
@@ -10,7 +10,7 @@ public sealed class DiskViewModel : ObservableObject
     private const string NA = ComponentViewModel.NotAvailable;
     private string _loadText = NA;
 
-    public string Title => "Discos";
+    public string Title => Loc.T("Discos");
     public ObservableCollection<VolumeItem> Volumes { get; } = [];
     public ObservableCollection<DriveItem> Drives { get; } = [];
 
@@ -25,7 +25,7 @@ public sealed class DiskViewModel : ObservableObject
             var v = s.Volumes[i];
             double used = v.TotalGb - v.FreeGb;
             double pct = v.TotalGb > 0 ? used / v.TotalGb * 100 : 0;
-            Volumes[i].Set(v.Name, pct, $"{Size(used)} de {Size(v.TotalGb)} usados ({pct:0}%)", $"{Size(v.FreeGb)} livres");
+            Volumes[i].Set(v.Name, pct, Loc.T("{0} de {1} usados ({2:0}%)", Size(used), Size(v.TotalGb), pct), Loc.T("{0} livres", Size(v.FreeGb)));
         }
 
         Sync(Drives, s.Disks.Count, () => new DriveItem());
@@ -36,7 +36,7 @@ public sealed class DiskViewModel : ObservableObject
                 d.Temp is { } t ? $"{t:0}°C" : NA,
                 Speed(d.ReadBps), Speed(d.WriteBps),
                 d.Activity is { } a ? $"{a:0}%" : NA,
-                d.Health ?? NA,
+                d.Health is { } hl ? Loc.T(hl) : NA,
                 d.LifePercent is { } l ? $"{l:0}%" : NA);
         }
         LoadText = s.Disks.Select(d => d.Activity).Where(a => a.HasValue).DefaultIfEmpty(null).Max() is { } m ? $"{m:0}%" : NA;

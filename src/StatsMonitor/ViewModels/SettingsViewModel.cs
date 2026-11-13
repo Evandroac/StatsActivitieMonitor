@@ -15,6 +15,7 @@ public sealed class SettingsViewModel : ObservableObject
         _service = service;
         _onApplied = onApplied;
         Load(service.Current);
+        _language = service.Current.Language == "en" ? "en" : "pt";
         _loading = false;
         _timer.Tick += (_, _) => Flush();
     }
@@ -45,6 +46,19 @@ public sealed class SettingsViewModel : ObservableObject
         _loading = false;
         Raise(string.Empty);
         Persist();
+    }
+
+    private string _language = "pt";
+    public bool LangPt { get => _language == "pt"; set => SetLanguage(value, "pt"); }
+    public bool LangEn { get => _language == "en"; set => SetLanguage(value, "en"); }
+
+    // The language switches instantly; persistence follows the usual debounce.
+    private void SetLanguage(bool value, string lang)
+    {
+        if (!value || _language == lang) return;
+        _language = lang;
+        Loc.SetLanguage(lang);
+        AutoSave();
     }
 
     private bool _loading = true;
@@ -111,6 +125,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowGadget = ShowGadget;
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = _gadgetMode;
+        s.Language = _language;
         s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
         s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;
         s.ShowCpuGadget = ShowCpuGadget; s.ShowGpuGadget = ShowGpuGadget; s.ShowRamGadget = ShowRamGadget;

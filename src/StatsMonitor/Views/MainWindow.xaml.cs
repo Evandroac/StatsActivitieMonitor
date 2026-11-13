@@ -41,8 +41,9 @@ public partial class MainWindow : Window
     private void CreateTrayIcon()
     {
         var menu = new System.Windows.Forms.ContextMenuStrip();
-        menu.Items.Add("Abrir Stats Monitor", null, (_, _) => RestoreFromGadget());
-        menu.Items.Add("Sair", null, (_, _) => ExitApp());
+        var openItem = menu.Items.Add(Loc.T("Abrir Stats Monitor"), null, (_, _) => RestoreFromGadget());
+        var exitItem = menu.Items.Add(Loc.T("Sair"), null, (_, _) => ExitApp());
+        Loc.LanguageChanged += () => { openItem.Text = Loc.T("Abrir Stats Monitor"); exitItem.Text = Loc.T("Sair"); };
         _tray = new System.Windows.Forms.NotifyIcon
         {
             Text = "Stats Monitor",
@@ -215,9 +216,9 @@ public partial class MainWindow : Window
         {
             if (card.Visibility != Visibility.Visible) return;
             sb.AppendLine().AppendLine($"[{c.Title}] {c.Name}");
-            sb.AppendLine($"Uso: {c.LoadText}");
-            sb.AppendLine($"Frequência: {c.ClockText}");
-            if (_vm.ShowTemperatures) sb.AppendLine($"Temperatura: {c.TempText} ({c.MinMaxText})");
+            sb.AppendLine($"{Loc.T("Uso")}: {c.LoadText}");
+            sb.AppendLine($"{Loc.T("Frequência")}: {c.ClockText}");
+            if (_vm.ShowTemperatures) sb.AppendLine($"{Loc.T("Temperatura")}: {c.TempText} ({c.MinMaxText})");
             foreach (var d in c.Details) sb.AppendLine($"{d.Label}: {d.Value}");
         }
         Processor(CpuCard, _vm.Cpu);
@@ -226,27 +227,27 @@ public partial class MainWindow : Window
         {
             var r = _vm.Ram;
             sb.AppendLine().AppendLine($"[{r.Title}] {r.Name}");
-            sb.AppendLine($"Uso: {r.LoadText}");
-            sb.AppendLine($"Total: {r.TotalText} | Em uso: {r.UsedText} | Disponível: {r.AvailableText}");
+            sb.AppendLine($"{Loc.T("Uso")}: {r.LoadText}");
+            sb.AppendLine($"{Loc.T("Total")}: {r.TotalText} | {Loc.T("Em uso")}: {r.UsedText} | {Loc.T("Disponível")}: {r.AvailableText}");
         }
         if (VramCard.Visibility == Visibility.Visible)
         {
             var d = _vm.Disk;
-            sb.AppendLine().AppendLine($"[Discos] Atividade: {d.LoadText}");
+            sb.AppendLine().AppendLine($"[{Loc.T("Discos")}] {Loc.T("Atividade")}: {d.LoadText}");
             foreach (var v in d.Volumes) sb.AppendLine($"{v.Name}: {v.Usage}, {v.Free}");
             foreach (var x in d.Drives)
-                sb.AppendLine($"{x.Name}: temp {x.Temp}, leitura {x.Read}, escrita {x.Write}, atividade {x.Activity}, saúde {x.Health}, vida útil {x.Life}");
+                sb.AppendLine(Loc.T("{0}: temp {1}, leitura {2}, escrita {3}, atividade {4}, saúde {5}, vida útil {6}", x.Name, x.Temp, x.Read, x.Write, x.Activity, x.Health, x.Life));
         }
         if (NetCard.Visibility == Visibility.Visible)
         {
             var n = _vm.Network;
-            sb.AppendLine().AppendLine($"[Rede] {n.Status}");
-            sb.AppendLine($"Adaptador: {n.Adapter} | IP: {n.Ip} | Gateway: {n.Gateway} | Link: {n.Link}");
-            sb.AppendLine($"Download: {n.Download} | Upload: {n.Upload} | Latência: {n.Latency}");
-            sb.AppendLine($"Total recebido: {n.TotalReceived} | Total enviado: {n.TotalSent}");
+            sb.AppendLine().AppendLine($"[{Loc.T("Rede")}] {n.Status}");
+            sb.AppendLine(Loc.T("Adaptador: {0} | IP: {1} | Gateway: {2} | Link: {3}", n.Adapter, n.Ip, n.Gateway, n.Link));
+            sb.AppendLine(Loc.T("Download: {0} | Upload: {1} | Latência: {2}", n.Download, n.Upload, n.Latency));
+            sb.AppendLine(Loc.T("Total recebido: {0} | Total enviado: {1}", n.TotalReceived, n.TotalSent));
         }
-        sb.AppendLine().AppendLine($"Tempo ligado: {_vm.UptimeText}");
-        sb.AppendLine($"Status do hardware: {_vm.StatusText}");
+        sb.AppendLine().AppendLine($"{Loc.T("Tempo ligado")}: {_vm.UptimeText}");
+        sb.AppendLine($"{Loc.T("Status do hardware")}: {_vm.StatusText}");
         try { Clipboard.SetText(sb.ToString()); }
         catch (System.Runtime.InteropServices.COMException) { }
     }
@@ -265,7 +266,7 @@ public partial class MainWindow : Window
                     if (Clean(label) is { Length: > 0 } l) lines.Add($"{(tb.IsChecked == true ? "[x]" : "[ ]")} {l}");
                     return;
                 case RadioButton { Tag: string name } rb:
-                    lines.Add($"{(rb.IsChecked == true ? "[x]" : "[ ]")} {name}");
+                    lines.Add($"{(rb.IsChecked == true ? "[x]" : "[ ]")} {Loc.T(name)}");
                     return;
                 case System.Windows.Controls.Primitives.ButtonBase:
                 case System.Windows.Controls.Primitives.Popup:

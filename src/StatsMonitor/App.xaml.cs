@@ -32,6 +32,7 @@ public partial class App : Application
 
         var settings = new SettingsService();
         settings.Load();
+        Loc.SetLanguage(settings.Current.Language);
         ThemeHelper.Apply(settings.Current);
 
         _viewModel = new MainViewModel(new LibreHardwareMonitorService(), settings);

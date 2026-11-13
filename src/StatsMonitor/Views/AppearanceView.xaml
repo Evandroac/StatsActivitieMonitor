@@ -40,8 +40,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding Label}" VerticalAlignment="Center" ToolTip="{Binding Label}"/>
                 <TextBox Grid.Column="1" Width="100" HorizontalAlignment="Left" h:Hint.Text="{Binding DefaultHex, Mode=OneWay}" Text="{Binding Hex, UpdateSourceTrigger=PropertyChanged}"
-                         ToolTip="Hexadecimal (#RRGGBB ou #AARRGGBB). Vazio = padrão do tema"/>
-                <ToggleButton x:Name="Toggle" Grid.Column="2" Width="40" Height="22" Cursor="Hand" ToolTip="Abrir seletor RGB"
+                         ToolTip="{h:Tr 'Hexadecimal (#RRGGBB ou #AARRGGBB). Vazio = padrão do tema'}"/>
+                <ToggleButton x:Name="Toggle" Grid.Column="2" Width="40" Height="22" Cursor="Hand" ToolTip="{h:Tr 'Abrir seletor RGB'}"
                               IsChecked="{Binding IsOpen, ElementName=Pop, Mode=TwoWay}">
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton">
@@ -85,7 +85,7 @@
                                 <Slider Minimum="0" Maximum="255" Value="{Binding B}"/></DockPanel>
                             <DockPanel><TextBlock Text="A" Width="18" Foreground="{DynamicResource TextSecondary}"/><TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" Text="{Binding AlphaText}"/>
                                 <Slider Minimum="0" Maximum="255" Value="{Binding A}"/></DockPanel>
-                            <TextBlock Text="Cores rápidas" Style="{StaticResource Caption}" Margin="0,10,0,4"/>
+                            <TextBlock Text="{h:Tr 'Cores rápidas'}" Style="{StaticResource Caption}" Margin="0,10,0,4"/>
                             <ItemsControl ItemsSource="{x:Static h:ColorPalette.Colors}">
                                 <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
@@ -101,7 +101,7 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Button Content="Usar padrão do tema" Style="{StaticResource PillButton}" Margin="0,6,0,0" Click="OnSwatchDefault"/>
+                            <Button Content="{h:Tr 'Usar padrão do tema'}" Style="{StaticResource PillButton}" Margin="0,6,0,0" Click="OnSwatchDefault"/>
                         </StackPanel>
                     </Border>
                 </Popup>            </Grid>
@@ -111,22 +111,22 @@
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
     <Border Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="180" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <StackPanel>
-            <TextBlock Text="AÇÕES" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
-            <TextBlock Text="As alterações são salvas automaticamente." Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
-            <Button Content="↺  Restaurar padrões" ToolTip="Limpa todas as cores e volta ao padrão do tema" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
+            <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
+            <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
+            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
         </StackPanel>
     </Border>
     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
-            <TextBlock Text="⭐  Minhas personalizações" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+            <TextBlock Text="{h:Tr '⭐  Minhas personalizações'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
             <DockPanel Margin="0,0,0,0">
-                <Button DockPanel.Dock="Right" Content="Excluir" ToolTip="Exclui a personalização com o nome do campo" Style="{StaticResource PillButton}" Command="{Binding DeletePresetCommand}" Margin="8,0,0,0"/>
-                <Button DockPanel.Dock="Right" Content="Carregar" ToolTip="Carrega como prévia a personalização com o nome do campo" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
-                <Button DockPanel.Dock="Right" Content="Salvar como" ToolTip="Salva as cores atuais com o nome do campo (substitui se o nome já existir)" Style="{StaticResource PillButton}" Command="{Binding SavePresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="{h:Tr 'Excluir'}" ToolTip="{h:Tr 'Exclui a personalização com o nome do campo'}" Style="{StaticResource PillButton}" Command="{Binding DeletePresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="{h:Tr 'Carregar'}" ToolTip="{h:Tr 'Carrega como prévia a personalização com o nome do campo'}" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="{h:Tr 'Salvar como'}" ToolTip="{h:Tr 'Salva as cores atuais com o nome do campo (substitui se o nome já existir)'}" Style="{StaticResource PillButton}" Command="{Binding SavePresetCommand}" Margin="8,0,0,0"/>
                 <Grid>
-                    <TextBox x:Name="PresetBox" TextChanged="OnPresetTextChanged" Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" Padding="4,5,28,5" h:Hint.Text="Digite um nome ou escolha uma personalização salva" ToolTip="Nome da personalização: digite para criar ou clique na seta para escolher uma salva"/>
+                    <TextBox x:Name="PresetBox" TextChanged="OnPresetTextChanged" Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" Padding="4,5,28,5" h:Hint.Text="{h:Tr 'Digite um nome ou escolha uma personalização salva'}" ToolTip="{h:Tr 'Nome da personalização: digite para criar ou clique na seta para escolher uma salva'}"/>
                     <ToggleButton x:Name="PresetToggle" HorizontalAlignment="Right" Width="26" Content="▾" Cursor="Hand" Background="Transparent"
-                                  Foreground="{DynamicResource TextSecondary}" BorderThickness="0" ToolTip="Mostrar personalizações salvas"
+                                  Foreground="{DynamicResource TextSecondary}" BorderThickness="0" ToolTip="{h:Tr 'Mostrar personalizações salvas'}"
                                   IsChecked="{Binding IsOpen, ElementName=PresetPopup, Mode=TwoWay}">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
@@ -152,16 +152,16 @@
                         </Border>
                     </Popup>
                 </Grid>
-            </DockPanel>            <TextBlock Text="Carregar uma personalização aplica as cores na hora. Todas as alterações são salvas automaticamente." Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+            </DockPanel>            <TextBlock Text="{h:Tr 'Carregar uma personalização aplica as cores na hora. Todas as alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap"/>
 
             <Grid Margin="0,16,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="🌗  Tema base" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+                    <TextBlock Text="{h:Tr '🌗  Tema base'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="Theme" Tag="Escuro" ToolTip="Usa as cores escuras como base" IsChecked="{Binding DarkTheme}" Style="{StaticResource ThemeCard}" Margin="0,0,12,0">
+                        <RadioButton GroupName="Theme" Tag="Escuro" ToolTip="{h:Tr 'Usa as cores escuras como base'}" IsChecked="{Binding DarkTheme}" Style="{StaticResource ThemeCard}" Margin="0,0,12,0">
                             <StackPanel>
                                 <Border Width="120" Height="64" CornerRadius="8" Background="#12141A" BorderBrush="#40808080" BorderThickness="1" Padding="8">
                                     <Border Background="#1B1E27" CornerRadius="5" Padding="6" BorderBrush="#30808080" BorderThickness="1">
@@ -172,9 +172,9 @@
                                         </StackPanel>
                                     </Border>
                                 </Border>
-                                <TextBlock Text="🌙  Escuro" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                <TextBlock Text="{h:Tr '🌙  Escuro'}" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
                             </StackPanel>
-                        </RadioButton>                        <RadioButton GroupName="Theme" Tag="Claro" ToolTip="Usa as cores claras como base" IsChecked="{Binding LightTheme}" Style="{StaticResource ThemeCard}" Margin="0">
+                        </RadioButton>                        <RadioButton GroupName="Theme" Tag="Claro" ToolTip="{h:Tr 'Usa as cores claras como base'}" IsChecked="{Binding LightTheme}" Style="{StaticResource ThemeCard}" Margin="0">
                             <StackPanel>
                                 <Border Width="120" Height="64" CornerRadius="8" Background="#EEF1F6" BorderBrush="#40808080" BorderThickness="1" Padding="8">
                                     <Border Background="#FFFFFF" CornerRadius="5" Padding="6" BorderBrush="#30808080" BorderThickness="1">
@@ -185,55 +185,55 @@
                                         </StackPanel>
                                     </Border>
                                 </Border>
-                                <TextBlock Text="☀  Claro" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                <TextBlock Text="{h:Tr '☀  Claro'}" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
                             </StackPanel>
                         </RadioButton>                    </StackPanel>
                     <Border Margin="0,10,0,0" CornerRadius="8" Padding="10" BorderThickness="1" BorderBrush="#40808080" Background="{Binding MainOptions[0].Preview}"
-                            ToolTip="Pré-visualização do sistema com o tema e as cores escolhidas">
+                            ToolTip="{h:Tr 'Pré-visualização do sistema com o tema e as cores escolhidas'}">
                         <StackPanel>
                             <DockPanel Margin="0,0,0,8">
                                 <TextBlock DockPanel.Dock="Right" FontSize="11" Foreground="{Binding MainOptions[4].Preview}">
-                                    <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Text" Value="☀ Claro"/>
-                                        <Style.Triggers><DataTrigger Binding="{Binding DarkTheme}" Value="True"><Setter Property="Text" Value="🌙 Escuro"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                                    <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Text" Value="{h:Tr '☀ Claro'}"/>
+                                        <Style.Triggers><DataTrigger Binding="{Binding DarkTheme}" Value="True"><Setter Property="Text" Value="{h:Tr '🌙 Escuro'}"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
                                 </TextBlock>
-                                <TextBlock Text="Monitor" FontWeight="SemiBold" Foreground="{Binding MainOptions[3].Preview}"/>
+                                <TextBlock Text="{h:Tr 'Monitor'}" FontWeight="SemiBold" Foreground="{Binding MainOptions[3].Preview}"/>
                             </DockPanel>
                             <Grid>
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="8"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                                 <Border Background="{Binding MainOptions[1].Preview}" BorderBrush="{Binding MainOptions[2].Preview}" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                     <StackPanel>
-                                        <TextBlock Text="🧠  CPU" FontWeight="SemiBold" FontSize="12" Foreground="{Binding MainOptions[5].Preview}"/>
+                                        <TextBlock Text="{h:Tr '🧠  CPU'}" FontWeight="SemiBold" FontSize="12" Foreground="{Binding MainOptions[5].Preview}"/>
                                         <TextBlock Text="23%  ·  52°C" FontSize="14" Margin="0,4,0,6" Foreground="{Binding MainOptions[3].Preview}"/>
                                         <Border Height="6" CornerRadius="3" Background="{Binding MainOptions[7].Preview}"><Border Width="40" HorizontalAlignment="Left" CornerRadius="3" Background="{Binding MainOptions[5].Preview}"/></Border>
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="2" Background="{Binding MainOptions[1].Preview}" BorderBrush="{Binding MainOptions[2].Preview}" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                     <StackPanel>
-                                        <TextBlock Text="🧩  Memória" FontWeight="SemiBold" FontSize="12" Foreground="{Binding MainOptions[6].Preview}"/>
+                                        <TextBlock Text="{h:Tr '🧩  Memória'}" FontWeight="SemiBold" FontSize="12" Foreground="{Binding MainOptions[6].Preview}"/>
                                         <TextBlock Text="41%  ·  13,2 GB" FontSize="14" Margin="0,4,0,6" Foreground="{Binding MainOptions[3].Preview}"/>
                                         <Border Height="6" CornerRadius="3" Background="{Binding MainOptions[7].Preview}"><Border Width="70" HorizontalAlignment="Left" CornerRadius="3" Background="{Binding MainOptions[6].Preview}"/></Border>
                                     </StackPanel>
                                 </Border>
                             </Grid>
-                            <TextBlock Text="Texto secundário de exemplo" FontSize="11" Margin="0,8,0,0" Foreground="{Binding MainOptions[4].Preview}"/>
+                            <TextBlock Text="{h:Tr 'Texto secundário de exemplo'}" FontSize="11" Margin="0,8,0,0" Foreground="{Binding MainOptions[4].Preview}"/>
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Text="🪟  Gadget (minimizado)" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+                    <TextBlock Text="{h:Tr '🪟  Gadget (minimizado)'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
                     <ItemsControl ItemsSource="{Binding GadgetOptions}" ItemTemplate="{StaticResource ColorRow}"/>
                     <TextBlock Text="{Binding GadgetOpacity, StringFormat=Opacidade do fundo: {0}%}" Margin="0,6,0,0"/>
-                    <Slider Minimum="10" Maximum="100" Value="{Binding GadgetOpacity}" ToolTip="Transparência do fundo do gadget (10% = quase transparente)"/>
+                    <Slider Minimum="10" Maximum="100" Value="{Binding GadgetOpacity}" ToolTip="{h:Tr 'Transparência do fundo do gadget (10% = quase transparente)'}"/>
 
-                    <TextBlock Text="🚨  Cores dos alertas de temperatura" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+                    <TextBlock Text="{h:Tr '🚨  Cores dos alertas de temperatura'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
                     <ItemsControl ItemsSource="{Binding AlertOptions}" ItemTemplate="{StaticResource ColorRow}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2">
-                    <TextBlock Text="🖥️  Janela principal (maximizada)" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+                    <TextBlock Text="{h:Tr '🖥️  Janela principal (maximizada)'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
                     <ItemsControl ItemsSource="{Binding MainOptions}" ItemTemplate="{StaticResource ColorRow}"/>
                 </StackPanel>
             </Grid>
 
-            <TextBlock Text="Deixe o campo vazio para usar a cor padrão do tema." Style="{StaticResource Caption}" Margin="0,12,0,0"/>
+            <TextBlock Text="{h:Tr 'Deixe o campo vazio para usar a cor padrão do tema.'}" Style="{StaticResource Caption}" Margin="0,12,0,0"/>
 
 
         </StackPanel>

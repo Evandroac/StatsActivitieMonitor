@@ -11,17 +11,19 @@ public sealed class ColorOption : ObservableObject
 {
     private readonly Func<Color> _default;
     private string _hex;
+    private readonly string _label;
 
     public ColorOption(string key, string label, string hex, Func<Color> defaultColor)
     {
         Key = key;
-        Label = label;
+        _label = label;
+        Loc.LanguageChanged += () => { Raise(nameof(Label)); Raise(nameof(Contrast)); Raise(nameof(IsCustom)); };
         _hex = hex;
         _default = defaultColor;
     }
 
     public string Key { get; }
-    public string Label { get; }
+    public string Label => Loc.T(_label);
 
     public string Hex
     {
@@ -68,7 +70,7 @@ public sealed class ColorOption : ObservableObject
         {
             double L(byte v) { var c = v / 255.0; return c <= 0.03928 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4); }
             var lum = 0.2126 * L(Current.R) + 0.7152 * L(Current.G) + 0.0722 * L(Current.B);
-            return $"Contraste: {1.05 / (lum + 0.05):0.0}:1 c/ branco · {(lum + 0.05) / 0.05:0.0}:1 c/ preto";
+            return Loc.T("Contraste: {0:0.0}:1 c/ branco · {1:0.0}:1 c/ preto", 1.05 / (lum + 0.05), (lum + 0.05) / 0.05);
         }
     }
     public bool IsCustom => ThemeHelper.TryParseColor(_hex, out _);

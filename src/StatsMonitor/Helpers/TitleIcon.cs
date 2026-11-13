@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
 
 namespace StatsMonitor.Helpers;
@@ -11,8 +11,8 @@ public sealed class TitleIcon : IValueConverter
     private static readonly (string Key, string Icon)[] Map =
     {
         ("cpu", "🧠"), ("processador", "🧠"), ("gpu", "🎮"), ("vídeo", "🎮"), ("video", "🎮"),
-        ("ram", "🧩"), ("memória", "🧩"), ("disco", "💽"), ("armazen", "💽"),
-        ("rede", "🌐"), ("internet", "🌐"), ("computador", "💻"), ("sistema", "🪟"),
+        ("ram", "🧩"), ("memória", "🧩"), ("memory", "🧩"), ("disk", "💽"), ("storage", "💽"), ("disco", "💽"), ("armazen", "💽"),
+        ("rede", "🌐"), ("network", "🌐"), ("computer", "💻"), ("board", "🔌"), ("processor", "🧠"), ("internet", "🌐"), ("computador", "💻"), ("sistema", "🪟"),
         ("placa", "🔌"), ("bios", "🔌"),
     };
 

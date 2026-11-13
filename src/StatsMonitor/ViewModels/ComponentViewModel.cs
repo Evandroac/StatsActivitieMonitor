@@ -62,7 +62,7 @@ public sealed class ComponentViewModel : ObservableObject
     public void Update(string? name, double? load, double? temp, double? clockMhz = null,
         double? totalGb = null, double? usedGb = null, double? availableGb = null)
     {
-        Name = string.IsNullOrWhiteSpace(name) ? "Não detectado" : name;
+        Name = string.IsNullOrWhiteSpace(name) ? Loc.T("Não detectado") : name;
         Load = load ?? 0;
         LoadText = load.HasValue ? $"{load.Value:0}%" : NotAvailable;
         ClockText = clockMhz.HasValue ? (clockMhz.Value >= 1000 ? $"{clockMhz.Value / 1000:0.00} GHz" : $"{clockMhz.Value:0} MHz") : NotAvailable;
@@ -77,7 +77,7 @@ public sealed class ComponentViewModel : ObservableObject
             _maxTemp = _maxTemp.HasValue ? Math.Max(_maxTemp.Value, temp.Value) : temp.Value;
         }
         TempText = temp.HasValue ? $"{temp.Value:0}°C" : NotAvailable;
-        MinMaxText = _minTemp.HasValue ? $"mín {_minTemp:0}°C · máx {_maxTemp:0}°C" : NotAvailable;
+        MinMaxText = _minTemp.HasValue ? Loc.T("mín {0:0}°C · máx {1:0}°C", _minTemp!.Value, _maxTemp!.Value) : NotAvailable;
         RefreshBrush();
 
         History.RemoveAt(0);
@@ -121,7 +121,12 @@ public sealed class ComponentViewModel : ObservableObject
 public sealed class DetailItem : ObservableObject
 {
     private string _value;
-    public DetailItem(string label, string value) { Label = label; _value = value; }
-    public string Label { get; }
+    private readonly string _key;
+    public DetailItem(string label, string value)
+    {
+        _key = label; _value = value;
+        Loc.LanguageChanged += () => Raise(nameof(Label));
+    }
+    public string Label => Loc.T(_key);
     public string Value { get => _value; set => Set(ref _value, value); }
 }

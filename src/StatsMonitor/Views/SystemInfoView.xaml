@@ -11,7 +11,7 @@
             <Setter Property="Margin" Value="6,0,0,0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="ToolTip" Value="Copiar para a área de transferência"/>
+            <Setter Property="ToolTip" Value="{h:Tr 'Copiar para a área de transferência'}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -30,7 +30,7 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
-            <TextBlock Text="Sistema" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </DockPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl x:Name="Groups">

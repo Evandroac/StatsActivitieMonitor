@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using StatsMonitor.Services;
 
@@ -12,6 +12,7 @@ public sealed record SearchResult(string Match, string Title, string Location, S
 public static class SearchIndex
 {
     private static List<SearchResult>? _static;
+    private static string? _staticLang;
     private static List<SearchResult> _system = [];
 
     public static async Task LoadSystemAsync()
@@ -20,11 +21,11 @@ public static class SearchIndex
         var list = new List<SearchResult>();
         foreach (var g in groups)
         {
-            list.Add(new(g.Title, g.Title, "Sistema", SearchPage.System));
+            list.Add(new(g.Title, g.Title, Loc.T("Sistema"), SearchPage.System));
             foreach (var l in g.Lines)
             {
-                list.Add(new(l.Label, l.Label, $"Sistema › {g.Title}", SearchPage.System));
-                if (l.Value != "N/D") list.Add(new(l.Value, $"{l.Label}: {l.Value}", $"Sistema › {g.Title}", SearchPage.System));
+                list.Add(new(l.Label, l.Label, $"{Loc.T("Sistema")} › {g.Title}", SearchPage.System));
+                if (l.Value != "N/D") list.Add(new(l.Value, $"{l.Label}: {l.Value}", $"{Loc.T("Sistema")} › {g.Title}", SearchPage.System));
             }
         }
         _system = list;
@@ -34,6 +35,7 @@ public static class SearchIndex
     {
         var terms = Normalize(query).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (terms.Length == 0) return [];
+        if (_staticLang != Loc.Lang) { _static = null; _staticLang = Loc.Lang; }
         _static ??= BuildStatic();
         return _static.Concat(_system)
             .Select(r => (r, key: Normalize(r.Title + " " + r.Location)))
@@ -58,7 +60,8 @@ public static class SearchIndex
         var list = new List<SearchResult>();
         void Add(SearchPage page, string location, params string[] texts)
         {
-            foreach (var t in texts) list.Add(new(t, t, location, page));
+            location = string.Join(" › ", location.Split(" › ").Select(Loc.T));
+            foreach (var t in texts) { var tt = Loc.T(t); list.Add(new(tt, tt, location, page)); }
         }
 
         Add(SearchPage.Settings, "Configurações › Geral",

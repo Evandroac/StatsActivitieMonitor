@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using StatsMonitor.Helpers;
+using System.Globalization;
 using System.Management;
 using System.Runtime.InteropServices;
 
@@ -14,49 +15,55 @@ public static class SystemInfoService
 
     private static Task<List<InfoGroup>>? _cache;
 
-    public static Task<List<InfoGroup>> GetAsync() => _cache ??= Task.Run(Read);
+    private static string? _cacheLang;
+
+    public static Task<List<InfoGroup>> GetAsync()
+    {
+        if (_cacheLang != Loc.Lang) { _cache = null; _cacheLang = Loc.Lang; }
+        return _cache ??= Task.Run(Read);
+    }
 
     public static List<InfoGroup> Read()
     {
         var groups = new List<InfoGroup>();
 
         var cs = First("Win32_ComputerSystem", "Name", "UserName", "Domain", "Manufacturer", "Model", "TotalPhysicalMemory");
-        groups.Add(new("Computador",
+        groups.Add(new(Loc.T("Computador"),
         [
-            new("Nome do computador", S(cs, "Name", Environment.MachineName)),
-            new("Usuário", S(cs, "UserName", Environment.UserName)),
-            new("Domínio / grupo de trabalho", S(cs, "Domain")),
-            new("Fabricante", S(cs, "Manufacturer")),
-            new("Modelo", S(cs, "Model")),
+            new(Loc.T("Nome do computador"), S(cs, "Name", Environment.MachineName)),
+            new(Loc.T("Usuário"), S(cs, "UserName", Environment.UserName)),
+            new(Loc.T("Domínio / grupo de trabalho"), S(cs, "Domain")),
+            new(Loc.T("Fabricante"), S(cs, "Manufacturer")),
+            new(Loc.T("Modelo"), S(cs, "Model")),
         ]));
 
         var os = First("Win32_OperatingSystem", "Caption", "Version", "BuildNumber", "OSArchitecture", "InstallDate", "LastBootUpTime");
-        groups.Add(new("Sistema operacional",
+        groups.Add(new(Loc.T("Sistema operacional"),
         [
-            new("Sistema", S(os, "Caption")),
-            new("Versão", S(os, "Version")),
-            new("Build", S(os, "BuildNumber")),
-            new("Arquitetura", S(os, "OSArchitecture")),
-            new("Instalado em", Date(os, "InstallDate")),
-            new("Último boot", Date(os, "LastBootUpTime")),
-            new("Runtime", RuntimeInformation.FrameworkDescription),
+            new(Loc.T("Sistema"), S(os, "Caption")),
+            new(Loc.T("Versão"), S(os, "Version")),
+            new(Loc.T("Build"), S(os, "BuildNumber")),
+            new(Loc.T("Arquitetura"), S(os, "OSArchitecture")),
+            new(Loc.T("Instalado em"), Date(os, "InstallDate")),
+            new(Loc.T("Último boot"), Date(os, "LastBootUpTime")),
+            new(Loc.T("Runtime"), RuntimeInformation.FrameworkDescription),
         ]));
 
         var bb = First("Win32_BaseBoard", "Manufacturer", "Product", "SerialNumber");
         var bios = First("Win32_BIOS", "Manufacturer", "SMBIOSBIOSVersion", "ReleaseDate");
-        groups.Add(new("Placa-mãe e BIOS",
+        groups.Add(new(Loc.T("Placa-mãe e BIOS"),
         [
-            new("Placa-mãe", $"{S(bb, "Manufacturer")} {S(bb, "Product")}".Trim()),
-            new("BIOS", $"{S(bios, "Manufacturer")} {S(bios, "SMBIOSBIOSVersion")}".Trim()),
-            new("Data da BIOS", Date(bios, "ReleaseDate")),
+            new(Loc.T("Placa-mãe"), $"{S(bb, "Manufacturer")} {S(bb, "Product")}".Trim()),
+            new(Loc.T("BIOS"), $"{S(bios, "Manufacturer")} {S(bios, "SMBIOSBIOSVersion")}".Trim()),
+            new(Loc.T("Data da BIOS"), Date(bios, "ReleaseDate")),
         ]));
 
         var cpu = First("Win32_Processor", "Name", "NumberOfCores", "NumberOfLogicalProcessors", "MaxClockSpeed");
-        groups.Add(new("Processador",
+        groups.Add(new(Loc.T("Processador"),
         [
-            new("Modelo", S(cpu, "Name")),
-            new("Núcleos / threads", $"{S(cpu, "NumberOfCores")} / {S(cpu, "NumberOfLogicalProcessors")}"),
-            new("Velocidade máxima", double.TryParse(S(cpu, "MaxClockSpeed"), out var mhz) ? $"{mhz / 1000:0.00} GHz" : NA),
+            new(Loc.T("Modelo"), S(cpu, "Name")),
+            new(Loc.T("Núcleos / threads"), $"{S(cpu, "NumberOfCores")} / {S(cpu, "NumberOfLogicalProcessors")}"),
+            new(Loc.T("Velocidade máxima"), double.TryParse(S(cpu, "MaxClockSpeed"), out var mhz) ? $"{mhz / 1000:0.00} GHz" : NA),
         ]));
 
         var mem = new List<InfoLine>();
@@ -65,17 +72,17 @@ public static class SystemInfoService
         {
             double gb = Convert.ToDouble(m["Capacity"] ?? 0, CultureInfo.InvariantCulture) / 1073741824.0;
             total += gb;
-            mem.Add(new(S(m, "BankLabel", "Módulo"), $"{gb:0} GB · {S(m, "Speed")} MHz · {S(m, "Manufacturer")} {S(m, "PartNumber")}".Trim()));
+            mem.Add(new(S(m, "BankLabel", Loc.T("Módulo")), $"{gb:0} GB · {S(m, "Speed")} MHz · {S(m, "Manufacturer")} {S(m, "PartNumber")}".Trim()));
         }
-        mem.Insert(0, new("Total instalado", total > 0 ? $"{total:0} GB" : NA));
-        groups.Add(new("Memória RAM", mem));
+        mem.Insert(0, new(Loc.T("Total instalado"), total > 0 ? $"{total:0} GB" : NA));
+        groups.Add(new(Loc.T("Memória RAM"), mem));
 
         var gpu = new List<InfoLine>();
         foreach (var g in All("Win32_VideoController", "Name", "DriverVersion", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate"))
         {
             gpu.Add(new(S(g, "Name"), $"Driver {S(g, "DriverVersion")} · {S(g, "CurrentHorizontalResolution")}x{S(g, "CurrentVerticalResolution")} @ {S(g, "CurrentRefreshRate")} Hz"));
         }
-        groups.Add(new("Vídeo", gpu.Count > 0 ? gpu : [new("GPU", NA)]));
+        groups.Add(new(Loc.T("Vídeo"), gpu.Count > 0 ? gpu : [new(Loc.T("GPU"), NA)]));
 
         var disks = new List<InfoLine>();
         foreach (var d in All("Win32_DiskDrive", "Model", "Size", "InterfaceType"))
@@ -83,7 +90,7 @@ public static class SystemInfoService
             double size = Convert.ToDouble(d["Size"] ?? 0, CultureInfo.InvariantCulture) / 1e9;
             disks.Add(new(S(d, "Model"), $"{size:0} GB · {S(d, "InterfaceType")}"));
         }
-        groups.Add(new("Armazenamento", disks.Count > 0 ? disks : [new("Disco", NA)]));
+        groups.Add(new(Loc.T("Armazenamento"), disks.Count > 0 ? disks : [new(Loc.T("Disco"), NA)]));
 
         return groups;
     }
