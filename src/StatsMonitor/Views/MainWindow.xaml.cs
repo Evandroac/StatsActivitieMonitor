@@ -197,6 +197,50 @@ public partial class MainWindow : Window
         catch (Exception) { }
     }
 
+    private void OnCopyAll(object sender, RoutedEventArgs e)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"Stats Monitor - {_vm.LastUpdateText}");
+        void Processor(UIElement card, ViewModels.ComponentViewModel c)
+        {
+            if (card.Visibility != Visibility.Visible) return;
+            sb.AppendLine().AppendLine($"[{c.Title}] {c.Name}");
+            sb.AppendLine($"Uso: {c.LoadText}");
+            sb.AppendLine($"Frequência: {c.ClockText}");
+            if (_vm.ShowTemperatures) sb.AppendLine($"Temperatura: {c.TempText} ({c.MinMaxText})");
+            foreach (var d in c.Details) sb.AppendLine($"{d.Label}: {d.Value}");
+        }
+        Processor(CpuCard, _vm.Cpu);
+        Processor(GpuCard, _vm.Gpu);
+        if (RamCard.Visibility == Visibility.Visible)
+        {
+            var r = _vm.Ram;
+            sb.AppendLine().AppendLine($"[{r.Title}] {r.Name}");
+            sb.AppendLine($"Uso: {r.LoadText}");
+            sb.AppendLine($"Total: {r.TotalText} | Em uso: {r.UsedText} | Disponível: {r.AvailableText}");
+        }
+        if (VramCard.Visibility == Visibility.Visible)
+        {
+            var d = _vm.Disk;
+            sb.AppendLine().AppendLine($"[Discos] Atividade: {d.LoadText}");
+            foreach (var v in d.Volumes) sb.AppendLine($"{v.Name}: {v.Usage}, {v.Free}");
+            foreach (var x in d.Drives)
+                sb.AppendLine($"{x.Name}: temp {x.Temp}, leitura {x.Read}, escrita {x.Write}, atividade {x.Activity}, saúde {x.Health}, vida útil {x.Life}");
+        }
+        if (NetCard.Visibility == Visibility.Visible)
+        {
+            var n = _vm.Network;
+            sb.AppendLine().AppendLine($"[Rede] {n.Status}");
+            sb.AppendLine($"Adaptador: {n.Adapter} | IP: {n.Ip} | Gateway: {n.Gateway} | Link: {n.Link}");
+            sb.AppendLine($"Download: {n.Download} | Upload: {n.Upload} | Latência: {n.Latency}");
+            sb.AppendLine($"Total recebido: {n.TotalReceived} | Total enviado: {n.TotalSent}");
+        }
+        sb.AppendLine().AppendLine($"Tempo ligado: {_vm.UptimeText}");
+        sb.AppendLine($"Status do hardware: {_vm.StatusText}");
+        try { Clipboard.SetText(sb.ToString()); }
+        catch (System.Runtime.InteropServices.COMException) { }
+    }
+
     private void OnRunAsAdmin(object sender, RoutedEventArgs e)
     {
         try

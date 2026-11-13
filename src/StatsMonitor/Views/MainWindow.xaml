@@ -244,6 +244,7 @@
 
         <DockPanel Margin="6,0,6,6">
             <Button DockPanel.Dock="Right" Content="🛡" FontSize="16" Style="{StaticResource PillButton}" ToolTip="Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)" Click="OnRunAsAdmin" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            <Button DockPanel.Dock="Right" Content="📋" FontSize="16" Style="{StaticResource PillButton}" ToolTip="Copiar todas as informações exibidas na tela neste momento" Click="OnCopyAll" VerticalAlignment="Center" Margin="8,0,0,0"/>
             <TextBlock Text="Monitor" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,24,4"/>
         </DockPanel>
 
