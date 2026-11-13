@@ -10,6 +10,7 @@ public partial class AppearanceWindow : Window
         InitializeComponent();
         DataContext = vm;
         vm.Saved += Close;
+        MaxHeight = SystemParameters.WorkArea.Height;
         Closed += (_, _) => { if (!vm.IsSaved) vm.Revert(); };
     }
 }
