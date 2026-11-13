@@ -9,7 +9,12 @@
     <RootNamespace>StatsMonitor</RootNamespace>
     <AssemblyName>StatsMonitor</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>StatsMonitor.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="StatsMonitor.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
