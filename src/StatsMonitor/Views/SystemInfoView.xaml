@@ -51,7 +51,7 @@
                                                 <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}"/>
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                                     <TextBlock Text="{Binding Value}" VerticalAlignment="Center"/>
-                                                    <Button Style="{StaticResource CopyButton}" Tag="{Binding Value}" Click="OnCopy"/>
+                                                    <Button Tag="{Binding Value}" Click="OnCopy"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource CopyButton}"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value="N/D"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="-"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
                                                 </StackPanel>
                                             </Grid>
                                         </DataTemplate>
