@@ -257,6 +257,9 @@ public partial class MainWindow : Window
         WindowState = _settings.Current.WindowMaximized ? WindowState.Maximized : WindowState.Normal;
         Show();
         Activate();
+        Topmost = true;
+        Topmost = false;
+        Focus();
     }
 
     private void OnCopy(object sender, RoutedEventArgs e)
