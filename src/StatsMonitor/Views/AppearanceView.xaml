@@ -113,16 +113,16 @@
         <StackPanel>
             <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
             <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
-            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
+            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" AutomationProperties.Name="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
         </StackPanel>
     </Border>
     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
             <TextBlock Text="{h:Tr '⭐  Minhas personalizações'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
             <DockPanel Margin="0,0,0,0">
-                <Button DockPanel.Dock="Right" Content="{h:Tr 'Excluir'}" ToolTip="{h:Tr 'Exclui a personalização com o nome do campo'}" Style="{StaticResource PillButton}" Command="{Binding DeletePresetCommand}" Margin="8,0,0,0"/>
-                <Button DockPanel.Dock="Right" Content="{h:Tr 'Carregar'}" ToolTip="{h:Tr 'Carrega como prévia a personalização com o nome do campo'}" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
-                <Button DockPanel.Dock="Right" Content="{h:Tr 'Salvar como'}" ToolTip="{h:Tr 'Salva as cores atuais com o nome do campo (substitui se o nome já existir)'}" Style="{StaticResource PillButton}" Command="{Binding SavePresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="{h:Tr 'Excluir'}" ToolTip="{h:Tr 'Exclui a personalização com o nome do campo'}" AutomationProperties.Name="{h:Tr 'Exclui a personalização com o nome do campo'}" Style="{StaticResource PillButton}" Command="{Binding DeletePresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="{h:Tr 'Carregar'}" ToolTip="{h:Tr 'Carrega como prévia a personalização com o nome do campo'}" AutomationProperties.Name="{h:Tr 'Carrega como prévia a personalização com o nome do campo'}" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="{h:Tr 'Salvar como'}" ToolTip="{h:Tr 'Salva as cores atuais com o nome do campo (substitui se o nome já existir)'}" AutomationProperties.Name="{h:Tr 'Salva as cores atuais com o nome do campo (substitui se o nome já existir)'}" Style="{StaticResource PillButton}" Command="{Binding SavePresetCommand}" Margin="8,0,0,0"/>
                 <Grid>
                     <TextBox x:Name="PresetBox" TextChanged="OnPresetTextChanged" Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" Padding="4,5,28,5" h:Hint.Text="{h:Tr 'Digite um nome ou escolha uma personalização salva'}" ToolTip="{h:Tr 'Nome da personalização: digite para criar ou clique na seta para escolher uma salva'}"/>
                     <ToggleButton x:Name="PresetToggle" HorizontalAlignment="Right" Width="26" Content="▾" Cursor="Hand" Background="Transparent"

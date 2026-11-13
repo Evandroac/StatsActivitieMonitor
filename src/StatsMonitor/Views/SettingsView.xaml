@@ -16,7 +16,7 @@
         <StackPanel>
             <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
             <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
-            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
+            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" AutomationProperties.Name="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
             <Button Content="{h:Tr '⤓  Exportar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
             <Button Content="{h:Tr '⤒  Importar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
         </StackPanel>

@@ -184,11 +184,11 @@
 
     <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="0,0,1,0">
         <DockPanel Margin="0,6">
-        <Button x:Name="NavPin" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)'}" Click="OnTogglePin">
+        <Button x:Name="NavPin" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)'}" AutomationProperties.Name="{h:Tr 'Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)'}" Click="OnTogglePin">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📌" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/></StackPanel>
             </Button>
         <StackPanel x:Name="NavPanel" Width="48">
-            <Button x:Name="NavMenu" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Menu'}" Click="OnToggleMenu">
+            <Button x:Name="NavMenu" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Menu'}" AutomationProperties.Name="{h:Tr 'Menu'}" Click="OnToggleMenu">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="☰" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMenu" Text="{h:Tr 'Menu'}" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
             <Grid x:Name="SearchRow" Height="40" Margin="4,1">
@@ -196,7 +196,7 @@
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="SearchIcon" Style="{StaticResource NavButton}" Margin="-4,-1" Width="48" ToolTip="{h:Tr 'Pesquisar'}" Click="OnSearchIcon">
+                <Button x:Name="SearchIcon" Style="{StaticResource NavButton}" Margin="-4,-1" Width="48" ToolTip="{h:Tr 'Pesquisar'}" AutomationProperties.Name="{h:Tr 'Pesquisar'}" Click="OnSearchIcon">
                     <TextBlock Text="🔍" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/>
                 </Button>
                 <TextBox x:Name="SearchBox" Grid.Column="1" Visibility="Collapsed" VerticalAlignment="Center" Margin="2,0,4,0" Padding="4,4"
@@ -218,16 +218,16 @@
                     </Border>
                 </Popup>
             </Grid>
-            <Button x:Name="NavMain" Style="{StaticResource NavButton}" Tag="active" ToolTip="{h:Tr 'Tela principal'}" Click="OnNavMain">
+            <Button x:Name="NavMain" Style="{StaticResource NavButton}" Tag="active" ToolTip="{h:Tr 'Tela principal'}" AutomationProperties.Name="{h:Tr 'Tela principal'}" Click="OnNavMain">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📊" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMain" Text="{h:Tr 'Principal'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
-            <Button x:Name="NavSystem" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Informações do computador'}" Click="OnOpenSystem">
+            <Button x:Name="NavSystem" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Informações do computador'}" AutomationProperties.Name="{h:Tr 'Informações do computador'}" Click="OnOpenSystem">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="ℹ️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSystem" Text="{h:Tr 'Sistema'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
-            <Button x:Name="NavAppearance" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Temas, cores e presets de personalização'}" Click="OnOpenAppearance">
+            <Button x:Name="NavAppearance" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Temas, cores e presets de personalização'}" AutomationProperties.Name="{h:Tr 'Temas, cores e presets de personalização'}" Click="OnOpenAppearance">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="🎨" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblAppearance" Text="{h:Tr 'Personalização'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
-            <Button x:Name="NavSettings" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" Click="OnOpenSettings">
+            <Button x:Name="NavSettings" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" AutomationProperties.Name="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" Click="OnOpenSettings">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSettings" Text="{h:Tr 'Configurações'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
         </StackPanel>
@@ -235,7 +235,7 @@
     </Border>
 
     <ContentControl x:Name="PageHost" Grid.Column="1" Margin="14,58,14,14" Visibility="Collapsed" IsTabStop="False"/>
-    <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,18,24,0" Content="📋" FontSize="16" Style="{StaticResource PillButton}" ToolTip="{h:Tr 'Copiar todas as informações exibidas na tela neste momento'}" Click="OnCopyAll" Visibility="{Binding Visibility, ElementName=PageHost}"/>
+    <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,18,24,0" Content="📋" FontSize="16" Style="{StaticResource PillButton}" ToolTip="{h:Tr 'Copiar todas as informações exibidas na tela neste momento'}" AutomationProperties.Name="{h:Tr 'Copiar todas as informações exibidas na tela neste momento'}" Click="OnCopyAll" Visibility="{Binding Visibility, ElementName=PageHost}"/>
 
     <Grid x:Name="MainPage" Grid.Column="1" Margin="14">
         <Grid.RowDefinitions>
@@ -244,8 +244,8 @@
         </Grid.RowDefinitions>
 
         <DockPanel Margin="6,0,6,6">
-            <Button DockPanel.Dock="Right" Content="🛡" FontSize="16" Style="{StaticResource PillButton}" ToolTip="{h:Tr 'Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)'}" Click="OnRunAsAdmin" VerticalAlignment="Center" Margin="8,0,0,0"/>
-            <Button DockPanel.Dock="Right" Content="📋" FontSize="16" Style="{StaticResource PillButton}" ToolTip="{h:Tr 'Copiar todas as informações exibidas na tela neste momento'}" Click="OnCopyAll" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            <Button DockPanel.Dock="Right" Content="🛡" FontSize="16" Style="{StaticResource PillButton}" ToolTip="{h:Tr 'Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)'}" AutomationProperties.Name="{h:Tr 'Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)'}" Click="OnRunAsAdmin" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            <Button DockPanel.Dock="Right" Content="📋" FontSize="16" Style="{StaticResource PillButton}" ToolTip="{h:Tr 'Copiar todas as informações exibidas na tela neste momento'}" AutomationProperties.Name="{h:Tr 'Copiar todas as informações exibidas na tela neste momento'}" Click="OnCopyAll" VerticalAlignment="Center" Margin="8,0,0,0"/>
             <TextBlock Text="{h:Tr 'Monitor'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,24,4"/>
         </DockPanel>
 
@@ -263,7 +263,7 @@
                             <StackPanel Margin="0,0,0,8">
                                 <DockPanel>
                                     <TextBlock DockPanel.Dock="Right" Text="{Binding Free}" Style="{StaticResource Caption}"/>
-                                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="📂" ToolTip="{h:Tr 'Abrir o disco no Explorador de Arquivos'}" Tag="{Binding Name}" Click="OnOpenFolder"/></StackPanel>
+                                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="📂" ToolTip="{h:Tr 'Abrir o disco no Explorador de Arquivos'}" AutomationProperties.Name="{h:Tr 'Abrir o disco no Explorador de Arquivos'}" Tag="{Binding Name}" Click="OnOpenFolder"/></StackPanel>
                                 </DockPanel>
                                 <ProgressBar Height="8" Margin="0,3" Minimum="0" Maximum="100" Value="{Binding Percent, Mode=OneWay}" Foreground="{DynamicResource Accent2}" Background="{DynamicResource TrackBrush}" BorderThickness="0"/>
                                 <TextBlock Text="{Binding Usage}" Style="{StaticResource Caption}"/>

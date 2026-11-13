@@ -39,6 +39,19 @@ Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir te
 
 Botão "Personalização" na janela principal (separado das configurações): tema base escuro/claro, cores de fundo, painéis, bordas, textos e destaques da janela principal, cor/texto/opacidade do gadget e cores dos alertas. Campos vazios usam o padrão do tema; "Restaurar padrões" limpa tudo.
 
+## Testes
+
+`dotnet test src\StatsMonitor.Tests` executa os testes xUnit (Loc, Units, alertas, configurações, perfis, atalho).
+
+## Instalador
+
+Requer o .NET SDK e o Inno Setup 6. Execute `.\installer\build.ps1 -Version 1.0.0` para gerar `artifacts\StatsMonitor-Setup-<versão>.exe`.
+Para assinar o código, defina `SM_SIGN_PFX` (caminho do .pfx) e `SM_SIGN_PASSWORD` antes de executar (requer o signtool do Windows SDK).
+
+## Recursos adicionais
+
+- Notificações de alerta (toast + som), perfis (Jogo/Trabalho/Silencioso, também na bandeja), atalho global (padrão Ctrl+Alt+G), tema Seguir o sistema e alto contraste, exportar/importar configurações e sensores extras (ventiladores, energia, tensões, bateria).
+
 ## Limitações
 
 - Temperatura/frequência dependem do suporte de cada CPU/GPU e do acesso ao driver de sensores.
