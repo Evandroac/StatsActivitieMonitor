@@ -14,7 +14,13 @@ public sealed class SettingsViewModel : ObservableObject
     {
         _service = service;
         _onApplied = onApplied;
-        var s = service.Current;
+        Load(service.Current);
+        _loading = false;
+        _timer.Tick += (_, _) => Flush();
+    }
+
+    private void Load(AppSettings s)
+    {
         IntervalSeconds = s.UpdateIntervalMs / 1000.0;
         RunAtStartup = s.RunAtStartup;
         StartMinimized = s.StartMinimized;
@@ -28,8 +34,17 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
+    }
+
+    /// <summary>Restores every option on this page to its default value and saves.</summary>
+    public void ResetDefaults()
+    {
+        _timer.Stop();
+        _loading = true;
+        Load(new AppSettings());
         _loading = false;
-        _timer.Tick += (_, _) => Flush();
+        Raise(string.Empty);
+        Persist();
     }
 
     private bool _loading = true;

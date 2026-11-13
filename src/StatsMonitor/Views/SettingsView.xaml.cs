@@ -27,6 +27,13 @@ public partial class SettingsView : UserControl
     /// <summary>Persists any pending change (used when navigating away).</summary>
     public void Discard() => _vm.Flush();
 
+    private void OnResetDefaults(object sender, RoutedEventArgs e)
+    {
+        if (MessageBox.Show("Restaurar todas as configurações para o padrão?", "Stats Monitor", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+        _vm.ResetDefaults();
+        RefreshPreview();
+    }
+
     private void RefreshPreview()
     {
         var vm = _vm;
