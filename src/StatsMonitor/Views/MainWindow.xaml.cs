@@ -250,7 +250,7 @@ public partial class MainWindow : Window
         if (visible && s.GadgetMode == GadgetDisplayMode.None) visible = false;
         if (visible) _gadget.ShowGadget(); else _gadget.Hide();
         bool windowShown = IsVisible && WindowState != WindowState.Minimized;
-        _vm.SetPaused(s.PauseWhenHidden && !s.NotifyAlerts && !windowShown && !visible);
+        _vm.SetPaused(s.PauseWhenHidden && !s.NotifyAlerts && !s.LogEnabled && !windowShown && !visible);
     }
 
     private void ToggleGadget()

@@ -60,6 +60,7 @@
             <RadioButton Tag="gadget" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🖼️  Gadget'}" Checked="OnSection"/>
             <RadioButton Tag="panels" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🧩  Painéis exibidos'}" Checked="OnSection"/>
             <RadioButton Tag="alerts" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🔔  Alertas'}" Checked="OnSection"/>
+            <RadioButton Tag="logging" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '📝  Registro de dados'}" Checked="OnSection"/>
             <RadioButton Tag="appearance" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🎨  Personalização'}" Checked="OnSection"/>
             <RadioButton Tag="profiles" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🎛️  Perfis'}" Checked="OnSection"/>
         </StackPanel>
@@ -249,6 +250,17 @@
             </ItemsControl>
         </ScrollViewer>
 
+        </StackPanel></Border>
+        <Border x:Name="SecLogging" Style="{StaticResource SecCard}"><StackPanel>
+            <TextBlock Text="{h:Tr '📝  Registro de dados'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+            <CheckBox Content="{h:Tr 'Gravar leituras em arquivo CSV'}" ToolTip="{h:Tr 'Salva CPU, memória, GPU e disco em um arquivo por dia, para análise e validação. Mantém a leitura ativa mesmo com o app oculto'}" IsChecked="{Binding LogEnabled}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <TextBlock Text="{h:Tr 'Intervalo entre registros (s):'}" VerticalAlignment="Center" Width="200"/>
+                <local:NumericBox Minimum="1" Maximum="300" Step="1" ToolTip="{h:Tr 'Intervalos maiores geram arquivos menores'}" Value="{Binding LogIntervalSeconds}"/>
+            </StackPanel>
+            <TextBlock Text="{Binding LogFolder}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+            <TextBlock Text="{h:Tr 'Arquivos com mais de 14 dias são apagados e cada arquivo diário é limitado a 25 MB.'}" Style="{StaticResource Caption}" TextWrapping="Wrap"/>
+            <Button Content="{h:Tr '📂  Abrir pasta de registros'}" AutomationProperties.Name="{h:Tr 'Abrir pasta de registros'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,8,0,0" Click="OnOpenLogFolder"/>
         </StackPanel></Border>
         <Border x:Name="SecAppearance" Style="{StaticResource SecCard}"><StackPanel><TextBlock x:Name="AppearanceTitle" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/><ContentControl x:Name="AppearanceHost" IsTabStop="False" Margin="-20,0,-20,-20"/></StackPanel></Border>
         <Border x:Name="SecProfiles" Style="{StaticResource SecCard}"><StackPanel>

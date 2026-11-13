@@ -494,9 +494,30 @@ public static class ComponentDetailService
 
     #region Sensors
 
+    private static TimeSpan _selfCpu;
+    private static DateTime _selfAt;
+
+    // Lets the user verify how little the monitor itself costs.
+    private static InfoGroup SelfUsage()
+    {
+        using var p = System.Diagnostics.Process.GetCurrentProcess();
+        var now = DateTime.UtcNow;
+        string cpu = NA;
+        if (_selfAt != default && (now - _selfAt).TotalSeconds >= 0.5)
+            cpu = $"{(p.TotalProcessorTime - _selfCpu).TotalSeconds / (now - _selfAt).TotalSeconds / Environment.ProcessorCount * 100:0.0}%";
+        if (_selfAt == default || (now - _selfAt).TotalSeconds >= 0.5) { _selfCpu = p.TotalProcessorTime; _selfAt = now; }
+        return new(T("Consumo do Stats Monitor", "Stats Monitor resource usage"),
+        [
+            new(T("Uso de CPU do app", "App CPU usage"), cpu),
+            new(T("Memória do app", "App memory"), $"{p.WorkingSet64 / 1048576.0:0} MB"),
+            new("Threads", p.Threads.Count.ToString()),
+            new(T("Tempo de CPU acumulado", "Total CPU time"), $"{p.TotalProcessorTime.TotalSeconds:0.0} s"),
+        ]);
+    }
+
     private static List<InfoGroup> LiveSensors(HardwareSnapshot? s)
     {
-        var groups = new List<InfoGroup>();
+        var groups = new List<InfoGroup> { SelfUsage() };
         foreach (var cat in Enum.GetValues<SensorCategory>())
         {
             var lines = (s?.Sensors ?? []).Where(x => x.Category == cat)

@@ -114,6 +114,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
         _monitor.Interval = TimeSpan.FromMilliseconds(S.SimplifiedView ? Math.Max(ms, 2000) : ms);
         _monitor.SlowSensors = S.SlowSensors;
+        Services.DataLogger.Configure(S.LogEnabled, S.LogIntervalSeconds);
         foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;
         Disk.ShowChart = !S.SimplifiedView;
         ShowTemperatures = S.ShowTemperatures;
@@ -137,6 +138,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
             Apply(s);
+            Services.DataLogger.Write(s);
             SnapshotApplied?.Invoke(s);
             foreach (var a in _alerts.Evaluate(s, S)) { Services.AlertHistory.Add(a); AlertRaised?.Invoke(a); }
         });

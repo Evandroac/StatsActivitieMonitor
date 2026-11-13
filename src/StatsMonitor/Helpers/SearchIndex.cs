@@ -106,6 +106,7 @@ public static class SearchIndex
         Add(SearchPage.Settings, "Configurações › Alertas de temperatura", "Alertas de temperatura (°C)", "Atenção", "Crítica");
         Add(SearchPage.Settings, "Configurações › Alertas", "Notificar ao passar do limite crítico", "Uso crítico (%):",
             "Tempo acima do limite (s):", "Intervalo mínimo entre avisos (min):", "Histórico de alertas", "Limpar", "Nenhum alerta registrado");
+        Add(SearchPage.Settings, "Configurações › Registro de dados", "Registro de dados", "Gravar leituras em arquivo CSV", "Intervalo entre registros (s):", "Abrir pasta de registros");
         Add(SearchPage.Settings, "Configurações › Atalho global", "Atalho global", "Ativar atalho para mostrar/ocultar o gadget", "Atalho:");
 
         Add(SearchPage.Appearance, "Personalização › Presets", "Minhas personalizações", "Salvar como", "Carregar", "Excluir");

@@ -53,6 +53,8 @@ public partial class SettingsView : UserControl
     private void UpdateHistoryEmpty() =>
         AlertHistoryEmpty.Visibility = StatsMonitor.Services.AlertHistory.Entries.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
+    private void OnOpenLogFolder(object sender, RoutedEventArgs e) => StatsMonitor.Services.DataLogger.OpenFolder();
+
     private void OnClearAlertHistory(object sender, RoutedEventArgs e) => StatsMonitor.Services.AlertHistory.Clear();
 
     public event Action? TestAlertRequested;
@@ -80,7 +82,7 @@ public partial class SettingsView : UserControl
     private (string Tag, FrameworkElement Section)[] Sections => new (string, FrameworkElement)[]
     {
         ("general", SecGeneral), ("gadget", SecGadget), ("panels", SecPanels),
-        ("alerts", SecAlerts), ("appearance", SecAppearance), ("profiles", SecProfiles),
+        ("alerts", SecAlerts), ("logging", SecLogging), ("appearance", SecAppearance), ("profiles", SecProfiles),
     };
 
     private void OnSection(object sender, RoutedEventArgs e)
