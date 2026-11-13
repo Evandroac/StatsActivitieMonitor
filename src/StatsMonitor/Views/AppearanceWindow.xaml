@@ -88,7 +88,7 @@
                         </Border>
                     </Popup>
                 </Grid>
-            </DockPanel>            <TextBlock Text="Carregar mostra a prévia; use Salvar para manter a aplicação. Os presets criados ou excluídos são mantidos mesmo ao cancelar." Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+            </DockPanel>            <TextBlock Text="Escolher ou carregar mostra a prévia; use Aplicar ou Salvar para manter. Os presets criados ou excluídos são mantidos mesmo ao cancelar." Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap"/>
 
             <Grid Margin="0,16,0,0">
                 <Grid.ColumnDefinitions>
@@ -120,9 +120,9 @@
             <DockPanel Margin="0,20,0,0">
                 <Button DockPanel.Dock="Left" Content="Restaurar padrões" ToolTip="Limpa todas as cores e volta ao padrão do tema" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Cancelar" ToolTip="Fecha e desfaz a prévia" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
-                    <Button Content="Aplicar" ToolTip="Mostra as alterações no app sem salvar" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
-                    <Button Content="Salvar" ToolTip="Aplica, grava e fecha" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
+                    <Button Content="Cancelar" ToolTip="Fecha e desfaz o que não foi aplicado ou salvo" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
+                    <Button Content="Aplicar" ToolTip="Aplica e salva as alterações sem fechar a janela" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
+                    <Button Content="Salvar" ToolTip="Aplica, salva e fecha a janela" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
                 </StackPanel>
             </DockPanel>
         </StackPanel>

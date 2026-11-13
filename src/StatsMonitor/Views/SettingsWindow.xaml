@@ -66,9 +66,9 @@
             <TextBox Grid.Row="2" Grid.Column="2" Style="{StaticResource Field}" Margin="0,3" h:Hint.Text="°C" ToolTip="Temperatura (°C) a partir da qual o valor fica crítico" Text="{Binding GpuCritTemp}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Cancelar" ToolTip="Fecha e desfaz a prévia" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
-            <Button Content="Aplicar" ToolTip="Mostra as alterações no app sem salvar" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
-            <Button Content="Salvar" ToolTip="Aplica, grava e fecha" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
+            <Button Content="Cancelar" ToolTip="Fecha e desfaz o que não foi aplicado ou salvo" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
+            <Button Content="Aplicar" ToolTip="Aplica e salva as alterações sem fechar a janela" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
+            <Button Content="Salvar" ToolTip="Aplica, salva e fecha a janela" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
         </StackPanel>
     </StackPanel>
 </Window>

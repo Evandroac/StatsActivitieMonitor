@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
 using StatsMonitor.Helpers;
@@ -94,7 +94,7 @@ public sealed class AppearanceViewModel : ObservableObject
 
         _snapshot = service.Snapshot();
         SaveCommand = new RelayCommand(Save);
-        ApplyCommand = new RelayCommand(Apply);
+        ApplyCommand = new RelayCommand(ApplyAndKeep);
         ResetCommand = new RelayCommand(Reset);
         InitPresets();
     }
@@ -118,7 +118,7 @@ public sealed class AppearanceViewModel : ObservableObject
 
     public double GadgetOpacity { get => _gadgetOpacity; set => Set(ref _gadgetOpacity, Math.Clamp(Math.Round(value), 10, 100)); }
 
-    private readonly string _snapshot;
+    private string _snapshot;
     public ICommand ApplyCommand { get; }
     public ICommand SaveCommand { get; }
     public ICommand ResetCommand { get; }
@@ -220,10 +220,17 @@ public sealed class AppearanceViewModel : ObservableObject
         PresetName = "";
     }
 
-    private void Save()
+    private void ApplyAndKeep()
     {
         Apply();
         _service.Save();
+        _snapshot = _service.Snapshot();
+        _presetsDirty = false;
+    }
+
+    private void Save()
+    {
+        ApplyAndKeep();
         IsSaved = true;
         Saved?.Invoke();
     }

@@ -30,10 +30,10 @@ public sealed class SettingsViewModel : ObservableObject
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         _snapshot = service.Snapshot();
         SaveCommand = new RelayCommand(Save);
-        ApplyCommand = new RelayCommand(Apply);
+        ApplyCommand = new RelayCommand(ApplyAndKeep);
     }
 
-    private readonly string _snapshot;
+    private string _snapshot;
     public ICommand ApplyCommand { get; }
 
     public double IntervalSeconds { get; set; }
@@ -86,11 +86,19 @@ public sealed class SettingsViewModel : ObservableObject
         _onApplied();
     }
 
-    private void Save()
+    private void Persist()
     {
         Apply();
         _service.Save();
         StartupService.SetEnabled(_service.Current.RunAtStartup);
+        _snapshot = _service.Snapshot();
+    }
+
+    private void ApplyAndKeep() => Persist();
+
+    private void Save()
+    {
+        Persist();
         IsSaved = true;
         Saved?.Invoke();
     }
