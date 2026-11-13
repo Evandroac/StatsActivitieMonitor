@@ -51,7 +51,19 @@
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="180" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <StackPanel>
+            <TextBlock Text="AÇÕES" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
+            <Button Content="💾  Salvar" ToolTip="Aplica, salva e volta à tela principal" Style="{StaticResource PillButton}" Background="{DynamicResource Accent}" Foreground="White" FontWeight="SemiBold" Command="{Binding SaveCommand}" Margin="0,0,0,8"/>
+            <Button Content="✔  Aplicar" ToolTip="Aplica e salva as alterações sem sair desta tela" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,0,8"/>
+            <Button Content="✖  Cancelar" ToolTip="Desfaz o que não foi aplicado ou salvo e volta" Style="{StaticResource PillButton}" Click="OnCancel" Margin="0,0,0,8"/>
+            <Rectangle Height="1" Fill="{DynamicResource CardBorder}" Margin="0,4,0,12"/>
+            <Button Content="↺  Restaurar padrões" ToolTip="Limpa todas as cores e volta ao padrão do tema" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
+        </StackPanel>
+    </Border>
+    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
             <TextBlock Text="Minhas personalizações" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
             <DockPanel Margin="0,0,0,0">
@@ -116,14 +128,8 @@
 
             <TextBlock Text="Deixe o campo vazio para usar a cor padrão do tema." Style="{StaticResource Caption}" Margin="0,12,0,0"/>
 
-            <DockPanel Margin="0,20,0,0">
-                <Button DockPanel.Dock="Left" Content="Restaurar padrões" ToolTip="Limpa todas as cores e volta ao padrão do tema" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Cancelar" ToolTip="Desfaz o que não foi aplicado ou salvo e volta" Style="{StaticResource PillButton}" Click="OnCancel" Margin="0,0,8,0"/>
-                    <Button Content="Aplicar" ToolTip="Aplica e salva as alterações sem sair desta tela" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
-                    <Button Content="Salvar" ToolTip="Aplica, salva e volta à tela principal" Style="{StaticResource PillButton}" Command="{Binding SaveCommand}"/>
-                </StackPanel>
-            </DockPanel>
+
         </StackPanel>
     </ScrollViewer>
+    </Grid>
 </UserControl>
