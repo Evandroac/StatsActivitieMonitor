@@ -30,8 +30,6 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
-            <Button DockPanel.Dock="Right" Content="Copiar tudo" Style="{StaticResource PillButton}" Click="OnCopyAll" VerticalAlignment="Center"
-                    ToolTip="Copiar todas as informações para a área de transferência"/>
             <TextBlock Text="Sistema" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </DockPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">

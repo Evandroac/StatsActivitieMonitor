@@ -26,7 +26,7 @@ public partial class SystemInfoView : UserControl
         catch (System.Runtime.InteropServices.COMException) { }
     }
 
-    private void OnCopyAll(object sender, RoutedEventArgs e)
+    public void CopyAll()
     {
         var sb = new StringBuilder();
         foreach (var g in _groups)

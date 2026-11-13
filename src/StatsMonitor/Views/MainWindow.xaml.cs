@@ -199,6 +199,11 @@ public partial class MainWindow : Window
 
     private void OnCopyAll(object sender, RoutedEventArgs e)
     {
+        if (PageHost.Visibility == Visibility.Visible && PageHost.Content is SystemInfoView sys)
+        {
+            sys.CopyAll();
+            return;
+        }
         if (PageHost.Visibility == Visibility.Visible && PageHost.Content is DependencyObject page)
         {
             CopyPage(page);
