@@ -21,6 +21,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowTemperatures = s.ShowTemperatures;
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
+        GadgetOnTaskbar = s.GadgetMode == GadgetDisplayMode.Taskbar;
         DarkTheme = s.DarkTheme;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
@@ -34,6 +35,8 @@ public sealed class SettingsViewModel : ObservableObject
     public bool ShowTemperatures { get; set; }
     public bool ShowGadget { get; set; }
     public bool AlwaysShowGadget { get; set; }
+    public bool GadgetOnTaskbar { get; set; }
+    public bool GadgetFloating { get => !GadgetOnTaskbar; set => GadgetOnTaskbar = !value; }
     public bool DarkTheme { get; set; }
     public double CpuWarnTemp { get; set; }
     public double CpuCritTemp { get; set; }
@@ -56,6 +59,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowTemperatures = ShowTemperatures;
         s.ShowGadget = ShowGadget;
         s.AlwaysShowGadget = AlwaysShowGadget;
+        s.GadgetMode = GadgetOnTaskbar ? GadgetDisplayMode.Taskbar : GadgetDisplayMode.Floating;
         s.DarkTheme = DarkTheme;
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);

@@ -20,6 +20,9 @@
         <CheckBox Content="Exibir temperaturas" IsChecked="{Binding ShowTemperatures}"/>
         <CheckBox Content="Exibir gadget" IsChecked="{Binding ShowGadget}"/>
         <CheckBox Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>
+        <TextBlock Text="Exibição do gadget ao minimizar" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <RadioButton GroupName="GadgetMode" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <CheckBox Content="Tema escuro" IsChecked="{Binding DarkTheme}"/>
 
         <TextBlock Text="Alertas de temperatura (°C)" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>

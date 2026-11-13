@@ -4,26 +4,39 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" ShowActivated="False"
         SizeToContent="WidthAndHeight" FontFamily="Consolas"
-        ToolTip="Arraste para mover · duplo clique para abrir">
-    <Border Background="{DynamicResource GadgetBg}" CornerRadius="10" Padding="12,8"
+        ToolTip="Duplo clique para abrir">
+    <Border x:Name="Root" Background="{DynamicResource GadgetBg}" CornerRadius="10" Padding="12,8"
             BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
-        <StackPanel>
-            <TextBlock FontSize="13">
-                <Run Text="CPU: "/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/>
-                <Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
-            </TextBlock>
-            <TextBlock FontSize="13">
-                <Run Text="RAM: "/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/>
-                <Run Text=" | "/><Run Text="{Binding Ram.UsedText, Mode=OneWay}"/>
-            </TextBlock>
-            <TextBlock FontSize="13">
-                <Run Text="GPU: "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/>
-                <Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
-            </TextBlock>
-            <TextBlock FontSize="13">
-                <Run Text="VRAM: "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/>
-                <Run Text=" | "/><Run Text="{Binding Vram.UsedText, Mode=OneWay}"/>
-            </TextBlock>
-        </StackPanel>
+        <Grid>
+            <StackPanel x:Name="FloatingPanel">
+                <TextBlock FontSize="13">
+                    <Run Text="CPU: "/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock FontSize="13">
+                    <Run Text="RAM: "/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Ram.UsedText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock FontSize="13">
+                    <Run Text="GPU: "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock FontSize="13">
+                    <Run Text="VRAM: "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Vram.UsedText, Mode=OneWay}"/>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
+                <TextBlock FontSize="12" Margin="0,0,12,0">
+                    <Run Text="CPU "/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock FontSize="12" Margin="0,0,12,0">
+                    <Run Text="RAM "/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock FontSize="12" Margin="0,0,12,0">
+                    <Run Text="GPU "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock FontSize="12">
+                    <Run Text="VRAM "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
     </Border>
 </Window>

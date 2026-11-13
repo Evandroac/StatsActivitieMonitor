@@ -3,8 +3,11 @@ using System.Text.Json;
 
 namespace StatsMonitor.Settings;
 
+public enum GadgetDisplayMode { Floating, Taskbar }
+
 public sealed class AppSettings
 {
+    public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
     public int UpdateIntervalMs { get; set; } = 1000;
     public bool RunAtStartup { get; set; }
     public bool StartMinimized { get; set; }
