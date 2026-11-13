@@ -11,6 +11,8 @@ public sealed class DiskViewModel : ObservableObject
     private string _loadText = NA;
 
     public string Title => Loc.T("Discos");
+    public bool ShowChart { get => _showChart; set => Set(ref _showChart, value); }
+    private bool _showChart = true;
     public ObservableCollection<VolumeItem> Volumes { get; } = [];
     public ObservableCollection<DriveItem> Drives { get; } = [];
 
@@ -38,6 +40,7 @@ public sealed class DiskViewModel : ObservableObject
                 d.Activity is { } a ? $"{a:0}%" : NA,
                 d.Health is { } hl ? Loc.T(hl) : NA,
                 d.LifePercent is { } l ? $"{l:0}%" : NA);
+            Drives[i].Push(d.Activity, d.ReadBps, d.WriteBps);
         }
         LoadText = s.Disks.Select(d => d.Activity).Where(a => a.HasValue).DefaultIfEmpty(null).Max() is { } m ? $"{m:0}%" : NA;
     }
@@ -79,6 +82,25 @@ public sealed class DriveItem : ObservableObject
     public string Activity { get => _activity; private set => Set(ref _activity, value); }
     public string Health { get => _health; private set => Set(ref _health, value); }
     public string Life { get => _life; private set => Set(ref _life, value); }
+    private const int Len = ComponentViewModel.HistoryLength;
+    private double _ioMax = 10;
+    public ObservableCollection<double> ActivityHistory { get; } = Blank();
+    public ObservableCollection<double> ReadHistory { get; } = Blank();
+    public ObservableCollection<double> WriteHistory { get; } = Blank();
+    public double IoMax { get => _ioMax; private set => Set(ref _ioMax, value); }
+
+    private static ObservableCollection<double> Blank() => new(new double[Len]);
+
+    public void Push(double? activity, double? readBps, double? writeBps)
+    {
+        Add(ActivityHistory, activity ?? 0);
+        Add(ReadHistory, (readBps ?? 0) / 1048576);
+        Add(WriteHistory, (writeBps ?? 0) / 1048576);
+        IoMax = Math.Max(10, Math.Max(ReadHistory.Max(), WriteHistory.Max()) * 1.2);
+    }
+
+    private static void Add(ObservableCollection<double> h, double v) { h.RemoveAt(0); h.Add(v); }
+
     public void Set(string name, string temp, string read, string write, string activity, string health, string life)
     { Name = name; Temp = temp; Read = read; Write = write; Activity = activity; Health = health; Life = life; }
 }

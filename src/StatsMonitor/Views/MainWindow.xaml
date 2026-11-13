@@ -305,6 +305,14 @@
                                     <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Saúde SMART'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Health}"/></StackPanel>
                                     <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Vida útil'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Life}"/></StackPanel>
                                 </WrapPanel>
+<StackPanel Visibility="{Binding DataContext.ShowChart, ElementName=VramCard, Converter={StaticResource BoolToVis}}">
+<TextBlock Text="{h:Tr 'Atividade'}" Style="{StaticResource Caption}" Margin="0,4,0,0"/>
+<c:Sparkline Height="40" Values="{Binding ActivityHistory}" Stroke="{DynamicResource Accent}" AutomationProperties.Name="{h:Tr 'Atividade'}"/>
+<TextBlock Text="{h:Tr 'Leitura (MB/s)'}" Style="{StaticResource Caption}" Margin="0,4,0,0"/>
+<c:Sparkline Height="40" Values="{Binding ReadHistory}" Maximum="{Binding IoMax}" Unit="MB/s" Stroke="{DynamicResource Accent2}" AutomationProperties.Name="{h:Tr 'Leitura (MB/s)'}"/>
+<TextBlock Text="{h:Tr 'Escrita (MB/s)'}" Style="{StaticResource Caption}" Margin="0,4,0,0"/>
+<c:Sparkline Height="40" Values="{Binding WriteHistory}" Maximum="{Binding IoMax}" Unit="MB/s" Stroke="#FF9F43" AutomationProperties.Name="{h:Tr 'Escrita (MB/s)'}"/>
+</StackPanel>
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

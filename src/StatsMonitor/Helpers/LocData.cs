@@ -120,6 +120,8 @@ public static class LocData
 ["Gráficos"] = "Charts",
 ["Mostrar ou ocultar os painéis"] = "Show or hide the panels",
 ["Abrir tela detalhada"] = "Open detailed page",
+["Leitura (MB/s)"] = "Read (MB/s)",
+["Escrita (MB/s)"] = "Write (MB/s)",
 ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",
