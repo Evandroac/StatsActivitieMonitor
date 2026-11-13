@@ -24,7 +24,7 @@
         <CheckBox ToolTip="Abre direto no modo minimizado (gadget)" Content="Iniciar minimizado" IsChecked="{Binding StartMinimized}"/>
         <CheckBox ToolTip="Mostra ou oculta os valores de temperatura" Content="Exibir temperaturas" IsChecked="{Binding ShowTemperatures}"/>
         <CheckBox ToolTip="Mostra o gadget quando o app é minimizado" Content="Exibir gadget" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
-        <StackPanel IsEnabled="{Binding IsChecked, ElementName=ShowGadgetBox}">
+        <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
         <CheckBox ToolTip="Mantém o gadget na tela mesmo com a janela principal aberta" Content="Manter gadget sempre visível" IsChecked="{Binding AlwaysShowGadget}"/>
         <TextBlock Text="Exibição do gadget ao minimizar" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Gadget solto sobre a tela, que pode ser arrastado" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
@@ -32,7 +32,6 @@
         <RadioButton GroupName="GadgetMode" ToolTip="Barra horizontal de uma linha, solta sobre a tela e arrastável" Content="Barra horizontal flutuante (arrastável)" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Faixa horizontal fixa, centralizada no topo da tela" Content="Faixa fixa no topo da tela" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Ao minimizar, o app apenas minimiza, sem exibir gadget" Content="Não fazer nada (sem gadget)" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        </StackPanel>
         <TextBlock Text="Pré-visualização do gadget (valores de exemplo)" Style="{StaticResource Caption}" Margin="0,4,0,2"/>
         <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="10" ToolTip="Mostra como o gadget ficará em cada modo, com os indicadores marcados acima">
             <WrapPanel Orientation="Horizontal">
@@ -62,6 +61,7 @@
                 </StackPanel>
             </WrapPanel>
         </Border>
+        </StackPanel>
         <TextBlock Text="Painéis exibidos" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
             <Grid.ColumnDefinitions>
