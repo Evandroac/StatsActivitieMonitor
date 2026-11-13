@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     public MainWindow(MainViewModel vm, SettingsService settings)
     {
         InitializeComponent();
+        MaxHeight = SystemParameters.WorkArea.Height;
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();

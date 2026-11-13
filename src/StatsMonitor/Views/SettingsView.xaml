@@ -43,7 +43,8 @@
     </UserControl.Resources>
     <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-    <StackPanel Grid.Column="0" Margin="16,20,0,20" VerticalAlignment="Top" Width="240">
+    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+    <StackPanel Margin="16,20,0,20" VerticalAlignment="Top" Width="240">
     <Border Padding="10" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <StackPanel>
             <TextBlock Text="{h:Tr 'SEÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="6,2,0,6"/>
@@ -66,6 +67,7 @@
         </StackPanel>
     </Border>
                 </StackPanel>
+                </ScrollViewer>
                 <ScrollViewer x:Name="SettingsScroll" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel x:Name="SectionsStack" Margin="20,20,20,20">
         <Border x:Name="SecGeneral" Style="{StaticResource SecCard}"><StackPanel>
