@@ -142,7 +142,8 @@ public partial class MainWindow : Window
         {
             (CpuCard, s.ShowCpuMain), (GpuCard, s.ShowGpuMain), (RamCard, s.ShowRamMain), (VramCard, s.ShowVramMain),
         };
-        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}";
+
+        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}|{(s.ShowSensorsMain ? 1 : 0)}";
         if (!force && key == _layoutKey) return;
         _layoutKey = key;
 
@@ -160,12 +161,14 @@ public partial class MainWindow : Window
             visible++;
         }
         int cardRows = (visible + cols - 1) / cols;
-        for (int r = 0; r < cardRows + 2; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        for (int r = 0; r < cardRows + 3; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
         NetCard.Visibility = s.ShowNetworkMain ? Visibility.Visible : Visibility.Collapsed;
+        SensorsCard.Visibility = s.ShowSensorsMain ? Visibility.Visible : Visibility.Collapsed;
         Grid.SetRow(NetCard, cardRows);
-        Grid.SetRow(FooterCard, cardRows + 1);
-        foreach (var f in new FrameworkElement[] { NetCard, FooterCard })
+        Grid.SetRow(SensorsCard, cardRows + 1);
+        Grid.SetRow(FooterCard, cardRows + 2);
+        foreach (var f in new FrameworkElement[] { NetCard, SensorsCard, FooterCard })
         {
             Grid.SetColumn(f, 0);
             Grid.SetColumnSpan(f, cols);
@@ -310,6 +313,11 @@ public partial class MainWindow : Window
             sb.AppendLine(Loc.T("Adaptador: {0} | IP: {1} | Gateway: {2} | Link: {3}", n.Adapter, n.Ip, n.Gateway, n.Link));
             sb.AppendLine(Loc.T("Download: {0} | Upload: {1} | Latência: {2}", n.Download, n.Upload, n.Latency));
             sb.AppendLine(Loc.T("Total recebido: {0} | Total enviado: {1}", n.TotalReceived, n.TotalSent));
+        }
+        if (SensorsCard.Visibility == Visibility.Visible && _vm.SensorLines.Count > 0)
+        {
+            sb.AppendLine().AppendLine($"[{Loc.T("Sensores")}]");
+            foreach (var x in _vm.SensorLines) sb.AppendLine($"{x.Category} - {x.Name}: {x.Value}");
         }
         sb.AppendLine().AppendLine($"{Loc.T("Tempo ligado")}: {_vm.UptimeText}");
         sb.AppendLine($"{Loc.T("Status do hardware")}: {_vm.StatusText}");

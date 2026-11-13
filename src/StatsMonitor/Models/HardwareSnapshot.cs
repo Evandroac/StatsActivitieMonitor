@@ -32,6 +32,7 @@ public sealed class HardwareSnapshot
 
     public IReadOnlyList<DiskSnapshot> Disks { get; init; } = [];
     public IReadOnlyList<VolumeSnapshot> Volumes { get; init; } = [];
+    public IReadOnlyList<SensorReading> Sensors { get; init; } = [];
 
     /// <summary>True when the process runs elevated (needed by some temperature sensors).</summary>
     public bool IsElevated { get; init; }
@@ -42,3 +43,8 @@ public sealed record DiskSnapshot(string Name, double? Temp, double? ReadBps, do
 
 /// <summary>Logical volume (drive letter) capacity.</summary>
 public sealed record VolumeSnapshot(string Name, double TotalGb, double FreeGb);
+
+public enum SensorCategory { Fan, Power, Voltage, Battery }
+
+/// <summary>Extra motherboard/CPU/battery sensor reading.</summary>
+public sealed record SensorReading(SensorCategory Category, string Name, double Value, string Unit);

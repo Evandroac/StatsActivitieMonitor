@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Security.Principal;
+using StatsMonitor.Helpers;
 using LibreHardwareMonitor.Hardware;
 using StatsMonitor.Models;
 
@@ -51,7 +52,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     {
         try
         {
-            _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true, IsMemoryEnabled = true, IsStorageEnabled = true };
+            _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true, IsMemoryEnabled = true, IsStorageEnabled = true, IsMotherboardEnabled = true, IsControllerEnabled = true, IsBatteryEnabled = true };
             _computer.Open();
         }
         catch (Exception ex)
@@ -149,10 +150,38 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             VramLoad = vramLoad,
             Disks = ReadDisks(all),
             Volumes = ReadVolumes(),
+            Sensors = ReadSensors(all),
             VramTemp = gpu?.Sensors
                 .Where(s => s.SensorType == SensorType.                Temperature && Valid(s.SensorType, s.Value).HasValue                            && s.Name.Contains("Memory", StringComparison.OrdinalIgnoreCase))
                 .Select(s => (double?)s.Value!.Value).Max(),
         };
+    }
+
+    private static List<SensorReading> ReadSensors(List<IHardware> all)
+    {
+        var list = new List<SensorReading>();
+        foreach (var h in all.Where(h => h.HardwareType is HardwareType.Cpu or HardwareType.Motherboard or HardwareType.SuperIO
+                                         or HardwareType.EmbeddedController or HardwareType.Battery))
+        {
+            foreach (var s in h.Sensors)
+            {
+                if (Valid(s.SensorType, s.Value) is not { } v) continue;
+                bool battery = h.HardwareType == HardwareType.Battery;
+                (SensorCategory cat, string unit)? kind = s.SensorType switch
+                {
+                    SensorType.Fan => (SensorCategory.Fan, "RPM"),
+                    SensorType.Power => (SensorCategory.Power, "W"),
+                    SensorType.Voltage when !battery => (SensorCategory.Voltage, "V"),
+                    SensorType.Level when battery && s.Name.Contains("Charge", StringComparison.OrdinalIgnoreCase) => (SensorCategory.Battery, "%"),
+                    SensorType.Level when battery && s.Name.Contains("Degradation", StringComparison.OrdinalIgnoreCase) => (SensorCategory.Battery, "%"),
+                    _ => null,
+                };
+                if (kind is not { } k) continue;
+                if (k.cat == SensorCategory.Fan && v <= 0) continue;
+                list.Add(new SensorReading(k.cat, battery ? $"{Loc.T("Bateria")} - {s.Name}" : s.Name, v, k.unit));
+            }
+        }
+        return list;
     }
 
     private DateTime _healthAt = DateTime.MinValue;

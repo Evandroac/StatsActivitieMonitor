@@ -77,6 +77,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public ComponentViewModel Ram { get; }
     public DiskViewModel Disk { get; } = new();
     public NetworkViewModel Network { get; } = new();
+    public System.Collections.ObjectModel.ObservableCollection<SensorLine> SensorLines { get; } = new();
+    public bool HasSensors => SensorLines.Count > 0;
     public string UptimeText { get => _uptimeText; private set => Set(ref _uptimeText, value); }
     public string LastUpdateText { get => _lastUpdateText; private set => Set(ref _lastUpdateText, value); }
     public string StatusText { get => _statusText; private set => Set(ref _statusText, value); }
@@ -142,8 +144,25 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         });
     }
 
-    private HardwareSnapshot? _last;
+    private void UpdateSensors(HardwareSnapshot s)
+    {
+        var lines = s.Sensors
+            .OrderBy(x => x.Category).ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(x => new SensorLine(Loc.T(x.Category switch
+            {
+                Models.SensorCategory.Fan => "Ventilador",
+                Models.SensorCategory.Power => "Energia",
+                Models.SensorCategory.Voltage => "Tensão",
+                _ => "Bateria",
+            }), x.Name, x.Unit == "V" ? $"{x.Value:0.000} V" : x.Unit == "W" ? $"{x.Value:0.#} W" : x.Unit == "%" ? $"{x.Value:0.#}%" : $"{x.Value:0} {x.Unit}"))
+            .ToList();
+        if (lines.SequenceEqual(SensorLines)) return;
+        SensorLines.Clear();
+        foreach (var l in lines) SensorLines.Add(l);
+        Raise(nameof(HasSensors));
+    }
 
+    private HardwareSnapshot? _last;
     private void Apply(HardwareSnapshot s)
     {
         _last = s;
@@ -158,6 +177,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
         Ram.Update(Loc.T("Memória RAM"), s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
         Disk.Update(s);
+        UpdateSensors(s);
 
         UptimeText = s.Uptime.Days > 0
             ? $"{s.Uptime.Days}d {s.Uptime.Hours:00}h {s.Uptime.Minutes:00}m {s.Uptime.Seconds:00}s"
@@ -189,3 +209,5 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _network.Dispose();
     }
 }
+
+public sealed record SensorLine(string Category, string Name, string Value);

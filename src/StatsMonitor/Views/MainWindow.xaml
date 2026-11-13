@@ -337,6 +337,27 @@
             </StackPanel>
         </Border>
 
+        <Border x:Name="SensorsCard" Style="{StaticResource Card}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"><TextBlock Text="🌀" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Sensores'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
+                <TextBlock Text="{h:Tr 'Nenhum sensor adicional disponível (execute como administrador).'}">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource Caption}"><Style.Triggers><DataTrigger Binding="{Binding HasSensors}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                </TextBlock>
+                <ItemsControl ItemsSource="{Binding SensorLines}" AutomationProperties.Name="{h:Tr 'Sensores'}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="220" Margin="0,0,12,8">
+                                <TextBlock Text="{Binding Category}" Style="{StaticResource Caption}"/>
+                                <TextBlock Text="{Binding Value}" FontSize="18" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
         <Border x:Name="FooterCard" Style="{StaticResource Card}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10"><TextBlock Text="📈" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Status do sistema'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
