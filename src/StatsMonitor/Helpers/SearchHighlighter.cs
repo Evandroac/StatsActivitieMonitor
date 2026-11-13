@@ -17,16 +17,15 @@ public static class SearchHighlighter
         {
             await Task.Delay(100);
             if (!root.IsLoaded) continue;
-            var target = Find(root, text);
-            if (target is null) continue;
+            if (Find(root, text) is not var (target, tb)) continue;
             target.BringIntoView();
             await Task.Delay(50);
-            Outline(target);
+            Outline(target, tb);
             return;
         }
     }
 
-    private static FrameworkElement? Find(DependencyObject root, string text)
+    private static (FrameworkElement target, TextBlock text)? Find(DependencyObject root, string text)
     {
         string wanted = SearchIndex.Normalize(text).Trim();
         TextBlock? partial = null;
@@ -34,11 +33,13 @@ public static class SearchHighlighter
         {
             if (!tb.IsVisible || string.IsNullOrWhiteSpace(tb.Text)) continue;
             string t = SearchIndex.Normalize(tb.Text).Trim();
-            if (t == wanted) return Wrap(tb);
+            if (t == wanted) return Result(tb);
             if (partial is null && t.Contains(wanted)) partial = tb;
         }
-        return partial is null ? null : Wrap(partial);
+        return partial is null ? null : Result(partial);
     }
+
+    private static (FrameworkElement, TextBlock) Result(TextBlock tb) => (Wrap(tb), tb);
 
     // For checkboxes, radios and buttons, outline the whole control.
     private static FrameworkElement Wrap(TextBlock tb)
@@ -62,11 +63,11 @@ public static class SearchHighlighter
         }
     }
 
-    private static void Outline(FrameworkElement target)
+    private static void Outline(FrameworkElement target, TextBlock tb)
     {
         var layer = AdornerLayer.GetAdornerLayer(target);
         if (layer is null) return;
-        var adorner = new HighlightAdorner(target);
+        var adorner = new HighlightAdorner(target, tb);
         layer.Add(adorner);
         adorner.BeginAnimation(UIElement.OpacityProperty, new System.Windows.Media.Animation.DoubleAnimation(1, 0.25, TimeSpan.FromMilliseconds(500))
         {
@@ -80,12 +81,22 @@ public static class SearchHighlighter
 
     private sealed class HighlightAdorner : Adorner
     {
-        public HighlightAdorner(UIElement el) : base(el) { IsHitTestVisible = false; }
+        private readonly TextBlock _text;
+
+        public HighlightAdorner(FrameworkElement el, TextBlock text) : base(el) { _text = text; IsHitTestVisible = false; }
 
         protected override void OnRender(DrawingContext dc)
         {
             var accent = (Application.Current.TryFindResource("Accent") as SolidColorBrush)?.Color ?? Colors.DeepSkyBlue;
-            var rect = new Rect(-4, -2, AdornedElement.RenderSize.Width + 8, AdornedElement.RenderSize.Height + 4);
+            // Limit the outline to the real text width: the TextBlock/control may be stretched to its column.
+            var ft = new FormattedText(_text.Text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+                new Typeface(_text.FontFamily, _text.FontStyle, _text.FontWeight, _text.FontStretch), _text.FontSize, Brushes.Black,
+                VisualTreeHelper.GetDpi(_text).PixelsPerDip);
+            double textWidth = Math.Min(_text.ActualWidth, ft.WidthIncludingTrailingWhitespace);
+            double left = _text.TranslatePoint(new Point(0, 0), (UIElement)AdornedElement).X;
+            double right = left + textWidth;
+            double start = AdornedElement == _text ? 0 : Math.Min(0, left);
+            var rect = new Rect(start - 4, -2, Math.Min(right, AdornedElement.RenderSize.Width) - start + 8, AdornedElement.RenderSize.Height + 4);
             dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromArgb(50, accent.R, accent.G, accent.B)),
                 new Pen(new SolidColorBrush(accent), 2), rect, 5, 5);
         }
