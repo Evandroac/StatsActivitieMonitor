@@ -218,6 +218,24 @@
             <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="50" Maximum="100" Step="1" ToolTip="{h:Tr 'Uso (%) de CPU, GPU ou RAM a partir do qual o alerta é emitido'}" Value="{Binding AlertLoadPercent}"/>
         </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Tempo acima do limite (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="600" Step="1" ToolTip="{h:Tr 'O valor precisa ficar acima do limite por este tempo antes de alertar'}" Value="{Binding AlertSustainSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Intervalo mínimo entre avisos (min):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="240" Step="1" ToolTip="{h:Tr 'Tempo mínimo entre dois avisos do mesmo tipo'}" Value="{Binding AlertCooldownMinutes}"/>
+        </StackPanel>
+        <DockPanel Margin="0,14,0,6">
+            <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
+            <TextBlock Text="{h:Tr '🕘  Histórico de alertas'}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
+        </DockPanel>
+        <TextBlock x:Name="AlertHistoryEmpty" Text="{h:Tr 'Nenhum alerta registrado'}" Style="{StaticResource Caption}"/>
+        <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto" Focusable="False">
+            <ItemsControl x:Name="AlertHistoryList" AutomationProperties.Name="{h:Tr 'Histórico de alertas'}">
+                <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Display}" TextWrapping="Wrap" Margin="0,2" FontSize="12"/></DataTemplate></ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
         </StackPanel></Border>
         <Border x:Name="SecAppearance" Style="{StaticResource SecCard}"><StackPanel><TextBlock x:Name="AppearanceTitle" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/><ContentControl x:Name="AppearanceHost" IsTabStop="False" Margin="-20,0,-20,-20"/></StackPanel></Border>

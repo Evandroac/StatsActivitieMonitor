@@ -90,7 +90,7 @@
                     </Style>
                 </Border.Style>
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" Click="OnShortcut"/></StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,2,0,10"><Button Style="{StaticResource CopyButton}" Tag="{Binding Name}" Click="OnCopy"/><TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/></StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -141,7 +141,7 @@
         <DataTemplate x:Key="MemoryTemplate">
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" Click="OnShortcut"/></StackPanel>
                     <TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" Margin="0,2,0,10"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -218,9 +218,13 @@
                     </Border>
                 </Popup>
             </Grid>
+            <Grid>
             <Button x:Name="NavMain" Style="{StaticResource NavButton}" Tag="active" ToolTip="{h:Tr 'Tela principal'}" AutomationProperties.Name="{h:Tr 'Tela principal'}" Click="OnNavMain">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📊" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMain" Text="{h:Tr 'Principal'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
+                <Button x:Name="NavTreeToggle" Visibility="Collapsed" HorizontalAlignment="Right" Width="30" Height="30" Margin="0,0,8,0" Content="▾" FontSize="12" Cursor="Hand" ToolTip="{h:Tr 'Mostrar ou ocultar os painéis'}" AutomationProperties.Name="{h:Tr 'Mostrar ou ocultar os painéis'}" Style="{StaticResource CopyButton}" Click="OnToggleTree"/>
+            </Grid>
+            <StackPanel x:Name="NavTree">
             <Button x:Name="NavCpu" Style="{StaticResource NavButton}" CommandParameter="Cpu" ToolTip="{h:Tr 'CPU'}" AutomationProperties.Name="{h:Tr 'CPU'}" Click="OnOpenComponent">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="🧠" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblCpu" Text="{h:Tr 'CPU'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
@@ -239,6 +243,7 @@
             <Button x:Name="NavSensors" Style="{StaticResource NavButton}" CommandParameter="Sensors" ToolTip="{h:Tr 'Sensores'}" AutomationProperties.Name="{h:Tr 'Sensores'}" Click="OnOpenComponent">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📡" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSensors" Text="{h:Tr 'Sensores'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
+            </StackPanel>
             <Button x:Name="NavSystem" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Informações do computador'}" AutomationProperties.Name="{h:Tr 'Informações do computador'}" Click="OnOpenSystem">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="ℹ️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSystem" Text="{h:Tr 'Sistema'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
@@ -272,7 +277,7 @@
         <ContentControl x:Name="RamCard" MinHeight="260" Content="{Binding Ram}" ContentTemplate="{StaticResource MemoryTemplate}"/>
         <Border x:Name="VramCard" Style="{StaticResource Card}" MinHeight="260" DataContext="{Binding Disk}">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="💽" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Discos (HD/SSD)'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/></StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="💽" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Discos (HD/SSD)'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" CommandParameter="Disk" Click="OnShortcut"/></StackPanel>
                 <ItemsControl ItemsSource="{Binding Volumes}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -325,7 +330,7 @@
                         </Ellipse>
                         <TextBlock Text="{Binding Status}" FontSize="13"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Rede / Internet'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Rede / Internet'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" CommandParameter="Network" Click="OnShortcut"/></StackPanel>
                 </DockPanel>
                 <WrapPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
@@ -355,7 +360,7 @@
 
         <Border x:Name="SensorsCard" Style="{StaticResource Card}">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"><TextBlock Text="🌀" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Sensores'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"><TextBlock Text="🌀" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Sensores'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" CommandParameter="Sensors" Click="OnShortcut"/></StackPanel>
                 <TextBlock Text="{h:Tr 'Nenhum sensor adicional disponível (execute como administrador).'}">
                     <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource Caption}"><Style.Triggers><DataTrigger Binding="{Binding HasSensors}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
                 </TextBlock>

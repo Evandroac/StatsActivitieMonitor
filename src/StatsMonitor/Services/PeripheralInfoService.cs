@@ -9,7 +9,7 @@ public static class PeripheralInfoService
 {
     private const string NA = "N/D";
 
-    public static Task<List<InfoGroup>> GetAsync() => Task.Run(Read);
+    public static Task<List<InfoGroup>> GetAsync() => Wmi.RunAsync(Read, Wmi.Unavailable());
 
     public static List<InfoGroup> Read()
     {
@@ -40,7 +40,7 @@ public static class PeripheralInfoService
         var list = new List<InfoLine>();
         try
         {
-            using var searcher = new ManagementObjectSearcher(@"root\wmi", "SELECT ManufacturerName, UserFriendlyName, ProductCodeID, YearOfManufacture FROM WmiMonitorID");
+            using var searcher = Wmi.Searcher("SELECT ManufacturerName, UserFriendlyName, ProductCodeID, YearOfManufacture FROM WmiMonitorID", @"root\wmi");
             foreach (ManagementBaseObject m in searcher.Get())
             {
                 string name = Decode(m["UserFriendlyName"]);
@@ -65,7 +65,7 @@ public static class PeripheralInfoService
         var list = new List<InfoLine>();
         try
         {
-            using var searcher = new ManagementObjectSearcher($"SELECT {string.Join(",", props)} FROM {cls}" + (where is null ? "" : $" WHERE {where}"));
+            using var searcher = Wmi.Searcher($"SELECT {string.Join(",", props)} FROM {cls}" + (where is null ? "" : $" WHERE {where}"));
             foreach (ManagementBaseObject o in searcher.Get())
             {
                 var (label, _) = map(o);

@@ -78,6 +78,8 @@ public sealed class AppSettings
     public bool NotifyAlerts { get; set; } = true;
     public bool AlertSound { get; set; } = true;
     public double AlertLoadPercent { get; set; } = 95;
+    public int AlertSustainSeconds { get; set; } = 10;
+    public int AlertCooldownMinutes { get; set; } = 2;
 
     public bool HotkeyEnabled { get; set; } = true;
     public string GadgetHotkey { get; set; } = "Ctrl+Alt+G";

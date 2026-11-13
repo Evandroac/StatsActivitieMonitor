@@ -39,7 +39,7 @@ public static class SystemInfoService
     public static Task<List<InfoGroup>> GetAsync()
     {
         if (_cacheLang != Loc.Lang) { _cache = null; _cacheLang = Loc.Lang; }
-        return _cache ??= Task.Run(Read);
+        return _cache ??= Wmi.RunAsync(Read, Wmi.Unavailable());
     }
 
     public static List<InfoGroup> Read()
@@ -123,7 +123,7 @@ public static class SystemInfoService
         var list = new List<ManagementBaseObject>();
         try
         {
-            using var searcher = new ManagementObjectSearcher($"SELECT {string.Join(",", props)} FROM {cls}");
+            using var searcher = Wmi.Searcher($"SELECT {string.Join(",", props)} FROM {cls}");
             foreach (var o in searcher.Get()) list.Add(o);
         }
         catch { /* class unavailable */ }

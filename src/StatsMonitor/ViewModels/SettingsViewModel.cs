@@ -38,7 +38,7 @@ public sealed class SettingsViewModel : ObservableObject
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; AlertSound = s.AlertSound;
-        AlertLoadPercent = s.AlertLoadPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
+        AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
         ShowSensorsMain = s.ShowSensorsMain; PauseWhenHidden = s.PauseWhenHidden; SlowSensors = s.SlowSensors;
     }
 
@@ -138,6 +138,8 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; Raise(); AutoSave(); } } }
     private bool _notifyAlerts; public bool NotifyAlerts { get => _notifyAlerts; set { if (_notifyAlerts != value) { _notifyAlerts = value; AutoSave(); } } }
     private bool _alertSound; public bool AlertSound { get => _alertSound; set { if (_alertSound != value) { _alertSound = value; AutoSave(); } } }
+    private double _alertSustainSeconds; public double AlertSustainSeconds { get => _alertSustainSeconds; set { if (_alertSustainSeconds != value) { _alertSustainSeconds = value; AutoSave(); } } }
+    private double _alertCooldownMinutes; public double AlertCooldownMinutes { get => _alertCooldownMinutes; set { if (_alertCooldownMinutes != value) { _alertCooldownMinutes = value; AutoSave(); } } }
     private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }
     private bool _hotkeyEnabled; public bool HotkeyEnabled { get => _hotkeyEnabled; set { if (_hotkeyEnabled != value) { _hotkeyEnabled = value; AutoSave(); } } }
     private string _gadgetHotkey = "Ctrl+Alt+G"; public string GadgetHotkey { get => _gadgetHotkey; set { if (_gadgetHotkey != value && value is not null) { _gadgetHotkey = value; AutoSave(); } } }
@@ -239,7 +241,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
 
         s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.AlertSound = AlertSound;
-        s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.HotkeyEnabled = HotkeyEnabled;
+        s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.AlertSustainSeconds = (int)Math.Clamp(AlertSustainSeconds, 0, 600); s.AlertCooldownMinutes = (int)Math.Clamp(AlertCooldownMinutes, 0, 240); s.HotkeyEnabled = HotkeyEnabled;
         s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
         s.ShowSensorsMain = ShowSensorsMain; s.PauseWhenHidden = PauseWhenHidden; s.SlowSensors = SlowSensors;
         ThemeHelper.Apply(s);

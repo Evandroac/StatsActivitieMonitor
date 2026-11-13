@@ -21,6 +21,9 @@ public partial class SettingsView : UserControl
         InitializeComponent();
         DataContext = _vm = vm;
         _appearance = appearance;
+        AlertHistoryList.ItemsSource = StatsMonitor.Services.AlertHistory.Entries;
+        StatsMonitor.Services.AlertHistory.Entries.CollectionChanged += (_, _) => UpdateHistoryEmpty();
+        UpdateHistoryEmpty();
         if (appearance is not null)
         {
             appearance.Embedded();
@@ -46,6 +49,11 @@ public partial class SettingsView : UserControl
         Loaded += (_, _) => { RefreshPreview(); RefreshTitles(); Loc.LanguageChanged += onLang; Units.Changed += onLang; };
         Unloaded += (_, _) => { Loc.LanguageChanged -= onLang; Units.Changed -= onLang; };
     }
+
+    private void UpdateHistoryEmpty() =>
+        AlertHistoryEmpty.Visibility = StatsMonitor.Services.AlertHistory.Entries.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    private void OnClearAlertHistory(object sender, RoutedEventArgs e) => StatsMonitor.Services.AlertHistory.Clear();
 
     public event Action? TestAlertRequested;
 

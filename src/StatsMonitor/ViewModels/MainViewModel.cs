@@ -137,7 +137,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         {
             Apply(s);
             SnapshotApplied?.Invoke(s);
-            foreach (var a in _alerts.Evaluate(s, S)) AlertRaised?.Invoke(a);
+            foreach (var a in _alerts.Evaluate(s, S)) { Services.AlertHistory.Add(a); AlertRaised?.Invoke(a); }
         });
     }
 

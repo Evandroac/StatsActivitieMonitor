@@ -1,4 +1,4 @@
-using StatsMonitor.Helpers;
+﻿using StatsMonitor.Helpers;
 using StatsMonitor.Models;
 using StatsMonitor.Settings;
 
@@ -21,20 +21,21 @@ public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
 }
 
 /// <summary>
-/// Decides when to raise critical alerts. An alert fires once when a value crosses its limit (load alerts must
-/// stay above it for several samples), re-arms after the value drops back below the limit, and is rate-limited.
+/// Decides when to raise critical alerts. A value must stay at or above its limit for the configured number of
+/// seconds, an alert fires once per episode (re-armed after the value drops below the limit minus a hysteresis),
+/// and alerts of the same kind are rate-limited by a minimum interval.
 /// </summary>
 public sealed class AlertNotifier
 {
-    public const int LoadSamplesRequired = 5;
     public const double Hysteresis = 3;
 
-    private sealed class State { public bool Active; public int Streak; public DateTime LastFired = DateTime.MinValue; }
+    private sealed class State { public bool Active; public DateTime? Since; public DateTime LastFired = DateTime.MinValue; }
 
     private readonly Dictionary<AlertKind, State> _state = Enum.GetValues<AlertKind>().ToDictionary(k => k, _ => new State());
     private readonly Func<DateTime> _now;
 
-    public TimeSpan Cooldown { get; init; } = TimeSpan.FromMinutes(2);
+    /// <summary>Overrides the minimum interval between alerts of the same kind (defaults to the setting).</summary>
+    public TimeSpan? Cooldown { get; init; }
 
     public AlertNotifier(Func<DateTime>? now = null) => _now = now ?? (() => DateTime.Now);
 
@@ -43,36 +44,38 @@ public sealed class AlertNotifier
         var events = new List<AlertEvent>();
         if (!cfg.NotifyAlerts)
         {
-            foreach (var st in _state.Values) { st.Active = false; st.Streak = 0; }
+            foreach (var st in _state.Values) { st.Active = false; st.Since = null; }
             return events;
         }
 
-        Check(events, AlertKind.CpuTemp, s.CpuTemp, cfg.CpuCritTemp, 1);
-        Check(events, AlertKind.GpuTemp, s.GpuTemp, cfg.GpuCritTemp, 1);
-        Check(events, AlertKind.CpuLoad, s.CpuLoad, cfg.AlertLoadPercent, LoadSamplesRequired);
-        Check(events, AlertKind.GpuLoad, s.GpuLoad, cfg.AlertLoadPercent, LoadSamplesRequired);
-        Check(events, AlertKind.RamLoad, s.RamLoad, cfg.AlertLoadPercent, LoadSamplesRequired);
+        var sustain = TimeSpan.FromSeconds(Math.Max(0, cfg.AlertSustainSeconds));
+        var cooldown = Cooldown ?? TimeSpan.FromMinutes(Math.Max(0, cfg.AlertCooldownMinutes));
+        Check(events, AlertKind.CpuTemp, s.CpuTemp, cfg.CpuCritTemp, sustain, cooldown);
+        Check(events, AlertKind.GpuTemp, s.GpuTemp, cfg.GpuCritTemp, sustain, cooldown);
+        Check(events, AlertKind.CpuLoad, s.CpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
+        Check(events, AlertKind.GpuLoad, s.GpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
+        Check(events, AlertKind.RamLoad, s.RamLoad, cfg.AlertLoadPercent, sustain, cooldown);
         return events;
     }
 
-    private void Check(List<AlertEvent> events, AlertKind kind, double? value, double limit, int samples)
+    private void Check(List<AlertEvent> events, AlertKind kind, double? value, double limit, TimeSpan sustain, TimeSpan cooldown)
     {
         var st = _state[kind];
-        if (value is not { } v) { st.Streak = 0; return; }
+        var now = _now();
+        if (value is not { } v) { st.Since = null; return; }
 
         if (v >= limit)
         {
-            st.Streak++;
-            if (st.Active || st.Streak < samples) return;
+            st.Since ??= now;
+            if (st.Active || now - st.Since.Value < sustain) return;
             st.Active = true;
-            var now = _now();
-            if (now - st.LastFired < Cooldown) return;
+            if (now - st.LastFired < cooldown) return;
             st.LastFired = now;
             events.Add(new AlertEvent(kind, v, limit));
         }
         else
         {
-            st.Streak = 0;
+            st.Since = null;
             if (v < limit - Hysteresis) st.Active = false;
         }
     }

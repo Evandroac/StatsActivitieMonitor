@@ -6,6 +6,16 @@ namespace StatsMonitor.Services;
 
 public static class HealthCheck
 {
+    /// <summary>Overall status for the tray indicator: 0 = healthy (green), 1 = attention (yellow), 2 = critical (red).</summary>
+    public static int Level(HardwareSnapshot s, AppSettings cfg)
+    {
+        if (s.CpuTemp is > 0 && s.CpuTemp >= cfg.CpuCritTemp) return 2;
+        if (s.GpuTemp is > 0 && s.GpuTemp >= cfg.GpuCritTemp) return 2;
+        if (s.Disks.Any(d => d.Health == "Falha iminente")) return 2;
+        if (s.RamLoad is >= 97) return 2;
+        return Evaluate(s, cfg).Healthy && s.CpuLoad is not >= 95 ? 0 : 1;
+    }
+
     /// <summary>Evaluates a snapshot against the alert thresholds. Returns whether the PC looks healthy and a localized report.</summary>
     public static (bool Healthy, string Report) Evaluate(HardwareSnapshot s, AppSettings cfg)
     {

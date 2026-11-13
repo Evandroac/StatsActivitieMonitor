@@ -1,4 +1,4 @@
-using System.Management;
+﻿using System.Management;
 
 namespace StatsMonitor.Services;
 
@@ -10,8 +10,7 @@ public static class DiskHealthService
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         try
         {
-            using var searcher = new ManagementObjectSearcher(@"root\Microsoft\Windows\Storage",
-                "SELECT FriendlyName, HealthStatus FROM MSFT_PhysicalDisk");
+            using var searcher = Wmi.Searcher("SELECT FriendlyName, HealthStatus FROM MSFT_PhysicalDisk", @"root\Microsoft\Windows\Storage");
             foreach (ManagementObject d in searcher.Get())
             {
                 string? name = (d["FriendlyName"] as string)?.Trim();

@@ -21,7 +21,7 @@ public static class DiskPerfService
             {
                 _modelsAt = DateTime.Now;
                 var models = new Dictionary<int, string>();
-                using var s = new ManagementObjectSearcher("SELECT Index, Model FROM Win32_DiskDrive");
+                using var s = Wmi.Searcher("SELECT Index, Model FROM Win32_DiskDrive");
                 foreach (ManagementBaseObject d in s.Get())
                     if (d["Model"] is string m) models[Convert.ToInt32(d["Index"])] = m.Trim();
                 _models = models;
@@ -36,7 +36,7 @@ public static class DiskPerfService
             {
                 _perfAt = DateTime.Now;
                 var perf = new Dictionary<string, DiskPerf>();
-                using var q = new ManagementObjectSearcher(
+                using var q = Wmi.Searcher(
                     "SELECT Name, DiskReadBytesPersec, DiskWriteBytesPersec, PercentDiskTime FROM Win32_PerfFormattedData_PerfDisk_PhysicalDisk");
                 foreach (ManagementBaseObject o in q.Get())
                 {

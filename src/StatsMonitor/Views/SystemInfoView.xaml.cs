@@ -42,13 +42,19 @@ public partial class SystemInfoView : UserControl
         public string Current { get => _current; private set { _current = value; PropertyChanged?.Invoke(this, new(nameof(Current))); } }
         private double _max = 100;
         public double Maximum { get => _max; private set { _max = value; PropertyChanged?.Invoke(this, new(nameof(Maximum))); } }
+        private string _stats = "";
+        public string Stats { get => _stats; private set { _stats = value; PropertyChanged?.Invoke(this, new(nameof(Stats))); } }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        private int _samples;
 
         public void Tick()
         {
             double v = Sample();
             Values.RemoveAt(0);
             Values.Add(v);
+            _samples = Math.Min(_samples + 1, Values.Count);
+            var recent = Values.Skip(Values.Count - _samples).ToList();
+            Stats = $"{Loc.T("mín")} {Format(recent.Min())}  ·  {Loc.T("méd")} {Format(recent.Average())}  ·  {Loc.T("máx")} {Format(recent.Max())}";
             Current = Format(v);
             Maximum = Auto ? Math.Max(Floor, Values.Max() * 1.25) : Floor;
         }
@@ -63,7 +69,7 @@ public partial class SystemInfoView : UserControl
     {
         string T(string pt, string en) => Loc.Lang == "en" ? en : pt;
         var a1 = Res("Accent"); var a2 = Res("Accent2");
-        System.Windows.Media.Brush warn = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xFF, 0x9F, 0x43));
+        System.Windows.Media.Brush warn = System.Windows.SystemParameters.HighContrast ? System.Windows.SystemColors.HighlightBrush : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xFF, 0x9F, 0x43));
         double Disks(Func<StatsMonitor.Models.DiskSnapshot, double?> f) => snap()?.Disks.Select(d => f(d) ?? 0).DefaultIfEmpty(0).Max() ?? 0;
         ChartSeries Pct(string title, Func<double> f, System.Windows.Media.Brush b) => new() { Title = title, Stroke = b, Sample = f };
         ChartSeries Temp(string title, Func<double> f) => new()
@@ -106,6 +112,34 @@ public partial class SystemInfoView : UserControl
         };
     }
 
+    private void OnExport(object sender, RoutedEventArgs e)
+    {
+        if (Charts.ActualWidth < 1 || Charts.ActualHeight < 1) return;
+        var dlg = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter = Loc.T("Imagem PNG|*.png"),
+            FileName = $"stats-monitor-{Component}-{DateTime.Now:yyyyMMdd-HHmmss}.png",
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(Charts);
+        var bg = Application.Current.TryFindResource("WindowBg") as System.Windows.Media.Brush ?? System.Windows.Media.Brushes.Black;
+        var bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(
+            (int)Math.Ceiling(Charts.ActualWidth * dpi.DpiScaleX), (int)Math.Ceiling(Charts.ActualHeight * dpi.DpiScaleY),
+            96 * dpi.DpiScaleX, 96 * dpi.DpiScaleY, System.Windows.Media.PixelFormats.Pbgra32);
+        var dv = new System.Windows.Media.DrawingVisual();
+        using (var dc = dv.RenderOpen())
+        {
+            dc.DrawRectangle(bg, null, new Rect(0, 0, Charts.ActualWidth, Charts.ActualHeight));
+            dc.DrawRectangle(new System.Windows.Media.VisualBrush(Charts), null, new Rect(0, 0, Charts.ActualWidth, Charts.ActualHeight));
+        }
+        bmp.Render(dv);
+        var enc = new System.Windows.Media.Imaging.PngBitmapEncoder();
+        enc.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bmp));
+        try { using var fs = System.IO.File.Create(dlg.FileName); enc.Save(fs); }
+        catch (System.IO.IOException) { }
+    }
+
     private void SampleCharts() { foreach (var s in _series) s.Tick(); }
 
     public SystemInfoView(bool peripherals = false) : this(
@@ -127,7 +161,7 @@ public partial class SystemInfoView : UserControl
         {
             _series = BuildSeries(ck, chartSrc.Value.snap, chartSrc.Value.net);
             Charts.ItemsSource = _series;
-            Charts.Visibility = _series.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            Charts.Visibility = ExportButton.Visibility = _series.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
         if (twoColumns)
         {

@@ -40,7 +40,7 @@ public static class ComponentDetailService
         lock (Gate)
         {
             if (_cacheLang != Loc.Lang) { StaticCache.Clear(); _cacheLang = Loc.Lang; }
-            if (!StaticCache.TryGetValue(kind, out task!)) StaticCache[kind] = task = Task.Run(() => ReadStatic(kind));
+            if (!StaticCache.TryGetValue(kind, out task!)) StaticCache[kind] = task = Wmi.RunAsync(() => ReadStatic(kind), Wmi.Unavailable());
         }
         var statics = await task;
         var live = kind == ComponentKind.Network ? await Task.Run(() => Live(kind, snap, net)) : Live(kind, snap, net);
@@ -73,7 +73,7 @@ public static class ComponentDetailService
                 _ => [],
             };
         }
-        catch { return []; }
+        catch { return Wmi.Unavailable(); }
     }
 
     #region CPU
@@ -344,7 +344,7 @@ public static class ComponentDetailService
         var kinds = new Dictionary<string, (string Media, string Bus, string Spindle)>();
         try
         {
-            using var searcher = new ManagementObjectSearcher(@"root\Microsoft\Windows\Storage", "SELECT DeviceId, MediaType, BusType, SpindleSpeed FROM MSFT_PhysicalDisk");
+            using var searcher = Wmi.Searcher("SELECT DeviceId, MediaType, BusType, SpindleSpeed FROM MSFT_PhysicalDisk", @"root\Microsoft\Windows\Storage");
             foreach (var o in searcher.Get())
             {
                 string media = o["MediaType"]?.ToString() switch { "3" => "HDD", "4" => "SSD", "5" => "SCM", _ => NA };

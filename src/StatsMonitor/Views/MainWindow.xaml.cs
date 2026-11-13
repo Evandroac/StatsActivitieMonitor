@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using StatsMonitor.Helpers;
+using StatsMonitor.Services;
 using StatsMonitor.Settings;
 using StatsMonitor.ViewModels;
 
@@ -72,12 +73,47 @@ public partial class MainWindow : Window
         };
         _tray.DoubleClick += (_, _) => RestoreFromGadget();
 
+        _vm.SnapshotApplied += UpdateTrayHealth;
         _vm.AlertRaised += a =>
         {
             _tray?.ShowBalloonTip(8000, a.Title, a.Message, System.Windows.Forms.ToolTipIcon.Warning);
             if (_settings.Current.AlertSound) System.Media.SystemSounds.Exclamation.Play();
         };
     }
+
+    private int _trayLevel = -1;
+    private System.Drawing.Icon? _trayIcon;
+
+    private void UpdateTrayHealth(StatsMonitor.Models.HardwareSnapshot s)
+    {
+        if (_tray is null) return;
+        int level = HealthCheck.Level(s, _settings.Current);
+        if (level == _trayLevel) return;
+        _trayLevel = level;
+
+        var color = level switch { 0 => System.Drawing.Color.FromArgb(0x2E, 0xCC, 0x71), 1 => System.Drawing.Color.FromArgb(0xF1, 0xC4, 0x0F), _ => System.Drawing.Color.FromArgb(0xE7, 0x4C, 0x3C) };
+        using var bmp = new System.Drawing.Bitmap(32, 32);
+        using (var g = System.Drawing.Graphics.FromImage(bmp))
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using var fill = new System.Drawing.SolidBrush(color);
+            using var pen = new System.Drawing.Pen(System.Drawing.Color.FromArgb(220, 255, 255, 255), 3);
+            g.FillEllipse(fill, 3, 3, 26, 26);
+            g.DrawEllipse(pen, 3, 3, 26, 26);
+        }
+        IntPtr h = bmp.GetHicon();
+        var icon = System.Drawing.Icon.FromHandle(h);
+        var old = _trayIcon;
+        _trayIcon = (System.Drawing.Icon)icon.Clone();
+        _tray.Icon = _trayIcon;
+        icon.Dispose();
+        DestroyIcon(h);
+        old?.Dispose();
+        _tray.Text = "Stats Monitor — " + Loc.T(level switch { 0 => "Saudável", 1 => "Atenção", _ => "Crítico" });
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool DestroyIcon(IntPtr handle);
 
     private void ShowTestAlert()
     {
@@ -423,7 +459,42 @@ public partial class MainWindow : Window
         var v = open ? Visibility.Visible : Visibility.Collapsed;
         LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = v;
         SearchBox.Visibility = v;
+        NavTreeToggle.Visibility = v;
+        NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
+        ApplyTree();
         if (!open) SearchPopup.IsOpen = false;
+    }
+
+    private bool _treeOpen = true;
+
+    private void ApplyTree()
+    {
+        NavTree.Visibility = !_menuOpen || _treeOpen ? Visibility.Visible : Visibility.Collapsed;
+        NavTreeToggle.Content = _treeOpen ? "▾" : "▸";
+    }
+
+    private void OnToggleTree(object sender, RoutedEventArgs e)
+    {
+        _treeOpen = !_treeOpen;
+        ApplyTree();
+    }
+
+    private void OnShortcut(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement fe) return;
+        var K = typeof(StatsMonitor.Services.ComponentKind);
+        StatsMonitor.Services.ComponentKind? kind = fe.DataContext == _vm.Cpu ? StatsMonitor.Services.ComponentKind.Cpu
+            : fe.DataContext == _vm.Gpu ? StatsMonitor.Services.ComponentKind.Gpu
+            : fe.DataContext == _vm.Ram ? StatsMonitor.Services.ComponentKind.Memory
+            : Enum.TryParse<StatsMonitor.Services.ComponentKind>((fe as Button)?.CommandParameter as string, out var k) ? k : null;
+        if (kind is null) return;
+        var nav = kind switch
+        {
+            StatsMonitor.Services.ComponentKind.Cpu => NavCpu, StatsMonitor.Services.ComponentKind.Gpu => NavGpu,
+            StatsMonitor.Services.ComponentKind.Memory => NavRam, StatsMonitor.Services.ComponentKind.Disk => NavDisk,
+            StatsMonitor.Services.ComponentKind.Network => NavNet, _ => NavSensors,
+        };
+        OnOpenComponent(nav, e);
     }
 
     // Saved preference: pinned keeps the menu expanded, unpinned keeps it collapsed.

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using StatsMonitor.Helpers;
 using StatsMonitor.Models;
@@ -72,7 +72,7 @@ public class AlertNotifierTests : IDisposable
     [Fact]
     public void Temperature_alert_fires_once_until_it_drops_below_the_limit()
     {
-        var cfg = new AppSettings { CpuCritTemp = 85 };
+        var cfg = new AppSettings { CpuCritTemp = 85, AlertSustainSeconds = 0 };
         var n = new AlertNotifier();
         Assert.Empty(n.Evaluate(Snap(cpuTemp: 80), cfg));
         Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg));
@@ -82,7 +82,7 @@ public class AlertNotifierTests : IDisposable
     [Fact]
     public void Alert_rearms_after_cooldown_and_cool_down()
     {
-        var cfg = new AppSettings { CpuCritTemp = 85 };
+        var cfg = new AppSettings { CpuCritTemp = 85, AlertSustainSeconds = 0 };
         var now = new DateTime(2025, 1, 1, 12, 0, 0);
         var n = new AlertNotifier(() => now) { Cooldown = TimeSpan.FromMinutes(2) };
         Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg));
@@ -95,16 +95,31 @@ public class AlertNotifierTests : IDisposable
     }
 
     [Fact]
-    public void Load_alert_needs_sustained_usage()
+    public void Alert_needs_the_value_to_stay_above_the_limit_for_the_configured_seconds()
     {
-        var cfg = new AppSettings { AlertLoadPercent = 95 };
-        var n = new AlertNotifier();
-        for (int i = 0; i < AlertNotifier.LoadSamplesRequired - 1; i++)
-            Assert.Empty(n.Evaluate(Snap(cpuLoad: 99), cfg));
+        var cfg = new AppSettings { AlertLoadPercent = 95, AlertSustainSeconds = 10 };
+        var now = new DateTime(2025, 1, 1, 12, 0, 0);
+        var n = new AlertNotifier(() => now);
+        Assert.Empty(n.Evaluate(Snap(cpuLoad: 99), cfg));
+        now = now.AddSeconds(5);
+        Assert.Empty(n.Evaluate(Snap(cpuLoad: 99), cfg));
+        now = now.AddSeconds(6);
         var ev = Assert.Single(n.Evaluate(Snap(cpuLoad: 99), cfg));
         Assert.Equal(AlertKind.CpuLoad, ev.Kind);
     }
 
+    [Fact]
+    public void A_dip_below_the_limit_restarts_the_sustain_timer()
+    {
+        var cfg = new AppSettings { AlertLoadPercent = 95, AlertSustainSeconds = 10 };
+        var now = new DateTime(2025, 1, 1, 12, 0, 0);
+        var n = new AlertNotifier(() => now);
+        n.Evaluate(Snap(cpuLoad: 99), cfg);
+        now = now.AddSeconds(8);
+        n.Evaluate(Snap(cpuLoad: 50), cfg);
+        now = now.AddSeconds(8);
+        Assert.Empty(n.Evaluate(Snap(cpuLoad: 99), cfg));
+    }
     [Fact]
     public void Disabled_notifications_never_fire()
     {
