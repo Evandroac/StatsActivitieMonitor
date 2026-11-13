@@ -31,7 +31,7 @@ public partial class App : Application
 
         var settings = new SettingsService();
         settings.Load();
-        ThemeHelper.Apply(settings.Current.DarkTheme);
+        ThemeHelper.Apply(settings.Current);
 
         _viewModel = new MainViewModel(new LibreHardwareMonitorService(), settings);
         var main = new MainWindow(_viewModel, settings);

@@ -5,6 +5,11 @@
         ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" ShowActivated="False"
         SizeToContent="WidthAndHeight" FontFamily="Consolas"
         ToolTip="Duplo clique para abrir">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
+        </Style>
+    </Window.Resources>
     <Border x:Name="Root" Background="{DynamicResource GadgetBg}" CornerRadius="10" Padding="12,8"
             BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <Grid>

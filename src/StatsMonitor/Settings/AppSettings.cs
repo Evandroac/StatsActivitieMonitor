@@ -16,6 +16,11 @@ public sealed class AppSettings
     public bool AlwaysShowGadget { get; set; }
     public bool DarkTheme { get; set; } = true;
 
+    // Custom colors keyed by theme resource name (WindowBg, CardBg, ...); missing/empty means theme default.
+    public Dictionary<string, string> ColorOverrides { get; set; } = new();
+    // Gadget background opacity in percent; null keeps the theme default.
+    public int? GadgetOpacity { get; set; }
+
     public bool ShowCpuMain { get; set; } = true;
     public bool ShowGpuMain { get; set; } = true;
     public bool ShowRamMain { get; set; } = true;

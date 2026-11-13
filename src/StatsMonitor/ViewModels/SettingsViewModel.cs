@@ -1,4 +1,4 @@
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using StatsMonitor.Helpers;
 using StatsMonitor.Services;
 using StatsMonitor.Settings;
@@ -22,14 +22,12 @@ public sealed class SettingsViewModel : ObservableObject
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
         GadgetOnTaskbar = s.GadgetMode == GadgetDisplayMode.Taskbar;
-        DarkTheme = s.DarkTheme;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
         ShowCpuGadget = s.ShowCpuGadget; ShowGpuGadget = s.ShowGpuGadget; ShowRamGadget = s.ShowRamGadget;
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
-        NormalColor = s.NormalColor; WarningColor = s.WarningColor; CriticalColor = s.CriticalColor;
         SaveCommand = new RelayCommand(Save);
     }
 
@@ -41,7 +39,6 @@ public sealed class SettingsViewModel : ObservableObject
     public bool AlwaysShowGadget { get; set; }
     public bool GadgetOnTaskbar { get; set; }
     public bool GadgetFloating { get => !GadgetOnTaskbar; set => GadgetOnTaskbar = !value; }
-    public bool DarkTheme { get; set; }
     public bool ShowCpuMain { get; set; }
     public bool ShowGpuMain { get; set; }
     public bool ShowRamMain { get; set; }
@@ -56,9 +53,6 @@ public sealed class SettingsViewModel : ObservableObject
     public double CpuCritTemp { get; set; }
     public double GpuWarnTemp { get; set; }
     public double GpuCritTemp { get; set; }
-    public string NormalColor { get; set; }
-    public string WarningColor { get; set; }
-    public string CriticalColor { get; set; }
 
     public ICommand SaveCommand { get; }
 
@@ -74,18 +68,15 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowGadget = ShowGadget;
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = GadgetOnTaskbar ? GadgetDisplayMode.Taskbar : GadgetDisplayMode.Floating;
-        s.DarkTheme = DarkTheme;
         s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
         s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;
         s.ShowCpuGadget = ShowCpuGadget; s.ShowGpuGadget = ShowGpuGadget; s.ShowRamGadget = ShowRamGadget;
         s.ShowVramGadget = ShowVramGadget; s.ShowNetworkGadget = ShowNetworkGadget;
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
-        s.NormalColor = NormalColor; s.WarningColor = WarningColor; s.CriticalColor = CriticalColor;
 
         _service.Save();
         StartupService.SetEnabled(s.RunAtStartup);
-        ThemeHelper.Apply(s.DarkTheme);
         _onApplied();
         Saved?.Invoke();
     }

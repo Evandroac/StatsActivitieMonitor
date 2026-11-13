@@ -6,13 +6,63 @@ namespace StatsMonitor.Helpers;
 
 public static class ThemeHelper
 {
-    public static void Apply(bool dark)
+    public static void Apply(AppSettings s)
     {
+        bool dark = s.DarkTheme;
         var uri = new Uri($"Themes/{(dark ? "Dark" : "Light")}.xaml", UriKind.Relative);
         var dicts = Application.Current.Resources.MergedDictionaries;
         var existing = dicts.FirstOrDefault(d => d.Source?.OriginalString.StartsWith("Themes/") == true);
         if (existing != null) dicts.Remove(existing);
-        dicts.Insert(0, new ResourceDictionary { Source = uri });
+        var theme = new ResourceDictionary { Source = uri };
+        dicts.Insert(0, theme);
+
+        // Overrides live in Application.Resources, which take precedence over the merged theme.
+        foreach (var key in ColorKeys)
+        {
+            Application.Current.Resources.Remove(key);
+            if (s.ColorOverrides.TryGetValue(key, out var hex) && TryParseColor(hex, out var c))
+                Application.Current.Resources[key] = Frozen(c);
+        }
+
+        Application.Current.Resources.Remove("GadgetBg");
+        var baseColor = s.ColorOverrides.TryGetValue("GadgetBg", out var gh) && TryParseColor(gh, out var gc)
+            ? gc
+            : ((SolidColorBrush)theme["GadgetBg"]).Color;
+        if (s.GadgetOpacity is { } pct) baseColor.A = (byte)Math.Round(Math.Clamp(pct, 10, 100) * 255 / 100.0);
+        else if (!s.ColorOverrides.ContainsKey("GadgetBg")) return;
+        Application.Current.Resources["GadgetBg"] = Frozen(baseColor);
+    }
+
+    public static readonly string[] ColorKeys =
+        ["WindowBg", "CardBg", "CardBorder", "TextPrimary", "TextSecondary", "TrackBrush", "Accent", "Accent2", "GadgetText"];
+
+    /// <summary>Theme default color for a resource key, ignoring user overrides.</summary>
+    public static Color ThemeDefault(string key, bool dark)
+    {
+        var d = new ResourceDictionary { Source = new Uri($"Themes/{(dark ? "Dark" : "Light")}.xaml", UriKind.Relative) };
+        return ((SolidColorBrush)d[key]).Color;
+    }
+
+    public static bool TryParseColor(string? hex, out Color color)
+    {
+        color = default;
+        if (string.IsNullOrWhiteSpace(hex)) return false;
+        try
+        {
+            color = (Color)ColorConverter.ConvertFromString(hex.Trim());
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static SolidColorBrush Frozen(Color c)
+    {
+        var b = new SolidColorBrush(c);
+        b.Freeze();
+        return b;
     }
 
     public static Brush ParseBrush(string hex, string fallback)

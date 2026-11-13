@@ -128,6 +128,16 @@ public partial class MainWindow : Window
         }
     }
 
+    private void OnOpenAppearance(object sender, RoutedEventArgs e)
+    {
+        var vm = new AppearanceViewModel(_settings, () =>
+        {
+            _vm.ApplySettings();
+            UpdateGadget();
+        });
+        new AppearanceWindow(vm) { Owner = this }.ShowDialog();
+    }
+
     private void OnOpenSettings(object sender, RoutedEventArgs e)
     {
         var vm = new SettingsViewModel(_settings, () =>

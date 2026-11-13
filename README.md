@@ -33,7 +33,11 @@ Via CLI: `dotnet run --project src/StatsMonitor`
 
 ## Configurações
 
-Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, tema escuro/claro, limites de temperatura (atenção/crítica) por CPU e GPU e cores dos alertas (normal, atenção, crítica).
+Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, modo do gadget (flutuante ou na barra de tarefas), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
+
+## Personalização
+
+Botão "Personalização" na janela principal (separado das configurações): tema base escuro/claro, cores de fundo, painéis, bordas, textos e destaques da janela principal, cor/texto/opacidade do gadget e cores dos alertas. Campos vazios usam o padrão do tema; "Restaurar padrões" limpa tudo.
 
 ## Limitações
 

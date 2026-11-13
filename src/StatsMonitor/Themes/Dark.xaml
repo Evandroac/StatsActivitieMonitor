@@ -10,4 +10,5 @@
     <SolidColorBrush x:Key="Accent" Color="#4DA3FF"/>
     <SolidColorBrush x:Key="Accent2" Color="#B388FF"/>
     <SolidColorBrush x:Key="GadgetBg" Color="#CC10121A"/>
+    <SolidColorBrush x:Key="GadgetText" Color="#ECEFF4"/>
 </ResourceDictionary>

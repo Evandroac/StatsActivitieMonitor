@@ -99,6 +99,7 @@
         <WrapPanel Margin="6,0,6,6">
             <TextBlock Text="Monitor" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,24,4"/>
             <Button Content="⚙  Configurações" Style="{StaticResource PillButton}" Click="OnOpenSettings" Margin="0,0,8,4"/>
+            <Button Content="🎨  Personalização" Style="{StaticResource PillButton}" Click="OnOpenAppearance" Margin="0,0,8,4"/>
             <Button Content="🛡  Executar como administrador" Style="{StaticResource PillButton}" Click="OnRunAsAdmin" Margin="0,0,0,4"/>
         </WrapPanel>
 
