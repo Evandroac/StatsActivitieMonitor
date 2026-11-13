@@ -109,6 +109,8 @@ public partial class GadgetWindow : Window
         EnumWindows((h, _) =>
         {
             if (h == self || !IsWindowVisible(h) || IsIconic(h)) return true;
+            GetWindowThreadProcessId(h, out uint pid);
+            if (pid == Environment.ProcessId) return true;
             if ((GetWindowLong(h, GWL_EXSTYLE) & WS_EX_TOPMOST) == 0) return true;
             if (!GetWindowRect(h, out var r)) return true;
             int w = r.Right - r.Left, ht = r.Bottom - r.Top;
@@ -165,6 +167,9 @@ public partial class GadgetWindow : Window
 
     private const int GWL_EXSTYLE = -20;
     private const int WS_EX_TOPMOST = 0x8;
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
+
     [DllImport("user32.dll")]
     private static extern bool SetWindowPos(IntPtr hWnd, IntPtr after, int x, int y, int cx, int cy, uint flags);
 
