@@ -214,7 +214,7 @@ public partial class MainWindow : Window
         _menuOpen = !_menuOpen;
         NavPanel.Width = _menuOpen ? 200 : 48;
         var v = _menuOpen ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
     }
 
     private void OnNavMain(object sender, RoutedEventArgs e) => ShowMain();
@@ -246,8 +246,10 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSettings, NavAppearance }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavSettings, NavAppearance }) b.Tag = b == active ? "active" : null;
     }
+
+    private void OnOpenSystem(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(), NavSystem);
 
     private void OnOpenAppearance(object sender, RoutedEventArgs e)
     {

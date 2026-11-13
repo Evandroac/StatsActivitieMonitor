@@ -173,6 +173,9 @@
             <Button x:Name="NavMain" Style="{StaticResource NavButton}" Tag="active" ToolTip="Tela principal" Click="OnNavMain">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📊" FontSize="16" Width="24" TextAlignment="Center"/><TextBlock x:Name="LblMain" Text="Principal" Margin="10,0,0,0" Visibility="Collapsed"/></StackPanel>
             </Button>
+            <Button x:Name="NavSystem" Style="{StaticResource NavButton}" ToolTip="Informações do computador" Click="OnOpenSystem">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🖥" FontSize="16" Width="24" TextAlignment="Center"/><TextBlock x:Name="LblSystem" Text="Sistema" Margin="10,0,0,0" Visibility="Collapsed"/></StackPanel>
+            </Button>
             <Button x:Name="NavSettings" Style="{StaticResource NavButton}" ToolTip="Intervalo, painéis exibidos, gadget e limites de temperatura" Click="OnOpenSettings">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙" FontSize="16" Width="24" TextAlignment="Center"/><TextBlock x:Name="LblSettings" Text="Configurações" Margin="10,0,0,0" Visibility="Collapsed"/></StackPanel>
             </Button>
