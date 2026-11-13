@@ -28,9 +28,38 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush) { HasTemperature = false };
         Vram = new ComponentViewModel("VRAM", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush);
 
+        InitCpuDetails();
         ApplySettings();
         _monitor.SnapshotUpdated += OnSnapshot;
         _monitor.ErrorOccurred += OnError;
+    }
+
+    private DetailItem? _procItem, _threadItem, _handleItem;
+
+    private void InitCpuDetails()
+    {
+        var info = CpuInfoService.Read();
+        _procItem = new DetailItem("Processos", "--");
+        _threadItem = new DetailItem("Threads", "--");
+        _handleItem = new DetailItem("Identificadores", "--");
+        foreach (var d in new[]
+        {
+            new DetailItem("Velocidade base", info.BaseSpeed),
+            new DetailItem("Sockets", info.Sockets.ToString()),
+            new DetailItem("Núcleos", info.Cores.ToString()),
+            new DetailItem("Processadores lógicos", info.LogicalProcessors.ToString()),
+            new DetailItem("Virtualização", info.Virtualization),
+            new DetailItem("Cache", info.Cache),
+            _procItem, _threadItem, _handleItem,
+        }) Cpu.Details.Add(d);
+    }
+
+    private void UpdateCounts()
+    {
+        if (CpuInfoService.ReadCounts() is not { } c) return;
+        _procItem!.Value = c.Processes.ToString("N0");
+        _threadItem!.Value = c.Threads.ToString("N0");
+        _handleItem!.Value = c.Handles.ToString("N0");
     }
 
     private AppSettings S => _settingsService.Current;
@@ -99,6 +128,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void Apply(HardwareSnapshot s)
     {
+        UpdateCounts();
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
         Ram.Update("Memória RAM", s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);

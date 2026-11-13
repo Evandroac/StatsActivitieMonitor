@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Media;
 using StatsMonitor.Helpers;
 
@@ -28,6 +28,7 @@ public sealed class ComponentViewModel : ObservableObject
     }
 
     public string Title { get; }
+    public ObservableCollection<DetailItem> Details { get; } = [];
     public bool HasTemperature { get; init; } = true;
     public ObservableCollection<double> History { get; } = [];
 
@@ -83,4 +84,13 @@ public sealed class ComponentViewModel : ObservableObject
     public void RefreshBrush() => TempBrush = _tempBrush(_temp);
 
     public static string Gb(double? v) => v.HasValue ? $"{v.Value:0.0} GB" : NotAvailable;
+}
+
+/// <summary>A label/value pair shown in a component card.</summary>
+public sealed class DetailItem : ObservableObject
+{
+    private string _value;
+    public DetailItem(string label, string value) { Label = label; _value = value; }
+    public string Label { get; }
+    public string Value { get => _value; set => Set(ref _value, value); }
 }
