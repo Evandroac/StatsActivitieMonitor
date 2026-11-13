@@ -71,7 +71,7 @@
                 <CheckBox Content="CPU" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowCpuMain}"/>
                 <CheckBox Content="GPU" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowGpuMain}"/>
                 <CheckBox Content="Memória RAM" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowRamMain}"/>
-                <CheckBox Content="Memória VRAM" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowVramMain}"/>
+                <CheckBox Content="Discos" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowVramMain}"/>
                 <CheckBox Content="Rede / Internet" ToolTip="Exibir na janela principal" IsChecked="{Binding ShowNetworkMain}"/>
             </StackPanel>
             <StackPanel Grid.Column="1">
@@ -79,7 +79,7 @@
                 <CheckBox Content="CPU" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowCpuGadget}"/>
                 <CheckBox Content="GPU" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowGpuGadget}"/>
                 <CheckBox Content="Memória RAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowRamGadget}"/>
-                <CheckBox Content="Memória VRAM" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowVramGadget}"/>
+                <CheckBox Content="Discos" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowVramGadget}"/>
                 <CheckBox Content="Rede / Internet" ToolTip="Exibir no gadget (minimizado)" IsChecked="{Binding ShowNetworkGadget}"/>
                 <CheckBox Content="FPS (em jogos)" ToolTip="Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador." IsChecked="{Binding ShowFpsGadget}"/>
             </StackPanel>

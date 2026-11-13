@@ -26,7 +26,6 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Cpu = new ComponentViewModel("CPU", t => Level(t, S.CpuWarnTemp, S.CpuCritTemp).brush);
         Gpu = new ComponentViewModel("GPU", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush);
         Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush) { HasTemperature = false };
-        Vram = new ComponentViewModel("VRAM", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush);
 
         InitCpuDetails();
         ApplySettings();
@@ -73,7 +72,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public ComponentViewModel Cpu { get; }
     public ComponentViewModel Gpu { get; }
     public ComponentViewModel Ram { get; }
-    public ComponentViewModel Vram { get; }
+    public DiskViewModel Disk { get; } = new();
     public NetworkViewModel Network { get; } = new();
     public string UptimeText { get => _uptimeText; private set => Set(ref _uptimeText, value); }
     public string LastUpdateText { get => _lastUpdateText; private set => Set(ref _lastUpdateText, value); }
@@ -108,7 +107,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         {
             c.ShowTemperature = ShowTemperatures;
         }
-        foreach (var c in new[] { Cpu, Gpu, Ram, Vram }) c.RefreshBrush();
+        foreach (var c in new[] { Cpu, Gpu, Ram }) c.RefreshBrush();
     }
 
     private (int level, Brush brush) Level(double? temp, double warn, double crit)
@@ -144,8 +143,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
         Ram.Update("Memória RAM", s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
-        Vram.Update(s.GpuName is null ? null : "Memória VRAM", s.VramLoad, s.VramTemp, null,
-            s.VramTotalGb, s.VramUsedGb, s.VramAvailableGb);
+        Disk.Update(s);
 
         UptimeText = s.Uptime.Days > 0
             ? $"{s.Uptime.Days}d {s.Uptime.Hours:00}h {s.Uptime.Minutes:00}m {s.Uptime.Seconds:00}s"

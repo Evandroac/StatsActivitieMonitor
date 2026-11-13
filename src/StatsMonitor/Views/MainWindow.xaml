@@ -200,7 +200,42 @@
         <ContentControl x:Name="CpuCard" MinHeight="260" Content="{Binding Cpu}" ContentTemplate="{StaticResource ProcessorTemplate}"/>
         <ContentControl x:Name="GpuCard" MinHeight="260" Content="{Binding Gpu}" ContentTemplate="{StaticResource ProcessorTemplate}"/>
         <ContentControl x:Name="RamCard" MinHeight="260" Content="{Binding Ram}" ContentTemplate="{StaticResource MemoryTemplate}"/>
-        <ContentControl x:Name="VramCard" MinHeight="260" Content="{Binding Vram}" ContentTemplate="{StaticResource MemoryTemplate}"/>
+        <Border x:Name="VramCard" Style="{StaticResource Card}" MinHeight="260" DataContext="{Binding Disk}">
+            <StackPanel>
+                <TextBlock Text="Discos (HD/SSD)" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" Margin="0,0,0,8"/>
+                <ItemsControl ItemsSource="{Binding Volumes}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,8">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Free}" Style="{StaticResource Caption}"/>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                </DockPanel>
+                                <ProgressBar Height="8" Margin="0,3" Minimum="0" Maximum="100" Value="{Binding Percent, Mode=OneWay}" Foreground="{DynamicResource Accent2}" Background="{DynamicResource TrackBrush}" BorderThickness="0"/>
+                                <TextBlock Text="{Binding Usage}" Style="{StaticResource Caption}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Drives}" Margin="0,6,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,4,0,6">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/>
+                                <WrapPanel>
+                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="Temperatura" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Temp}"/></StackPanel>
+                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="Leitura" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Read}"/></StackPanel>
+                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="Escrita" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Write}"/></StackPanel>
+                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="Tempo de atividade" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Activity}"/></StackPanel>
+                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="Saúde SMART" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Health}"/></StackPanel>
+                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="Vida útil" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Life}"/></StackPanel>
+                                </WrapPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
 
         <Border x:Name="NetCard" Style="{StaticResource Card}" DataContext="{Binding Network}">
             <StackPanel>

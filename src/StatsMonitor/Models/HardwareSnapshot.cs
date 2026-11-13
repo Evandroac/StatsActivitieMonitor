@@ -30,6 +30,15 @@ public sealed class HardwareSnapshot
     public double? VramLoad { get; init; }
     public double? VramTemp { get; init; }
 
+    public IReadOnlyList<DiskSnapshot> Disks { get; init; } = [];
+    public IReadOnlyList<VolumeSnapshot> Volumes { get; init; } = [];
+
     /// <summary>True when the process runs elevated (needed by some temperature sensors).</summary>
     public bool IsElevated { get; init; }
 }
+
+/// <summary>Physical drive (HD/SSD/NVMe) readings.</summary>
+public sealed record DiskSnapshot(string Name, double? Temp, double? ReadBps, double? WriteBps, double? Activity, double? LifePercent, string? Health);
+
+/// <summary>Logical volume (drive letter) capacity.</summary>
+public sealed record VolumeSnapshot(string Name, double TotalGb, double FreeGb);

@@ -44,7 +44,7 @@ public partial class SettingsView : UserControl
         Add(vm.ShowCpuGadget, $"CPU: 23%{t("52°C")}", $"CPU 23%{t("52°C")}");
         Add(vm.ShowRamGadget, "RAM: 41% | 13,2 GB", "RAM 41%");
         Add(vm.ShowGpuGadget, $"GPU: 37%{t("58°C")}", $"GPU 37%{t("58°C")}");
-        Add(vm.ShowVramGadget, "VRAM: 29% | 4,6 GB", "VRAM 29%");
+        Add(vm.ShowVramGadget, "Disco: 12%", "Disco 12%");
         Add(vm.ShowFpsGadget, "FPS: 144", "FPS 144");
         Add(vm.ShowNetworkGadget, "NET: ↓ 12,3 Mbps ↑ 1,2 Mbps", "NET ↓ 12,3 Mbps ↑ 1,2 Mbps");
 

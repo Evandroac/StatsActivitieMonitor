@@ -24,7 +24,7 @@
                     <Run Text="GPU: "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FVram" FontSize="13">
-                    <Run Text="VRAM: "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Vram.UsedText, Mode=OneWay}"/>
+                    <Run Text="Disco: "/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FFps" FontSize="13">
                     <Run Text="FPS: "/><Run Text="{Binding FpsText, Mode=OneWay}"/>
@@ -45,7 +45,7 @@
                     <Run Text="GPU "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TVram" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="VRAM "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/>
+                    <Run Text="Disco "/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TFps" FontSize="12" Margin="12,0,0,0">
                     <Run Text="FPS "/><Run Text="{Binding FpsText, Mode=OneWay}"/>

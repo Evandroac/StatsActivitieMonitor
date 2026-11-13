@@ -1,4 +1,5 @@
-﻿using System.Security.Principal;
+﻿using System.IO;
+using System.Security.Principal;
 using LibreHardwareMonitor.Hardware;
 using StatsMonitor.Models;
 
@@ -50,7 +51,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     {
         try
         {
-            _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true, IsMemoryEnabled = true };
+            _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true, IsMemoryEnabled = true, IsStorageEnabled = true };
             _computer.Open();
         }
         catch (Exception ex)
@@ -146,10 +147,56 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             VramUsedGb = vramUsed,
             VramAvailableGb = vramFree,
             VramLoad = vramLoad,
+            Disks = ReadDisks(all),
+            Volumes = ReadVolumes(),
             VramTemp = gpu?.Sensors
                 .Where(s => s.SensorType == SensorType.                Temperature && Valid(s.SensorType, s.Value).HasValue                            && s.Name.Contains("Memory", StringComparison.OrdinalIgnoreCase))
                 .Select(s => (double?)s.Value!.Value).Max(),
         };
+    }
+
+    private DateTime _healthAt = DateTime.MinValue;
+    private Dictionary<string, string> _health = new();
+
+    private List<DiskSnapshot> ReadDisks(List<IHardware> all)
+    {
+        if (DateTime.Now - _healthAt > TimeSpan.FromSeconds(60))
+        {
+            _healthAt = DateTime.Now;
+            _health = DiskHealthService.Read();
+        }
+
+        var list = new List<DiskSnapshot>();
+        foreach (var d in all.Where(h => h.HardwareType == HardwareType.Storage))
+        {
+            string name = d.Name.Trim();
+            var life = Value(d, SensorType.Level, "Remaining Life") ?? Value(d, SensorType.Level, "Life")
+                       ?? Value(d, SensorType.Level, "Available Spare");
+            string? health = _health.FirstOrDefault(kv => name.Contains(kv.Key, StringComparison.OrdinalIgnoreCase)
+                                                          || kv.Key.Contains(name, StringComparison.OrdinalIgnoreCase)).Value;
+            list.Add(new DiskSnapshot(name,
+                FirstValue(d, SensorType.Temperature),
+                Value(d, SensorType.Throughput, "Read Rate"),
+                Value(d, SensorType.Throughput, "Write Rate"),
+                Value(d, SensorType.Load, "Total Activity"),
+                life, health));
+        }
+        return list;
+    }
+
+    private static List<VolumeSnapshot> ReadVolumes()
+    {
+        var list = new List<VolumeSnapshot>();
+        foreach (var d in DriveInfo.GetDrives())
+        {
+            try
+            {
+                if (d.DriveType != DriveType.Fixed || !d.IsReady) continue;
+                list.Add(new VolumeSnapshot(d.Name.TrimEnd('\\'), d.TotalSize / 1073741824.0, d.AvailableFreeSpace / 1073741824.0));
+            }
+            catch (IOException) { }
+        }
+        return list;
     }
 
     private static void Collect(IHardware hw, List<IHardware> list)

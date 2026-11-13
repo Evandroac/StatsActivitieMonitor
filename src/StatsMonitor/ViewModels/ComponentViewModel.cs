@@ -4,7 +4,7 @@ using StatsMonitor.Helpers;
 
 namespace StatsMonitor.ViewModels;
 
-/// <summary>Presentation state for one monitored component (CPU, GPU, RAM or VRAM).</summary>
+/// <summary>Presentation state for one monitored component (CPU, GPU or RAM).</summary>
 public sealed class ComponentViewModel : ObservableObject
 {
     public const int HistoryLength = 60;
