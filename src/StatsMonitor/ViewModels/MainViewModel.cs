@@ -11,6 +11,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 {
     private readonly IHardwareMonitorService _monitor;
     private readonly SettingsService _settingsService;
+    private readonly NetworkMonitorService _network = new();
     private Brush _normal = Brushes.Green, _warn = Brushes.Orange, _crit = Brushes.Red;
 
     private string _uptimeText = "--", _lastUpdateText = "--";
@@ -38,7 +39,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public ComponentViewModel Gpu { get; }
     public ComponentViewModel Ram { get; }
     public ComponentViewModel Vram { get; }
-
+    public NetworkViewModel Network { get; } = new();
     public string UptimeText { get => _uptimeText; private set => Set(ref _uptimeText, value); }
     public string LastUpdateText { get => _lastUpdateText; private set => Set(ref _lastUpdateText, value); }
     public string StatusText { get => _statusText; private set => Set(ref _statusText, value); }
@@ -46,7 +47,17 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public string SensorNote { get => _sensorNote; private set => Set(ref _sensorNote, value); }
     public bool ShowTemperatures { get => _showTemperatures; private set => Set(ref _showTemperatures, value); }
 
-    public void Start() => _monitor.Start();
+    public void Start()
+    {
+        _monitor.Start();
+        _network.SnapshotUpdated += OnNetwork;
+        _network.Start();
+    }
+
+    private void OnNetwork(object? sender, NetworkSnapshot s)
+    {
+        Application.Current?.Dispatcher.BeginInvoke(() => Network.Update(s));
+    }
 
     /// <summary>Re-reads settings (interval, colors, temperature visibility).</summary>
     public void ApplySettings()
@@ -116,6 +127,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         _monitor.SnapshotUpdated -= OnSnapshot;
         _monitor.ErrorOccurred -= OnError;
-        _monitor.Dispose();
+        _network.SnapshotUpdated -= OnNetwork;
+        _network.Dispose();
     }
 }
