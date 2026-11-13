@@ -60,7 +60,7 @@
                 <Button DockPanel.Dock="Right" Content="Carregar" ToolTip="Carrega como prévia a personalização com o nome do campo" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
                 <Button DockPanel.Dock="Right" Content="Salvar como" ToolTip="Salva as cores atuais com o nome do campo (substitui se o nome já existir)" Style="{StaticResource PillButton}" Command="{Binding SavePresetCommand}" Margin="8,0,0,0"/>
                 <Grid>
-                    <TextBox Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" Padding="4,5,28,5" h:Hint.Text="Digite um nome ou escolha uma personalização salva" ToolTip="Nome da personalização: digite para criar ou clique na seta para escolher uma salva"/>
+                    <TextBox x:Name="PresetBox" TextChanged="OnPresetTextChanged" Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" Padding="4,5,28,5" h:Hint.Text="Digite um nome ou escolha uma personalização salva" ToolTip="Nome da personalização: digite para criar ou clique na seta para escolher uma salva"/>
                     <ToggleButton x:Name="PresetToggle" HorizontalAlignment="Right" Width="26" Content="▾" Cursor="Hand" Background="Transparent"
                                   Foreground="{DynamicResource TextSecondary}" BorderThickness="0" ToolTip="Mostrar personalizações salvas"
                                   IsChecked="{Binding IsOpen, ElementName=PresetPopup, Mode=TwoWay}">
