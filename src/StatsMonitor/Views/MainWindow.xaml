@@ -167,12 +167,13 @@
     </Grid.ColumnDefinitions>
 
     <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="0,0,1,0">
-        <StackPanel x:Name="NavPanel" Width="48" Margin="0,6">
+        <DockPanel Margin="0,6">
+        <Button x:Name="NavPin" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)" Click="OnTogglePin">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="📌" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblPin" Text="Fixar menu" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+        <StackPanel x:Name="NavPanel" Width="48">
             <Button x:Name="NavMenu" Style="{StaticResource NavButton}" ToolTip="Menu" Click="OnToggleMenu">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="☰" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMenu" Text="Menu" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
-            </Button>
-            <Button x:Name="NavPin" Style="{StaticResource NavButton}" ToolTip="Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)" Click="OnTogglePin">
-                <StackPanel Orientation="Horizontal"><TextBlock Text="📌" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblPin" Text="Fixar menu" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
             <Grid x:Name="SearchRow" Height="40" Margin="4,1">
                 <Grid.ColumnDefinitions>
@@ -214,6 +215,7 @@
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSettings" Text="Configurações" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
         </StackPanel>
+        </DockPanel>
     </Border>
 
     <ContentControl x:Name="PageHost" Grid.Column="1" Margin="14" Visibility="Collapsed" IsTabStop="False"/>
