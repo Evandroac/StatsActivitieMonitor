@@ -16,6 +16,25 @@ public partial class AppearanceView : System.Windows.Controls.UserControl
     /// <summary>Persists any pending change (used when navigating away).</summary>
     public void Discard() { if (DataContext is AppearanceViewModel vm) vm.Flush(); }
 
+    private void OnSwatch(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button { Tag: string hex, DataContext: not null } b
+            && FindOption(b) is { } o) o.Hex = hex;
+    }
+
+    private void OnSwatchDefault(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button b && FindOption(b) is { } o) o.Reset();
+    }
+
+    // The swatch buttons live inside the popup of a color row, whose data context is the ColorOption.
+    private static ColorOption? FindOption(FrameworkElement el)
+    {
+        for (DependencyObject? d = el; d is not null; d = System.Windows.Media.VisualTreeHelper.GetParent(d) ?? LogicalTreeHelper.GetParent(d))
+            if (d is FrameworkElement { DataContext: ColorOption o }) return o;
+        return null;
+    }
+
     private bool _autoFilling;
 
     private void OnPresetTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

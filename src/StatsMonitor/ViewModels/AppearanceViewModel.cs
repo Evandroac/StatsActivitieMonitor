@@ -29,7 +29,7 @@ public sealed class ColorOption : ObservableObject
         set
         {
             if (!Set(ref _hex, value)) return;
-            Raise(nameof(Preview)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B));
+            Raise(nameof(Preview)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B)); RaiseInfo();
         }
     }
 
@@ -42,10 +42,43 @@ public sealed class ColorOption : ObservableObject
     private void SetChannel(Color c) =>
         Hex = c.A == 255 ? $"#{c.R:X2}{c.G:X2}{c.B:X2}" : $"#{c.A:X2}{c.R:X2}{c.G:X2}{c.B:X2}";
 
+    public double A { get => Current.A; set => SetChannel(Color.FromArgb((byte)value, Current.R, Current.G, Current.B)); }
+
+    public string HexText => Current.A == 255 ? $"#{Current.R:X2}{Current.G:X2}{Current.B:X2}" : $"#{Current.A:X2}{Current.R:X2}{Current.G:X2}{Current.B:X2}";
+    public string RgbText => $"rgb({Current.R}, {Current.G}, {Current.B})";
+    public string AlphaText => $"{Current.A * 100 / 255}%";
+    public string HslText
+    {
+        get
+        {
+            double r = Current.R / 255.0, g = Current.G / 255.0, b = Current.B / 255.0;
+            double max = Math.Max(r, Math.Max(g, b)), min = Math.Min(r, Math.Min(g, b)), d = max - min, l = (max + min) / 2, h = 0, s = 0;
+            if (d > 0)
+            {
+                s = d / (1 - Math.Abs(2 * l - 1));
+                h = max == r ? 60 * (((g - b) / d) % 6) : max == g ? 60 * ((b - r) / d + 2) : 60 * ((r - g) / d + 4);
+                if (h < 0) h += 360;
+            }
+            return $"hsl({h:0}°, {s * 100:0}%, {l * 100:0}%)";
+        }
+    }
+    public string Contrast
+    {
+        get
+        {
+            double L(byte v) { var c = v / 255.0; return c <= 0.03928 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4); }
+            var lum = 0.2126 * L(Current.R) + 0.7152 * L(Current.G) + 0.0722 * L(Current.B);
+            return $"Contraste: {1.05 / (lum + 0.05):0.0}:1 c/ branco · {(lum + 0.05) / 0.05:0.0}:1 c/ preto";
+        }
+    }
+    public bool IsCustom => ThemeHelper.TryParseColor(_hex, out _);
+
+    private void RaiseInfo() { Raise(nameof(A)); Raise(nameof(HexText)); Raise(nameof(RgbText)); Raise(nameof(AlphaText)); Raise(nameof(HslText)); Raise(nameof(Contrast)); Raise(nameof(IsCustom)); }
+
     public Brush Preview => new SolidColorBrush(Current);
     public string DefaultHex => _default().ToString();
 
-    public void Refresh() { Raise(nameof(Preview)); Raise(nameof(DefaultHex)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B)); }
+    public void Refresh() { Raise(nameof(Preview)); Raise(nameof(DefaultHex)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B)); RaiseInfo(); }
     public void Reset() => Hex = "";
 }
 

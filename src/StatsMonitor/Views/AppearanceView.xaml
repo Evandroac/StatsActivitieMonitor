@@ -4,6 +4,7 @@
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         FontFamily="Segoe UI">
     <UserControl.Resources>
+        <h:BoolTextConverter x:Key="CustomText" TrueText="Personalizada" FalseText="Padrão do tema"/>
         <DataTemplate x:Key="ColorRow">
             <Grid Margin="0,3">
                 <Grid.ColumnDefinitions>
@@ -21,8 +22,8 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ToggleButton">
-                                        <Border CornerRadius="4" Background="{Binding Preview}"
-                                                BorderBrush="{DynamicResource TextSecondary}" BorderThickness="1"/>
+                                        <Border x:Name="Sw" CornerRadius="4" Background="{Binding Preview}" BorderBrush="{DynamicResource TextSecondary}" BorderThickness="1"/>
+                                        <ControlTemplate.Triggers><Trigger Property="IsChecked" Value="True"><Setter TargetName="Sw" Property="BorderBrush" Value="{DynamicResource Accent}"/><Setter TargetName="Sw" Property="BorderThickness" Value="2"/></Trigger></ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -35,20 +36,49 @@
                     </ToggleButton.Style>
                 </ToggleButton>
                 <Popup x:Name="Pop" PlacementTarget="{Binding ElementName=Toggle}" Placement="Left" StaysOpen="False" AllowsTransparency="True">
-                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1"
-                            CornerRadius="8" Padding="12" Margin="6">
-                        <StackPanel Width="230">
-                            <Border Height="28" CornerRadius="4" Background="{Binding Preview}" Margin="0,0,0,8"/>
+                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="2"
+                            CornerRadius="10" Padding="14" Margin="8">
+                        <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.45"/></Border.Effect>
+                        <StackPanel Width="260">
+                            <DockPanel Margin="0,0,0,8">
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding IsCustom, Converter={StaticResource CustomText}}" Style="{StaticResource Caption}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            </DockPanel>
+                            <Border Height="44" CornerRadius="6" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Background="{Binding Preview}" Margin="0,0,0,8"/>
+                            <UniformGrid Columns="1" Margin="0,0,0,8">
+                                <TextBlock Style="{StaticResource Caption}" Text="{Binding HexText, StringFormat=HEX:  {0}}"/>
+                                <TextBlock Style="{StaticResource Caption}" Text="{Binding RgbText, StringFormat=RGB:  {0}}"/>
+                                <TextBlock Style="{StaticResource Caption}" Text="{Binding HslText, StringFormat=HSL:  {0}}"/>
+                                <TextBlock Style="{StaticResource Caption}" Text="{Binding Contrast}"/>
+                            </UniformGrid>
                             <DockPanel><TextBlock Text="R" Width="18" Foreground="#FF5555"/><TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding R, StringFormat={}{0:0}}"/>
                                 <Slider Minimum="0" Maximum="255" Value="{Binding R}"/></DockPanel>
                             <DockPanel><TextBlock Text="G" Width="18" Foreground="#55DD55"/><TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding G, StringFormat={}{0:0}}"/>
                                 <Slider Minimum="0" Maximum="255" Value="{Binding G}"/></DockPanel>
                             <DockPanel><TextBlock Text="B" Width="18" Foreground="#5599FF"/><TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding B, StringFormat={}{0:0}}"/>
                                 <Slider Minimum="0" Maximum="255" Value="{Binding B}"/></DockPanel>
+                            <DockPanel><TextBlock Text="A" Width="18" Foreground="{DynamicResource TextSecondary}"/><TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" Text="{Binding AlphaText}"/>
+                                <Slider Minimum="0" Maximum="255" Value="{Binding A}"/></DockPanel>
+                            <TextBlock Text="Cores rápidas" Style="{StaticResource Caption}" Margin="0,10,0,4"/>
+                            <ItemsControl ItemsSource="{x:Static h:ColorPalette.Colors}">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Width="22" Height="22" Margin="0,0,5,5" Cursor="Hand" Tag="{Binding}" ToolTip="{Binding}" Click="OnSwatch">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Sw" CornerRadius="11" BorderThickness="1" BorderBrush="#66808080" Background="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                    <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Sw" Property="BorderBrush" Value="{DynamicResource Accent}"/><Setter TargetName="Sw" Property="BorderThickness" Value="2"/></Trigger></ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="Usar padrão do tema" Style="{StaticResource PillButton}" Margin="0,6,0,0" Click="OnSwatchDefault"/>
                         </StackPanel>
                     </Border>
-                </Popup>
-            </Grid>
+                </Popup>            </Grid>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
