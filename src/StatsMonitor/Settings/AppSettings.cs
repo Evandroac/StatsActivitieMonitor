@@ -16,6 +16,13 @@ public sealed class AppearancePreset
     public string CriticalColor { get; set; } = "#FF4D4F";
 }
 
+/// <summary>A named subset of settings that can be switched at once (e.g. Game, Work, Quiet).</summary>
+public sealed class SettingsProfile
+{
+    public string Name { get; set; } = "";
+    public Dictionary<string, JsonElement> Values { get; set; } = new();
+}
+
 public sealed class AppSettings
 {
     public List<AppearancePreset> Presets { get; set; } = new();
@@ -63,6 +70,19 @@ public sealed class AppSettings
     public bool SidebarPinned { get; set; }
     public string Language { get; set; } = "pt";
     public string TempUnit { get; set; } = "C";
+    public bool FollowSystemTheme { get; set; }
+
+    public bool NotifyAlerts { get; set; } = true;
+    public bool AlertSound { get; set; } = true;
+    public double AlertLoadPercent { get; set; } = 95;
+
+    public bool HotkeyEnabled { get; set; } = true;
+    public string GadgetHotkey { get; set; } = "Ctrl+Alt+G";
+
+    public bool ShowSensorsMain { get; set; } = true;
+
+    public string? ActiveProfile { get; set; }
+    public List<SettingsProfile> Profiles { get; set; } = new();
     public bool WindowMaximized { get; set; } = true;
     public double? WindowLeft { get; set; }
     public double? WindowTop { get; set; }
@@ -74,16 +94,22 @@ public sealed class SettingsService
 {
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
-    private readonly string _path = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StatsMonitor", "settings.json");
+    private readonly string _path;
+
+    public SettingsService(string? path = null) =>
+        _path = path ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StatsMonitor", "settings.json");
 
     public AppSettings Current { get; private set; } = new();
 
+    /// <summary>True when no settings file existed at load time (first run).</summary>
+    public bool IsFirstRun { get; private set; }
+
     public void Load()
     {
+        IsFirstRun = !File.Exists(_path);
         try
         {
-            if (File.Exists(_path))
+            if (!IsFirstRun)
                 Current = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_path)) ?? new AppSettings();
         }
         catch
@@ -115,4 +141,28 @@ public sealed class SettingsService
             // Settings are non-critical; ignore IO failures.
         }
     }
+
+    /// <summary>Writes the current settings to a user-chosen file.</summary>
+    public void Export(string path) => File.WriteAllText(path, Snapshot());
+
+    /// <summary>Replaces the current settings with the content of a file. Returns false (leaving settings untouched) when the file is invalid.</summary>
+    public bool Import(string path)
+    {
+        try
+        {
+            var json = File.ReadAllText(path);
+            if (JsonSerializer.Deserialize<AppSettings>(json) is null) return false;
+            Restore(json);
+            Save();
+            return true;
+        }
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or NotSupportedException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>Picks the UI language from the OS culture ("pt" for Portuguese, otherwise "en").</summary>
+    public static string DetectLanguage(System.Globalization.CultureInfo? culture = null) =>
+        (culture ?? System.Globalization.CultureInfo.CurrentUICulture).TwoLetterISOLanguageName.Equals("pt", StringComparison.OrdinalIgnoreCase) ? "pt" : "en";
 }
