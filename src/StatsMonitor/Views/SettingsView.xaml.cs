@@ -26,7 +26,17 @@ public partial class SettingsView : UserControl
             appearance.Embedded();
             AppearanceHost.Content = appearance;
         }
+        _syncingTabs = true;
         TabGeneral.IsChecked = true;
+        _syncingTabs = false;
+        SettingsScroll.ScrollChanged += OnScrollChanged;
+        if (appearance is not null)
+            appearance.PreviewMouseWheel += (s, e) =>
+            {
+                if (e.OriginalSource is DependencyObject d && IsInsideList(d)) return;
+                e.Handled = true;
+                SettingsScroll.RaiseEvent(new System.Windows.Input.MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta) { RoutedEvent = UIElement.MouseWheelEvent, Source = s });
+            };
 
         // Refresh after the bindings have pushed the new value into the view model.
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
@@ -41,32 +51,73 @@ public partial class SettingsView : UserControl
 
     private void OnTestAlert(object sender, RoutedEventArgs e) => TestAlertRequested?.Invoke();
 
-    private void RefreshTitles() =>
+    private void RefreshTitles()
+    {
         TxtTempAlerts.Text = Loc.T("🌡️  Alertas de temperatura ({0})", Units.Symbol);
+        AppearanceTitle.Text = Loc.T("🎨  Personalização");
+    }
 
     /// <summary>Persists any pending change (used when navigating away).</summary>
     public void Discard() { _vm.Flush(); _appearance?.Discard(); }
 
-    private void OnSection(object sender, RoutedEventArgs e)
+    private static bool IsInsideList(DependencyObject d)
     {
-        if (sender is RadioButton { Tag: string tag } && IsLoadedOrInit) ApplySection(tag);
+        for (; d is not null; d = VisualTreeHelper.GetParent(d) ?? LogicalTreeHelper.GetParent(d))
+            if (d is ListBox) return true;
+        return false;
     }
 
-    private bool IsLoadedOrInit => SecGeneral is not null && SecProfiles is not null;
+    private bool _syncingTabs;
 
-    private void ApplySection(string tag)
+    private (string Tag, FrameworkElement Section)[] Sections => new (string, FrameworkElement)[]
     {
+        ("general", SecGeneral), ("gadget", SecGadget), ("panels", SecPanels),
+        ("alerts", SecAlerts), ("appearance", SecAppearance), ("profiles", SecProfiles),
+    };
+
+    private void OnSection(object sender, RoutedEventArgs e)
+    {
+        if (_syncingTabs || sender is not RadioButton { Tag: string tag }) return;
         CurrentSection = tag;
-        bool app = tag == "appearance";
-        SecGeneral.Visibility = Show(tag == "general");
-        SecGadget.Visibility = Show(tag == "gadget");
-        SecPanels.Visibility = Show(tag == "panels");
-        SecAlerts.Visibility = Show(tag == "alerts");
-        SecProfiles.Visibility = Show(tag == "profiles");
-        SettingsScroll.Visibility = Show(!app);
-        AppearanceHost.Visibility = Show(app);
-        BtnResetColors.Visibility = Show(app);
-        SettingsScroll.ScrollToTop();
+        ScrollTo(tag);
+    }
+
+    private void ScrollTo(string tag)
+    {
+        var section = Sections.FirstOrDefault(s => s.Tag == tag).Section;
+        if (section is null) return;
+        if (!IsLoaded)
+        {
+            RoutedEventHandler? h = null;
+            h = (_, _) => { Loaded -= h; ScrollTo(tag); };
+            Loaded += h;
+            return;
+        }
+        Dispatcher.BeginInvoke(() =>
+        {
+            UpdateLayout();
+            double y = section.TransformToAncestor(SectionsStack).Transform(new Point(0, 0)).Y;
+            SettingsScroll.ScrollToVerticalOffset(Math.Max(0, y + SectionsStack.Margin.Top - 6));
+        }, System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    // Highlights in the menu the section currently at the top of the page.
+    private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        if (e.VerticalChange == 0 && e.ExtentHeightChange == 0) return;
+        string current = "general";
+        foreach (var (tag, section) in Sections)
+        {
+            double top = section.TransformToAncestor(SectionsStack).Transform(new Point(0, 0)).Y + SectionsStack.Margin.Top;
+            if (top <= SettingsScroll.VerticalOffset + 40) current = tag;
+        }
+        if (SettingsScroll.ScrollableHeight > 0 && SettingsScroll.VerticalOffset >= SettingsScroll.ScrollableHeight - 1) current = "profiles";
+        if (current == CurrentSection) return;
+        CurrentSection = current;
+        _syncingTabs = true;
+        foreach (var rb in LogicalChildren<RadioButton>(this))
+            if ((string?)rb.Tag == current) rb.IsChecked = true;
+        _syncingTabs = false;
     }
 
     public void SelectSection(string tag)
@@ -84,28 +135,8 @@ public partial class SettingsView : UserControl
         }
     }
 
-    /// <summary>Switches to the section that shows the given text, so search results can be highlighted.</summary>
-    public void RevealText(string text, bool preferAppearance)
-    {
-        if (!IsLoaded)
-        {
-            RoutedEventHandler? h = null;
-            h = (_, _) => { Loaded -= h; RevealText(text, preferAppearance); };
-            Loaded += h;
-            return;
-        }
-        var order = new List<string> { "general", "gadget", "panels", "alerts", "profiles", "appearance" };
-        if (preferAppearance) { order.Remove("appearance"); order.Insert(0, "appearance"); }
-        foreach (var tag in order)
-        {
-            if (tag == "appearance" && _appearance is null) continue;
-            SelectSection(tag);
-            UpdateLayout();
-            if (SearchHighlighter.Contains(this, text)) return;
-        }
-        SelectSection(preferAppearance ? "appearance" : "general");
-    }
-
+    /// <summary>All sections are visible, so the highlighter finds any text; appearance results are also scrolled into view.</summary>
+    public void RevealText(bool preferAppearance) { if (preferAppearance) SelectSection("appearance"); }
     private void OnResetColors(object sender, RoutedEventArgs e) => _appearance?.ResetColors();
 
     private void OnResetDefaults(object sender, RoutedEventArgs e)

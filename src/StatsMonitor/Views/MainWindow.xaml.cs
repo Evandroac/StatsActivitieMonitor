@@ -486,7 +486,7 @@ public partial class MainWindow : Window
             case SearchPage.Appearance: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
         }
         FrameworkElement root = r.Page == SearchPage.Main ? MainPage : PageHost;
-        if (PageHost.Content is SettingsView sv) sv.RevealText(r.Match, r.Page == SearchPage.Appearance);
+        if (PageHost.Content is SettingsView sv) sv.RevealText(r.Page == SearchPage.Appearance);
         SearchHighlighter.Show(root, r.Match);
     }
 

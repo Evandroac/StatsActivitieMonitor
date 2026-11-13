@@ -17,7 +17,11 @@ public partial class AppearanceView : System.Windows.Controls.UserControl
     public void Discard() { if (DataContext is AppearanceViewModel vm) vm.Flush(); }
 
     /// <summary>Hides the own actions panel when shown as a section of the settings page.</summary>
-    public void Embedded() => ActionsPanel.Visibility = Visibility.Collapsed;
+    public void Embedded()
+    {
+        ActionsPanel.Visibility = Visibility.Collapsed;
+        BodyScroll.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Disabled;
+    }
 
     public void ResetColors() { if (DataContext is AppearanceViewModel vm) vm.ResetCommand.Execute(null); }
 

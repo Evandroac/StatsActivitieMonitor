@@ -116,7 +116,7 @@
             <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" AutomationProperties.Name="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Command="{Binding ResetCommand}"/>
         </StackPanel>
     </Border>
-    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="BodyScroll" Grid.Column="1" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
             <TextBlock Text="{h:Tr '⭐  Minhas personalizações'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
