@@ -69,6 +69,8 @@ public sealed class AppSettings
 
     public bool SidebarPinned { get; set; }
     public bool SimplifiedView { get; set; }
+    public bool PauseWhenHidden { get; set; }
+    public bool SlowSensors { get; set; }
     public string Language { get; set; } = "pt";
     public string TempUnit { get; set; } = "C";
     public bool FollowSystemTheme { get; set; }

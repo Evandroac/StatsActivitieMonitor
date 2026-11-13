@@ -29,6 +29,7 @@ public partial class MainWindow : Window
         SizeChanged += (_, _) => ArrangeCards();
         StateChanged += (_, _) => UpdateGadget();
         Closing += OnClosing;
+        IsVisibleChanged += (_, _) => UpdateGadget();
         Closed += (_, _) =>
         {
             _tray?.Dispose();
@@ -212,6 +213,8 @@ public partial class MainWindow : Window
         bool visible = _gadgetOverride ?? (s.ShowGadget && s.GadgetMode != GadgetDisplayMode.None && (s.AlwaysShowGadget || WindowState == WindowState.Minimized));
         if (visible && s.GadgetMode == GadgetDisplayMode.None) visible = false;
         if (visible) _gadget.ShowGadget(); else _gadget.Hide();
+        bool windowShown = IsVisible && WindowState != WindowState.Minimized;
+        _vm.SetPaused(s.PauseWhenHidden && !windowShown && !visible);
     }
 
     private void ToggleGadget()

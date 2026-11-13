@@ -103,12 +103,15 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Application.Current?.Dispatcher.BeginInvoke(() => Network.Update(s));
     }
 
+    public void SetPaused(bool paused) => _monitor.Paused = paused;
+
     /// <summary>Re-reads settings (interval, colors, temperature visibility).</summary>
     public void ApplySettings()
     {
         (_normal, _warn, _crit) = ThemeHelper.AlertBrushes(S);
         int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
         _monitor.Interval = TimeSpan.FromMilliseconds(S.SimplifiedView ? Math.Max(ms, 2000) : ms);
+        _monitor.SlowSensors = S.SlowSensors;
         foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;
         ShowTemperatures = S.ShowTemperatures;
         foreach (var c in new[] { Cpu, Gpu })

@@ -19,6 +19,13 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     public event EventHandler<Exception>? ErrorOccurred;
 
     public TimeSpan Interval { get; set; } = TimeSpan.FromSeconds(1);
+    private volatile bool _paused;
+    public bool Paused { get => _paused; set => _paused = value; }
+    private volatile bool _slowSensors;
+    public bool SlowSensors { get => _slowSensors; set { _slowSensors = value; DiskPerfService.CacheSeconds = value ? SlowSeconds : 2; } }
+    private const int SlowSeconds = 10;
+    private DateTime _slowAt = DateTime.MinValue;
+    private bool _slowDue = true;
 
     public void Start()
     {
@@ -62,6 +69,11 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
 
         while (!token.IsCancellationRequested)
         {
+            if (_paused)
+            {
+                try { await Task.Delay(500, token).ConfigureAwait(false); } catch (OperationCanceledException) { break; }
+                continue;
+            }
             try
             {
                 SnapshotUpdated?.Invoke(this, ReadSnapshot());
@@ -82,6 +94,8 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     private HardwareSnapshot ReadSnapshot()
     {
         var all = new List<IHardware>();
+        _slowDue = !_slowSensors || DateTime.Now - _slowAt >= TimeSpan.FromSeconds(SlowSeconds);
+        if (_slowDue) _slowAt = DateTime.Now;
         if (_computer != null)
         {
             foreach (var hw in _computer.Hardware)
@@ -247,9 +261,11 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
         return list;
     }
 
-    private static void Collect(IHardware hw, List<IHardware> list)
+    private void Collect(IHardware hw, List<IHardware> list)
     {
-        hw.Update();
+        bool slow = hw.HardwareType is HardwareType.Storage or HardwareType.Motherboard or HardwareType.SuperIO
+            or HardwareType.EmbeddedController or HardwareType.Battery;
+        if (!slow || _slowDue) hw.Update();
         list.Add(hw);
         foreach (var sub in hw.SubHardware) Collect(sub, list);
     }

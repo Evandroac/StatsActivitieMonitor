@@ -1,4 +1,4 @@
-using StatsMonitor.Models;
+﻿using StatsMonitor.Models;
 
 namespace StatsMonitor.Services;
 
@@ -9,6 +9,12 @@ public interface IHardwareMonitorService : IDisposable
     event EventHandler<Exception>? ErrorOccurred;
 
     TimeSpan Interval { get; set; }
+
+    /// <summary>While true no hardware is read.</summary>
+    bool Paused { get; set; }
+
+    /// <summary>Refresh disk and motherboard sensors only every few seconds.</summary>
+    bool SlowSensors { get; set; }
 
     void Start();
     void Stop();

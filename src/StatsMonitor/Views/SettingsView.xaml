@@ -43,6 +43,8 @@
         </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos, mas os alertas não são emitidos enquanto a leitura está pausada'}" IsChecked="{Binding PauseWhenHidden}"/>
+        <CheckBox Content="{h:Tr 'Ler sensores de disco e placa-mãe com menos frequência'}" ToolTip="{h:Tr 'Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais'}" IsChecked="{Binding SlowSensors}"/>
         <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra o gadget quando o app é minimizado'}" Content="{h:Tr 'Exibir gadget'}" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>

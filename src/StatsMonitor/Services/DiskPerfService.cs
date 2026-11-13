@@ -9,6 +9,7 @@ public static class DiskPerfService
 {
     private static Dictionary<int, string> _models = new();
     private static DateTime _modelsAt = DateTime.MinValue;
+    public static volatile int CacheSeconds = 2;
     private static Dictionary<string, DiskPerf> _perf = new();
     private static DateTime _perfAt = DateTime.MinValue;
 
@@ -31,7 +32,7 @@ public static class DiskPerfService
                                 .Select(kv => (int?)kv.Key).FirstOrDefault();
             if (index is null) return null;
 
-            if (DateTime.Now - _perfAt > TimeSpan.FromSeconds(2))
+            if (DateTime.Now - _perfAt > TimeSpan.FromSeconds(CacheSeconds))
             {
                 _perfAt = DateTime.Now;
                 var perf = new Dictionary<string, DiskPerf>();

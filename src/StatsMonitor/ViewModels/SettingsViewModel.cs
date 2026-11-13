@@ -39,7 +39,7 @@ public sealed class SettingsViewModel : ObservableObject
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; AlertSound = s.AlertSound;
         AlertLoadPercent = s.AlertLoadPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
-        ShowSensorsMain = s.ShowSensorsMain;
+        ShowSensorsMain = s.ShowSensorsMain; PauseWhenHidden = s.PauseWhenHidden; SlowSensors = s.SlowSensors;
     }
 
     /// <summary>Restores every option on this page to its default value and saves.</summary>
@@ -141,6 +141,8 @@ public sealed class SettingsViewModel : ObservableObject
     private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }
     private bool _hotkeyEnabled; public bool HotkeyEnabled { get => _hotkeyEnabled; set { if (_hotkeyEnabled != value) { _hotkeyEnabled = value; AutoSave(); } } }
     private string _gadgetHotkey = "Ctrl+Alt+G"; public string GadgetHotkey { get => _gadgetHotkey; set { if (_gadgetHotkey != value && value is not null) { _gadgetHotkey = value; AutoSave(); } } }
+    private bool _pauseWhenHidden; public bool PauseWhenHidden { get => _pauseWhenHidden; set { if (_pauseWhenHidden != value) { _pauseWhenHidden = value; AutoSave(); } } }
+    private bool _slowSensors; public bool SlowSensors { get => _slowSensors; set { if (_slowSensors != value) { _slowSensors = value; AutoSave(); } } }
     private bool _showSensorsMain; public bool ShowSensorsMain { get => _showSensorsMain; set { if (_showSensorsMain != value) { _showSensorsMain = value; AutoSave(); } } }
 
     public string[] HotkeyOptions { get; } = ["Ctrl+Alt+G", "Ctrl+Alt+S", "Ctrl+Shift+G", "Ctrl+Alt+M", "Win+Shift+G"];
@@ -239,7 +241,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.AlertSound = AlertSound;
         s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.HotkeyEnabled = HotkeyEnabled;
         s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
-        s.ShowSensorsMain = ShowSensorsMain;
+        s.ShowSensorsMain = ShowSensorsMain; s.PauseWhenHidden = PauseWhenHidden; s.SlowSensors = SlowSensors;
         ThemeHelper.Apply(s);
 
         _onApplied();
