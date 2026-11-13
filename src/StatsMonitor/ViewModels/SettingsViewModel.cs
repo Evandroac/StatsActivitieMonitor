@@ -66,6 +66,21 @@ public sealed class SettingsViewModel : ObservableObject
     }
 
     private bool _fahrenheit;
+    // Advisory messages for values that are allowed but may hurt how the app works. Empty means fine.
+    public string IntervalWarning => IntervalSeconds < 1 ? Loc.T("⚠ Intervalos abaixo de 1 s aumentam o uso de CPU do app.")
+        : IntervalSeconds > 30 ? Loc.T("⚠ Intervalos longos deixam valores e alertas desatualizados.") : "";
+    public string CpuTempWarning => TempWarning(CpuWarnTemp, CpuCritTemp);
+    public string GpuTempWarning => TempWarning(GpuWarnTemp, GpuCritTemp);
+    public string AlertWarning => AlertLoadPercent < 70 ? Loc.T("⚠ Limite de uso muito baixo: os alertas serão frequentes.")
+        : AlertSustainSeconds < 1 ? Loc.T("⚠ Sem tempo mínimo, picos curtos disparam alertas.")
+        : AlertCooldownMinutes < 1 ? Loc.T("⚠ Sem intervalo mínimo, as notificações podem se repetir em sequência.")
+        : AlertCooldownMinutes > 60 ? Loc.T("⚠ Intervalo muito longo pode esconder problemas recorrentes.") : "";
+
+    private static string TempWarning(double warn, double crit) =>
+        warn >= crit ? Loc.T("⚠ O limite de atenção deve ser menor que o crítico; senão o aviso de atenção nunca aparece.")
+        : crit < 60 ? Loc.T("⚠ Limite crítico muito baixo: o alerta pode disparar em uso normal.")
+        : crit > 100 ? Loc.T("⚠ Limite crítico muito alto: o aviso pode vir tarde demais para evitar danos.") : "";
+
     public double TempMin => Units.FromCelsius(0);
     public double TempMax => Units.FromCelsius(150);
     public bool UnitC { get => !_fahrenheit; set => SetUnit(value, false); }

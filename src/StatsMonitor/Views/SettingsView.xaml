@@ -6,6 +6,14 @@
         FontFamily="Segoe UI">
     <UserControl.Resources>
         <h:TempUnitConverter x:Key="TempConv"/>
+        <Style x:Key="WarnText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#E0A030"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="AutomationProperties.LiveSetting" Value="Polite"/>
+            <Style.Triggers><DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value=""><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+        </Style>
         <Style x:Key="SecCard" TargetType="Border">
             <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="Padding" Value="18,14"/>
@@ -76,6 +84,7 @@
             <TextBlock Text="{h:Tr 'Intervalo de atualização (s):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="{h:Tr 'Segundos entre atualizações (mínimo 0,25; máximo 60)'}" Value="{Binding IntervalSeconds}"/>
         </StackPanel>
+        <TextBlock Style="{StaticResource WarnText}" Text="{Binding IntervalWarning}"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
             <ComboBox Width="160" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" SelectedValuePath="Tag" SelectedValue="{Binding Language, Mode=TwoWay}">
@@ -209,6 +218,8 @@
             <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica em atenção'}" Value="{Binding GpuWarnTemp, Converter={StaticResource TempConv}}"/>
             <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica crítico'}" Value="{Binding GpuCritTemp, Converter={StaticResource TempConv}}"/>
         </Grid>
+        <TextBlock Style="{StaticResource WarnText}" Margin="0,4,0,0" Text="{Binding CpuTempWarning}"/>
+        <TextBlock Style="{StaticResource WarnText}" Text="{Binding GpuTempWarning}"/>
 
         <TextBlock Text="{h:Tr '🔔  Notificações de alerta'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
@@ -226,6 +237,7 @@
             <TextBlock Text="{h:Tr 'Intervalo mínimo entre avisos (min):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0" Maximum="240" Step="1" ToolTip="{h:Tr 'Tempo mínimo entre dois avisos do mesmo tipo'}" Value="{Binding AlertCooldownMinutes}"/>
         </StackPanel>
+        <TextBlock Style="{StaticResource WarnText}" Text="{Binding AlertWarning}"/>
         <DockPanel Margin="0,14,0,6">
             <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
             <TextBlock Text="{h:Tr '🕘  Histórico de alertas'}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
