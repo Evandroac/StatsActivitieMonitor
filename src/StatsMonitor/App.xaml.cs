@@ -11,6 +11,7 @@ public partial class App : Application
 {
     private Mutex? _singleInstance;
     private MainViewModel? _viewModel;
+    private FpsMonitor? _fps;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -41,10 +42,14 @@ public partial class App : Application
         if (settings.Current.StartMinimized) main.WindowState = WindowState.Minimized;
         main.Show();
         _viewModel.Start();
+
+        _fps = new FpsMonitor(settings);
+        _fps.Start();
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _fps?.Dispose();
         _viewModel?.Dispose();
         _singleInstance?.Dispose();
         base.OnExit(e);

@@ -27,6 +27,7 @@ public sealed class AppSettings
     public bool ShowTemperatures { get; set; } = true;
     public bool ShowGadget { get; set; } = true;
     public bool AlwaysShowGadget { get; set; }
+    public bool ShowFpsInGame { get; set; }
     public bool DarkTheme { get; set; } = true;
 
     // Custom colors keyed by theme resource name (WindowBg, CardBg, ...); missing/empty means theme default.
