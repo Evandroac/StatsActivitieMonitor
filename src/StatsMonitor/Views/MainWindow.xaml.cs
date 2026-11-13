@@ -10,6 +10,8 @@ public partial class MainWindow : Window
     private readonly MainViewModel _vm;
     private readonly SettingsService _settings;
     private GadgetWindow? _gadget;
+    private System.Windows.Forms.NotifyIcon? _tray;
+    private bool _exiting;
 
     public MainWindow(MainViewModel vm, SettingsService settings)
     {
@@ -22,11 +24,46 @@ public partial class MainWindow : Window
         ContentRendered += (_, _) => FitToContent();
         SizeChanged += (_, _) => ArrangeCards();
         StateChanged += (_, _) => UpdateGadget();
+        Closing += OnClosing;
         Closed += (_, _) =>
         {
+            _tray?.Dispose();
             _gadget?.Close();
             Application.Current.Shutdown();
         };
+        Application.Current.SessionEnding += (_, _) => _exiting = true;
+        CreateTrayIcon();
+    }
+
+    private void CreateTrayIcon()
+    {
+        var menu = new System.Windows.Forms.ContextMenuStrip();
+        menu.Items.Add("Abrir Stats Monitor", null, (_, _) => RestoreFromGadget());
+        menu.Items.Add("Sair", null, (_, _) => ExitApp());
+        _tray = new System.Windows.Forms.NotifyIcon
+        {
+            Text = "Stats Monitor",
+            Visible = true,
+            ContextMenuStrip = menu,
+            Icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!) ?? System.Drawing.SystemIcons.Application,
+        };
+        _tray.DoubleClick += (_, _) => RestoreFromGadget();
+    }
+
+    private void ExitApp()
+    {
+        _exiting = true;
+        Close();
+    }
+
+    // Closing the window keeps the app running in the background (tray); only "Sair" really exits.
+    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (_exiting) return;
+        e.Cancel = true;
+        WindowState = WindowState.Minimized;
+        Hide();
+        UpdateGadget();
     }
 
     private void FitToContent()
@@ -120,6 +157,7 @@ public partial class MainWindow : Window
                 UseShellExecute = true,
                 Verb = "runas"
             });
+            _exiting = true;
             Application.Current.Shutdown();
         }
         catch (System.ComponentModel.Win32Exception)
