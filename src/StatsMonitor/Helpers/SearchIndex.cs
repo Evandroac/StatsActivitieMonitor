@@ -4,7 +4,7 @@ using StatsMonitor.Services;
 
 namespace StatsMonitor.Helpers;
 
-public enum SearchPage { Main, System, Settings, Appearance }
+public enum SearchPage { Main, System, Settings, Appearance, Peripherals }
 
 /// <summary>A searchable item: <paramref name="Match"/> is the text rendered on screen that gets highlighted.</summary>
 public sealed record SearchResult(string Match, string Title, string Location, SearchPage Page);
@@ -17,20 +17,24 @@ public static class SearchIndex
 
     public static async Task LoadSystemAsync()
     {
-        var groups = await SystemInfoService.GetAsync();
         var list = new List<SearchResult>();
-        foreach (var g in groups)
+        void AddGroups(IEnumerable<InfoGroup> groups, string page, SearchPage target)
         {
-            list.Add(new(g.Title, g.Title, Loc.T("Sistema"), SearchPage.System));
-            foreach (var l in g.Lines)
+            foreach (var g in groups)
             {
-                list.Add(new(l.Label, l.Label, $"{Loc.T("Sistema")} › {g.Title}", SearchPage.System));
-                if (l.Value != "N/D") list.Add(new(l.Value, $"{l.Label}: {l.Value}", $"{Loc.T("Sistema")} › {g.Title}", SearchPage.System));
+                list.Add(new(g.Title, g.Title, Loc.T(page), target));
+                foreach (var l in g.Lines)
+                {
+                    list.Add(new(l.Label, l.Label, $"{Loc.T(page)} › {g.Title}", target));
+                    if (!string.IsNullOrEmpty(l.Value) && l.Value != "N/D" && l.Value != "-")
+                        list.Add(new(l.Value, $"{l.Label}: {l.Value}", $"{Loc.T(page)} › {g.Title}", target));
+                }
             }
         }
+        AddGroups(await SystemInfoService.GetAsync(), "Sistema", SearchPage.System);
+        AddGroups(await PeripheralInfoService.GetAsync(), "Periféricos", SearchPage.Peripherals);
         _system = list;
     }
-
     public static List<SearchResult> Search(string query)
     {
         var terms = Normalize(query).Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -43,7 +47,7 @@ public static class SearchIndex
             .OrderBy(x => Normalize(x.r.Title).StartsWith(terms[0]) ? 0 : 1)
             .Select(x => x.r)
             .DistinctBy(r => (r.Match, r.Location))
-            .Take(12)
+            .Take(40)
             .ToList();
     }
 
@@ -65,14 +69,17 @@ public static class SearchIndex
         }
 
         Add(SearchPage.Settings, "Configurações › Geral",
-            "Intervalo de atualização (s):", "Iniciar com o Windows", "Iniciar minimizado", "Exibir temperaturas");
+            "Intervalo de atualização (s):", "Iniciar com o Windows", "Iniciar minimizado", "Exibir temperaturas",
+            "Idioma", "Unidade de temperatura", "Visualização simplificada", "Perfis", "Seguir o tema do Windows", "Atalho global",
+            "Exportar configurações", "Importar configurações", "Restaurar padrões", "Notificações de alerta", "Tocar som de alerta", "Testar alerta",
+            "Sensores (ventiladores, energia, tensões, bateria)", "Uso crítico (%):");
         Add(SearchPage.Settings, "Configurações › Gadget",
             "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar",
             "Sobre a tela (flutuante, arrastável)", "Na barra de tarefas, canto direito (widget)",
             "Barra horizontal flutuante (arrastável)", "Faixa fixa no topo da tela", "Não fazer nada (sem gadget)",
             "Pré-visualização do gadget (valores de exemplo)");
         Add(SearchPage.Settings, "Configurações › Painéis exibidos",
-            "Painéis exibidos", "Janela principal", "Gadget (minimizado)", "Memória RAM", "Discos", "Rede / Internet", "FPS (em jogos)");
+            "Painéis exibidos", "Janela principal", "Gadget (minimizado)", "CPU", "GPU", "Memória RAM", "Discos", "Rede / Internet", "FPS (em jogos)");
         Add(SearchPage.Settings, "Configurações › Alertas de temperatura", "Alertas de temperatura (°C)", "Atenção", "Crítica");
 
         Add(SearchPage.Appearance, "Personalização › Presets", "Minhas personalizações", "Salvar como", "Carregar", "Excluir");
@@ -87,7 +94,12 @@ public static class SearchIndex
         Add(SearchPage.Main, "Principal › GPU", "Uso da VRAM", "Frequência da memória", "Consumo energético", "Ventoinhas");
         Add(SearchPage.Main, "Principal › Discos", "Leitura", "Escrita", "Saúde SMART", "Vida útil", "Tempo de atividade");
         Add(SearchPage.Main, "Principal › Rede", "Download", "Upload", "Latência", "Conexão");
-        Add(SearchPage.Main, "Principal", "Tempo ligado", "Última atualização");
+        Add(SearchPage.Main, "Principal", "Tempo ligado", "Última atualização", "Monitor", "Visualização simplificada");
+        Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível");
+        Add(SearchPage.System, "Sistema", "Sistema");
+        Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");
+        Add(SearchPage.Settings, "Configurações", "Configurações");
+        Add(SearchPage.Appearance, "Personalização", "Personalização");
         return list;
     }
 }

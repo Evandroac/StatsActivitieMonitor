@@ -131,12 +131,14 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
             Apply(s);
+            SnapshotApplied?.Invoke(s);
             foreach (var a in _alerts.Evaluate(s, S)) AlertRaised?.Invoke(a);
         });
     }
 
     private readonly Services.AlertNotifier _alerts = new();
     public event Action<Services.AlertEvent>? AlertRaised;
+    public event Action<HardwareSnapshot>? SnapshotApplied;
 
     private void OnError(object? sender, Exception ex)
     {

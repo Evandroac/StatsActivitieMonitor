@@ -37,6 +37,19 @@ public partial class MainWindow : Window
         };
         Application.Current.SessionEnding += (_, _) => { SaveWindowState(); _exiting = true; };
         CreateTrayIcon();
+        if (settings.IsFirstRun) ShowFirstRunHealth();
+    }
+
+    private void ShowFirstRunHealth()
+    {
+        void Handler(StatsMonitor.Models.HardwareSnapshot s)
+        {
+            _vm.SnapshotApplied -= Handler;
+            var (healthy, report) = StatsMonitor.Services.HealthCheck.Evaluate(s, _settings.Current);
+            Dispatcher.BeginInvoke(() => System.Windows.MessageBox.Show(report, Loc.T(healthy ? "Saúde do computador: tudo certo" : "Saúde do computador: atenção"),
+                MessageBoxButton.OK, healthy ? MessageBoxImage.Information : MessageBoxImage.Warning));
+        }
+        _vm.SnapshotApplied += Handler;
     }
 
     private void CreateTrayIcon()
@@ -468,6 +481,7 @@ public partial class MainWindow : Window
         {
             case SearchPage.Main: ShowMain(); break;
             case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false }) OnOpenSystem(this, new RoutedEventArgs()); break;
+            case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Appearance: if (PageHost.Content is not AppearanceView) OnOpenAppearance(this, new RoutedEventArgs()); break;
         }
