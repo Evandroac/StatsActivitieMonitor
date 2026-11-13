@@ -218,7 +218,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = LblPin.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
         SearchBox.Visibility = v;
         if (!open) SearchPopup.IsOpen = false;
     }
