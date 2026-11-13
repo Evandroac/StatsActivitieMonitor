@@ -128,7 +128,7 @@
                             <DataTemplate>
                                 <StackPanel MinWidth="130" Margin="0,0,14,6">
                                     <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}"/>
-                                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Value}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Value}" Click="OnCopy"/></StackPanel>
+                                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Value}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/></StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
