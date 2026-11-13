@@ -110,7 +110,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <c:Sparkline Height="60" Margin="0,12,0,0" Values="{Binding History}" Stroke="{DynamicResource Accent}"/>
+                    <c:Sparkline Visibility="{Binding ShowChart, Converter={StaticResource BoolToVis}}" Height="60" Margin="0,12,0,0" Values="{Binding History}" Stroke="{DynamicResource Accent}"/>
                     <ItemsControl ItemsSource="{Binding Details}" Margin="0,12,0,0" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="ItemsControl">
@@ -170,7 +170,7 @@
                                        Style="{StaticResource TempRow}"/>
                         </Grid>
                     </Grid>
-                    <c:Sparkline Height="60" Margin="0,12,0,0" Values="{Binding History}" Stroke="{DynamicResource Accent2}"/>
+                    <c:Sparkline Visibility="{Binding ShowChart, Converter={StaticResource BoolToVis}}" Height="60" Margin="0,12,0,0" Values="{Binding History}" Stroke="{DynamicResource Accent2}"/>
                 </StackPanel>
             </Border>
         </DataTemplate>
@@ -229,6 +229,9 @@
             </Button>
             <Button x:Name="NavSettings" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" AutomationProperties.Name="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" Click="OnOpenSettings">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSettings" Text="{h:Tr 'Configurações'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
+            <Button x:Name="NavSimple" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Visualização simplificada: sem gráficos, sem rede/sensores e atualização mais lenta para economizar recursos'}" AutomationProperties.Name="{h:Tr 'Visualização simplificada'}" Click="OnToggleSimplified">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🍃" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSimple" Text="{h:Tr 'Visualização simplificada'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
         </StackPanel>
         </DockPanel>

@@ -35,6 +35,9 @@ public sealed class ComponentViewModel : ObservableObject
     public bool HasTemperature { get; init; } = true;
     public ObservableCollection<double> History { get; } = [];
 
+    private bool _showChart = true;
+    public bool ShowChart { get => _showChart; set => Set(ref _showChart, value); }
+
     public string Name { get => _name; private set => Set(ref _name, value); }
     public double Load { get => _load; private set => Set(ref _load, value); }
     public string LoadText { get => _loadText; private set => Set(ref _loadText, value); }
@@ -80,8 +83,11 @@ public sealed class ComponentViewModel : ObservableObject
         MinMaxText = _minTemp.HasValue ? Loc.T("mín {0} · máx {1}", Units.Temp(_minTemp!.Value), Units.Temp(_maxTemp!.Value)) : NotAvailable;
         RefreshBrush();
 
-        History.RemoveAt(0);
-        History.Add(load ?? 0);
+        if (ShowChart)
+        {
+            History.RemoveAt(0);
+            History.Add(load ?? 0);
+        }
     }
 
     private int _alertLevel;

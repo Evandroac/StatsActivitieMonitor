@@ -68,6 +68,7 @@ public sealed class AppSettings
     public double? GadgetTop { get; set; }
 
     public bool SidebarPinned { get; set; }
+    public bool SimplifiedView { get; set; }
     public string Language { get; set; } = "pt";
     public string TempUnit { get; set; } = "C";
     public bool FollowSystemTheme { get; set; }

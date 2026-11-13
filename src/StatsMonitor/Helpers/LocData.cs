@@ -42,6 +42,8 @@ public static class LocData
         ["Duplo clique para abrir"] = "Double-click to open",
         ["Escrita"] = "Write",
         ["Exclui a personalização com o nome do campo"] = "Deletes the customization named in the field",
+        ["Visualização simplificada"] = "Simplified view",
+        ["Visualização simplificada: sem gráficos, sem rede/sensores e atualização mais lenta para economizar recursos"] = "Simplified view: no charts, no network/sensors cards and slower refresh to save resources",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",

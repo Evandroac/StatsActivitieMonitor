@@ -20,6 +20,7 @@ public partial class MainWindow : Window
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();
+        if (settings.Current.SimplifiedView) NavSimple.Tag = "active";
         if (settings.Current.SidebarPinned) { NavPin.Tag = "active"; SetMenu(true); }
         ArrangeCards();
         Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
@@ -143,7 +144,7 @@ public partial class MainWindow : Window
             (CpuCard, s.ShowCpuMain), (GpuCard, s.ShowGpuMain), (RamCard, s.ShowRamMain), (VramCard, s.ShowVramMain),
         };
 
-        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}|{(s.ShowSensorsMain ? 1 : 0)}";
+        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}|{(s.ShowSensorsMain ? 1 : 0)}|{(s.SimplifiedView ? 1 : 0)}";
         if (!force && key == _layoutKey) return;
         _layoutKey = key;
 
@@ -163,8 +164,8 @@ public partial class MainWindow : Window
         int cardRows = (visible + cols - 1) / cols;
         for (int r = 0; r < cardRows + 3; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-        NetCard.Visibility = s.ShowNetworkMain ? Visibility.Visible : Visibility.Collapsed;
-        SensorsCard.Visibility = s.ShowSensorsMain ? Visibility.Visible : Visibility.Collapsed;
+        NetCard.Visibility = s.ShowNetworkMain && !s.SimplifiedView ? Visibility.Visible : Visibility.Collapsed;
+        SensorsCard.Visibility = s.ShowSensorsMain && !s.SimplifiedView ? Visibility.Visible : Visibility.Collapsed;
         Grid.SetRow(NetCard, cardRows);
         Grid.SetRow(SensorsCard, cardRows + 1);
         Grid.SetRow(FooterCard, cardRows + 2);
@@ -390,12 +391,21 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = LblSimple.Visibility = v;
         SearchBox.Visibility = v;
         if (!open) SearchPopup.IsOpen = false;
     }
 
     // Saved preference: pinned keeps the menu expanded, unpinned keeps it collapsed.
+    private void OnToggleSimplified(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.SimplifiedView = !_settings.Current.SimplifiedView;
+        _settings.Save();
+        NavSimple.Tag = _settings.Current.SimplifiedView ? "active" : null;
+        _vm.ApplySettings();
+        ApplyPanelSettings();
+    }
+
     private void OnTogglePin(object sender, RoutedEventArgs e)
     {
         _settings.Current.SidebarPinned = !_settings.Current.SidebarPinned;

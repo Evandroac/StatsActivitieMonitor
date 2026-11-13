@@ -107,7 +107,9 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public void ApplySettings()
     {
         (_normal, _warn, _crit) = ThemeHelper.AlertBrushes(S);
-        _monitor.Interval = TimeSpan.FromMilliseconds(Math.Clamp(S.UpdateIntervalMs, 250, 60000));
+        int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
+        _monitor.Interval = TimeSpan.FromMilliseconds(S.SimplifiedView ? Math.Max(ms, 2000) : ms);
+        foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;
         ShowTemperatures = S.ShowTemperatures;
         foreach (var c in new[] { Cpu, Gpu })
         {
