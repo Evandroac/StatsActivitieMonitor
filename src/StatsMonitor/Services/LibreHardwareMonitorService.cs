@@ -149,7 +149,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             VramAvailableGb = vramFree,
             VramLoad = vramLoad,
             Disks = ReadDisks(all),
-            Volumes = ReadVolumes(),
+            Volumes = CachedVolumes(),
             Sensors = ReadSensors(all),
             VramTemp = gpu?.Sensors
                 .Where(s => s.SensorType == SensorType.                Temperature && Valid(s.SensorType, s.Value).HasValue                            && s.Name.Contains("Memory", StringComparison.OrdinalIgnoreCase))
@@ -218,6 +218,19 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
 
     private static double? Like(IHardware hw, SensorType type, string part) =>
         Valid(type, hw.Sensors.FirstOrDefault(s => s.SensorType == type && s.Name.Contains(part, StringComparison.OrdinalIgnoreCase) && s.Value.HasValue)?.Value);
+
+    private DateTime _volumesAt = DateTime.MinValue;
+    private List<VolumeSnapshot> _volumes = [];
+
+    private List<VolumeSnapshot> CachedVolumes()
+    {
+        if (DateTime.Now - _volumesAt > TimeSpan.FromSeconds(10))
+        {
+            _volumesAt = DateTime.Now;
+            _volumes = ReadVolumes();
+        }
+        return _volumes;
+    }
 
     private static List<VolumeSnapshot> ReadVolumes()
     {

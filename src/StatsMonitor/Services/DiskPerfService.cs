@@ -1,4 +1,4 @@
-using System.Management;
+﻿using System.Management;
 
 namespace StatsMonitor.Services;
 
@@ -9,6 +9,8 @@ public static class DiskPerfService
 {
     private static Dictionary<int, string> _models = new();
     private static DateTime _modelsAt = DateTime.MinValue;
+    private static Dictionary<string, DiskPerf> _perf = new();
+    private static DateTime _perfAt = DateTime.MinValue;
 
     public static DiskPerf? Find(string diskName)
     {
@@ -29,17 +31,24 @@ public static class DiskPerfService
                                 .Select(kv => (int?)kv.Key).FirstOrDefault();
             if (index is null) return null;
 
-            using var q = new ManagementObjectSearcher(
-                "SELECT Name, DiskReadBytesPersec, DiskWriteBytesPersec, PercentDiskTime FROM Win32_PerfFormattedData_PerfDisk_PhysicalDisk");
-            foreach (ManagementBaseObject o in q.Get())
+            if (DateTime.Now - _perfAt > TimeSpan.FromSeconds(2))
             {
-                string name = o["Name"]?.ToString() ?? "";
-                if (name != index.ToString() && !name.StartsWith(index + " ")) continue;
-                return new DiskPerf(
-                    Convert.ToDouble(o["DiskReadBytesPersec"]),
-                    Convert.ToDouble(o["DiskWriteBytesPersec"]),
-                    Math.Min(100, Convert.ToDouble(o["PercentDiskTime"])));
+                _perfAt = DateTime.Now;
+                var perf = new Dictionary<string, DiskPerf>();
+                using var q = new ManagementObjectSearcher(
+                    "SELECT Name, DiskReadBytesPersec, DiskWriteBytesPersec, PercentDiskTime FROM Win32_PerfFormattedData_PerfDisk_PhysicalDisk");
+                foreach (ManagementBaseObject o in q.Get())
+                {
+                    string name = o["Name"]?.ToString() ?? "";
+                    if (name == "_Total") continue;
+                    perf[name.Split(' ')[0]] = new DiskPerf(
+                        Convert.ToDouble(o["DiskReadBytesPersec"]),
+                        Convert.ToDouble(o["DiskWriteBytesPersec"]),
+                        Math.Min(100, Convert.ToDouble(o["PercentDiskTime"])));
+                }
+                _perf = perf;
             }
+            return _perf.TryGetValue(index.ToString()!, out var p) ? p : null;
         }
         catch { /* counters unavailable */ }
         return null;

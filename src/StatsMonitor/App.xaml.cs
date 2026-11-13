@@ -24,6 +24,9 @@ public partial class App : Application
             return;
         }
 
+        // A background monitor should never compete with games or foreground apps.
+        try { System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal; } catch { }
+
         DispatcherUnhandledException += (_, args) =>
         {
             MessageBox.Show(args.Exception.Message, "Stats Monitor", MessageBoxButton.OK, MessageBoxImage.Warning);
