@@ -18,6 +18,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = _vm = vm;
         _settings = settings;
+        RestoreWindowState();
         ArrangeCards();
         Loaded += (_, _) => UpdateGadget();
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
@@ -31,7 +32,7 @@ public partial class MainWindow : Window
             _gadget?.Close();
             Application.Current.Shutdown();
         };
-        Application.Current.SessionEnding += (_, _) => _exiting = true;
+        Application.Current.SessionEnding += (_, _) => { SaveWindowState(); _exiting = true; };
         CreateTrayIcon();
     }
 
@@ -59,6 +60,7 @@ public partial class MainWindow : Window
     // Closing the window keeps the app running in the background (tray); only "Sair" really exits.
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        SaveWindowState();
         if (_exiting) return;
         e.Cancel = true;
         WindowState = WindowState.Minimized;
@@ -66,9 +68,38 @@ public partial class MainWindow : Window
         UpdateGadget();
     }
 
+    private void RestoreWindowState()
+    {
+        var s = _settings.Current;
+        if (s.WindowMaximized)
+        {
+            SizeToContent = SizeToContent.Manual;
+            WindowState = WindowState.Maximized;
+        }
+        else if (s is { WindowLeft: { } l, WindowTop: { } t, WindowWidth: { } w, WindowHeight: { } h }
+                 && l + w > SystemParameters.VirtualScreenLeft + 50 && l < SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth - 50
+                 && t >= SystemParameters.VirtualScreenTop - 10 && t < SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight - 50)
+        {
+            SizeToContent = SizeToContent.Manual;
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            (Left, Top, Width, Height) = (l, t, Math.Max(w, MinWidth), h);
+        }
+    }
+
+    // A minimized window keeps the previously saved state.
+    private void SaveWindowState()
+    {
+        if (WindowState == WindowState.Minimized) return;
+        var s = _settings.Current;
+        s.WindowMaximized = WindowState == WindowState.Maximized;
+        var b = RestoreBounds;
+        if (!b.IsEmpty) (s.WindowLeft, s.WindowTop, s.WindowWidth, s.WindowHeight) = (b.Left, b.Top, b.Width, b.Height);
+        _settings.Save();
+    }
+
     private void FitToContent()
     {
-        if (SizeToContent == SizeToContent.Manual) return;
+        if (SizeToContent == SizeToContent.Manual || WindowState != WindowState.Normal) return;
         double h = Math.Min(ActualHeight, SystemParameters.WorkArea.Height);
         SizeToContent = SizeToContent.Manual;
         MinHeight = h;
@@ -145,7 +176,7 @@ public partial class MainWindow : Window
 
     private void RestoreFromGadget()
     {
-        WindowState = WindowState.Normal;
+        WindowState = _settings.Current.WindowMaximized ? WindowState.Maximized : WindowState.Normal;
         Show();
         Activate();
     }

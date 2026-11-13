@@ -59,6 +59,12 @@ public sealed class AppSettings
 
     public double? GadgetLeft { get; set; }
     public double? GadgetTop { get; set; }
+
+    public bool WindowMaximized { get; set; } = true;
+    public double? WindowLeft { get; set; }
+    public double? WindowTop { get; set; }
+    public double? WindowWidth { get; set; }
+    public double? WindowHeight { get; set; }
 }
 
 public sealed class SettingsService
