@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -27,36 +27,41 @@ public partial class SettingsWindow : Window
     private void RefreshPreview()
     {
         var vm = _vm;
-        PreviewPanel.Children.Clear();
-
-        if (vm.GadgetNone || !vm.ShowGadget)
-        {
-            PreviewBox.CornerRadius = new CornerRadius(6);
-            PreviewBox.Padding = new Thickness(10, 4, 10, 4);
-            PreviewPanel.Children.Add(Line(vm.GadgetNone ? "Sem gadget ao minimizar" : "Gadget desativado", 12, null));
-            return;
-        }
-
-        bool taskbar = vm.GadgetOnTaskbar;
         string t(string v) => vm.ShowTemperatures ? $" | {v}" : "";
-        var rows = new List<string>();
-        if (vm.ShowCpuGadget) rows.Add(taskbar ? $"CPU 23%{t("52°C")}" : $"CPU: 23%{t("52°C")}");
-        if (vm.ShowRamGadget) rows.Add(taskbar ? "RAM 41%" : "RAM: 41% | 13,2 GB");
-        if (vm.ShowGpuGadget) rows.Add(taskbar ? $"GPU 37%{t("58°C")}" : $"GPU: 37%{t("58°C")}");
-        if (vm.ShowVramGadget) rows.Add(taskbar ? "VRAM 29%" : "VRAM: 29% | 4,6 GB");
-        if (vm.ShowFpsGadget) rows.Add(taskbar ? "FPS 144" : "FPS: 144");
-        if (vm.ShowNetworkGadget) rows.Add(taskbar ? "NET ↓ 12,3 Mbps ↑ 1,2 Mbps" : "NET: ↓ 12,3 Mbps ↑ 1,2 Mbps");
+        var floating = new List<string>();
+        var taskbar = new List<string>();
+        void Add(bool on, string f, string tb) { if (on) { floating.Add(f); taskbar.Add(tb); } }
+        Add(vm.ShowCpuGadget, $"CPU: 23%{t("52°C")}", $"CPU 23%{t("52°C")}");
+        Add(vm.ShowRamGadget, "RAM: 41% | 13,2 GB", "RAM 41%");
+        Add(vm.ShowGpuGadget, $"GPU: 37%{t("58°C")}", $"GPU 37%{t("58°C")}");
+        Add(vm.ShowVramGadget, "VRAM: 29% | 4,6 GB", "VRAM 29%");
+        Add(vm.ShowFpsGadget, "FPS: 144", "FPS 144");
+        Add(vm.ShowNetworkGadget, "NET: ↓ 12,3 Mbps ↑ 1,2 Mbps", "NET ↓ 12,3 Mbps ↑ 1,2 Mbps");
 
-        PreviewBox.CornerRadius = new CornerRadius(taskbar ? 6 : 10);
-        PreviewBox.Padding = taskbar ? new Thickness(10, 4, 10, 4) : new Thickness(12, 8, 12, 8);
+        bool off = vm.GadgetNone || !vm.ShowGadget;
+        if (floating.Count == 0) { floating.Add("Nenhum indicador"); taskbar.Add("Nenhum indicador"); }
 
-        var panel = new StackPanel { Orientation = taskbar ? Orientation.Horizontal : Orientation.Vertical };
-        if (rows.Count == 0) rows.Add("Nenhum indicador selecionado");
-        for (int i = 0; i < rows.Count; i++)
-            panel.Children.Add(Line(rows[i], taskbar ? 12 : 13, taskbar && i > 0 ? new Thickness(14, 0, 0, 0) : null));
-        PreviewPanel.Children.Add(panel);
+        Fill(FloatingPanel, floating, 13, false);
+        Fill(TaskbarPanel, taskbar, 12, true);
+
+        Mark(FloatingBox, FloatingCaption, "Flutuante", vm.GadgetFloating && !off, off);
+        Mark(TaskbarBox, TaskbarCaption, "Barra de tarefas", vm.GadgetOnTaskbar && !off, off);
     }
 
+    private static void Fill(Panel panel, List<string> rows, double size, bool horizontal)
+    {
+        panel.Children.Clear();
+        for (int i = 0; i < rows.Count; i++)
+            panel.Children.Add(Line(rows[i], size, horizontal ? new Thickness(i > 0 ? 14 : 0, 0, 0, 0) : null));
+    }
+
+    // The mode currently selected gets an accent border; everything dims when the gadget won't be shown.
+    private static void Mark(Border box, TextBlock caption, string name, bool selected, bool off)
+    {
+        box.SetResourceReference(Border.BorderBrushProperty, selected ? "Accent" : "CardBorder");
+        box.Opacity = off ? 0.45 : selected ? 1 : 0.8;
+        caption.Text = selected ? $"{name} ✔ (selecionado)" : name;
+    }
     private static TextBlock Line(string text, double size, Thickness? margin)
     {
         var tb = new TextBlock { Text = text, FontFamily = new FontFamily("Consolas"), FontSize = size };
