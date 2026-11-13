@@ -11,17 +11,10 @@ public partial class AppearanceView : System.Windows.Controls.UserControl
     {
         InitializeComponent();
         DataContext = vm;
-        vm.Saved += () => CloseRequested?.Invoke();
     }
 
-    private void OnCancel(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is AppearanceViewModel vm) vm.Revert();
-        CloseRequested?.Invoke();
-    }
-
-    /// <summary>Discards anything not applied or saved (used when navigating away).</summary>
-    public void Discard() { if (DataContext is AppearanceViewModel { IsSaved: false } vm) vm.Revert(); }
+    /// <summary>Persists any pending change (used when navigating away).</summary>
+    public void Discard() { if (DataContext is AppearanceViewModel vm) vm.Flush(); }
 
     private bool _autoFilling;
 

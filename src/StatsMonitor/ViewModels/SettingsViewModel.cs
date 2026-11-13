@@ -28,49 +28,64 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
-        _snapshot = service.Snapshot();
-        SaveCommand = new RelayCommand(Save);
-        ApplyCommand = new RelayCommand(ApplyAndKeep);
+        _loading = false;
+        _timer.Tick += (_, _) => Flush();
     }
 
-    private string _snapshot;
-    public ICommand ApplyCommand { get; }
+    private bool _loading = true;
+    private readonly System.Windows.Threading.DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(350) };
 
-    public double IntervalSeconds { get; set; }
-    public bool RunAtStartup { get; set; }
-    public bool StartMinimized { get; set; }
-    public bool ShowTemperatures { get; set; }
-    public bool ShowGadget { get; set; }
-    public bool AlwaysShowGadget { get; set; }
+    private void SetMode(bool value, GadgetDisplayMode mode)
+    {
+        if (!value || _gadgetMode == mode) return;
+        _gadgetMode = mode;
+        AutoSave();
+    }
+
+    // Every change is applied and persisted automatically (debounced).
+    private void AutoSave()
+    {
+        if (_loading) return;
+        _timer.Stop();
+        _timer.Start();
+    }
+
+    /// <summary>Persists any pending change immediately.</summary>
+    public void Flush()
+    {
+        if (!_timer.IsEnabled) return;
+        _timer.Stop();
+        Persist();
+    }
+
+    private double _intervalSeconds; public double IntervalSeconds { get => _intervalSeconds; set { if (_intervalSeconds != value) { _intervalSeconds = value; AutoSave(); } } }
+    private bool _runAtStartup; public bool RunAtStartup { get => _runAtStartup; set { if (_runAtStartup != value) { _runAtStartup = value; AutoSave(); } } }
+    private bool _startMinimized; public bool StartMinimized { get => _startMinimized; set { if (_startMinimized != value) { _startMinimized = value; AutoSave(); } } }
+    private bool _showTemperatures; public bool ShowTemperatures { get => _showTemperatures; set { if (_showTemperatures != value) { _showTemperatures = value; AutoSave(); } } }
+    private bool _showGadget; public bool ShowGadget { get => _showGadget; set { if (_showGadget != value) { _showGadget = value; AutoSave(); } } }
+    private bool _alwaysShowGadget; public bool AlwaysShowGadget { get => _alwaysShowGadget; set { if (_alwaysShowGadget != value) { _alwaysShowGadget = value; AutoSave(); } } }
     private GadgetDisplayMode _gadgetMode;
-    public bool GadgetFloating { get => _gadgetMode == GadgetDisplayMode.Floating; set { if (value) _gadgetMode = GadgetDisplayMode.Floating; } }
-    public bool GadgetOnTaskbar { get => _gadgetMode == GadgetDisplayMode.Taskbar; set { if (value) _gadgetMode = GadgetDisplayMode.Taskbar; } }
-    public bool GadgetFloatingBar { get => _gadgetMode == GadgetDisplayMode.FloatingBar; set { if (value) _gadgetMode = GadgetDisplayMode.FloatingBar; } }
-    public bool GadgetDockedTop { get => _gadgetMode == GadgetDisplayMode.DockedTop; set { if (value) _gadgetMode = GadgetDisplayMode.DockedTop; } }
-    public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set { if (value) _gadgetMode = GadgetDisplayMode.None; } }
-    public bool ShowCpuMain { get; set; }
-    public bool ShowGpuMain { get; set; }
-    public bool ShowRamMain { get; set; }
-    public bool ShowVramMain { get; set; }
-    public bool ShowNetworkMain { get; set; }
-    public bool ShowCpuGadget { get; set; }
-    public bool ShowGpuGadget { get; set; }
-    public bool ShowRamGadget { get; set; }
-    public bool ShowVramGadget { get; set; }
-    public bool ShowNetworkGadget { get; set; }
-    public bool ShowFpsGadget { get; set; }
-    public double CpuWarnTemp { get; set; }
-    public double CpuCritTemp { get; set; }
-    public double GpuWarnTemp { get; set; }
-    public double GpuCritTemp { get; set; }
+    public bool GadgetFloating { get => _gadgetMode == GadgetDisplayMode.Floating; set => SetMode(value, GadgetDisplayMode.Floating); }
+    public bool GadgetOnTaskbar { get => _gadgetMode == GadgetDisplayMode.Taskbar; set => SetMode(value, GadgetDisplayMode.Taskbar); }
+    public bool GadgetFloatingBar { get => _gadgetMode == GadgetDisplayMode.FloatingBar; set => SetMode(value, GadgetDisplayMode.FloatingBar); }
+    public bool GadgetDockedTop { get => _gadgetMode == GadgetDisplayMode.DockedTop; set => SetMode(value, GadgetDisplayMode.DockedTop); }
+    public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set => SetMode(value, GadgetDisplayMode.None); }
+    private bool _showCpuMain; public bool ShowCpuMain { get => _showCpuMain; set { if (_showCpuMain != value) { _showCpuMain = value; AutoSave(); } } }
+    private bool _showGpuMain; public bool ShowGpuMain { get => _showGpuMain; set { if (_showGpuMain != value) { _showGpuMain = value; AutoSave(); } } }
+    private bool _showRamMain; public bool ShowRamMain { get => _showRamMain; set { if (_showRamMain != value) { _showRamMain = value; AutoSave(); } } }
+    private bool _showVramMain; public bool ShowVramMain { get => _showVramMain; set { if (_showVramMain != value) { _showVramMain = value; AutoSave(); } } }
+    private bool _showNetworkMain; public bool ShowNetworkMain { get => _showNetworkMain; set { if (_showNetworkMain != value) { _showNetworkMain = value; AutoSave(); } } }
+    private bool _showCpuGadget; public bool ShowCpuGadget { get => _showCpuGadget; set { if (_showCpuGadget != value) { _showCpuGadget = value; AutoSave(); } } }
+    private bool _showGpuGadget; public bool ShowGpuGadget { get => _showGpuGadget; set { if (_showGpuGadget != value) { _showGpuGadget = value; AutoSave(); } } }
+    private bool _showRamGadget; public bool ShowRamGadget { get => _showRamGadget; set { if (_showRamGadget != value) { _showRamGadget = value; AutoSave(); } } }
+    private bool _showVramGadget; public bool ShowVramGadget { get => _showVramGadget; set { if (_showVramGadget != value) { _showVramGadget = value; AutoSave(); } } }
+    private bool _showNetworkGadget; public bool ShowNetworkGadget { get => _showNetworkGadget; set { if (_showNetworkGadget != value) { _showNetworkGadget = value; AutoSave(); } } }
+    private bool _showFpsGadget; public bool ShowFpsGadget { get => _showFpsGadget; set { if (_showFpsGadget != value) { _showFpsGadget = value; AutoSave(); } } }
+    private double _cpuWarnTemp; public double CpuWarnTemp { get => _cpuWarnTemp; set { if (_cpuWarnTemp != value) { _cpuWarnTemp = value; AutoSave(); } } }
+    private double _cpuCritTemp; public double CpuCritTemp { get => _cpuCritTemp; set { if (_cpuCritTemp != value) { _cpuCritTemp = value; AutoSave(); } } }
+    private double _gpuWarnTemp; public double GpuWarnTemp { get => _gpuWarnTemp; set { if (_gpuWarnTemp != value) { _gpuWarnTemp = value; AutoSave(); } } }
+    private double _gpuCritTemp; public double GpuCritTemp { get => _gpuCritTemp; set { if (_gpuCritTemp != value) { _gpuCritTemp = value; AutoSave(); } } }
 
-    public ICommand SaveCommand { get; }
-
-    public event Action? Saved;
-
-    public bool IsSaved { get; private set; }
-
-    // Previews the values without persisting them.
     private void Apply()
     {
         var s = _service.Current;
@@ -96,21 +111,5 @@ public sealed class SettingsViewModel : ObservableObject
         Apply();
         _service.Save();
         StartupService.SetEnabled(_service.Current.RunAtStartup);
-        _snapshot = _service.Snapshot();
-    }
-
-    private void ApplyAndKeep() => Persist();
-
-    private void Save()
-    {
-        Persist();
-        IsSaved = true;
-        Saved?.Invoke();
-    }
-
-    public void Revert()
-    {
-        _service.Restore(_snapshot);
-        _onApplied();
     }
 }

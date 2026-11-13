@@ -92,9 +92,9 @@ public sealed class AppearanceViewModel : ObservableObject
             Fixed("Critical", "Crítica", s.CriticalColor, "#FF4D4F"),
         ];
 
-        _snapshot = service.Snapshot();
-        SaveCommand = new RelayCommand(Save);
-        ApplyCommand = new RelayCommand(ApplyAndKeep);
+        foreach (var o in MainOptions.Concat(GadgetOptions).Concat(AlertOptions))
+            o.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(ColorOption.Hex)) AutoSave(); };
+        _timer.Tick += (_, _) => Flush();
         ResetCommand = new RelayCommand(Reset);
         InitPresets();
     }
@@ -111,19 +111,33 @@ public sealed class AppearanceViewModel : ObservableObject
             if (!Set(ref _dark, value)) return;
             Raise(nameof(LightTheme));
             foreach (var o in MainOptions.Concat(GadgetOptions)) o.Refresh();
+            AutoSave();
         }
     }
 
     public bool LightTheme { get => !_dark; set => DarkTheme = !value; }
 
-    public double GadgetOpacity { get => _gadgetOpacity; set => Set(ref _gadgetOpacity, Math.Clamp(Math.Round(value), 10, 100)); }
+    public double GadgetOpacity { get => _gadgetOpacity; set { if (Set(ref _gadgetOpacity, Math.Clamp(Math.Round(value), 10, 100))) AutoSave(); } }
 
-    private string _snapshot;
-    public ICommand ApplyCommand { get; }
-    public ICommand SaveCommand { get; }
     public ICommand ResetCommand { get; }
 
-    public event Action? Saved;
+    private readonly System.Windows.Threading.DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(350) };
+
+    // Every change is applied and persisted automatically (debounced).
+    private void AutoSave()
+    {
+        _timer.Stop();
+        _timer.Start();
+    }
+
+    /// <summary>Persists any pending change immediately.</summary>
+    public void Flush()
+    {
+        if (!_timer.IsEnabled) return;
+        _timer.Stop();
+        Apply();
+        _service.Save();
+    }
 
     private void Reset()
     {
@@ -134,19 +148,6 @@ public sealed class AppearanceViewModel : ObservableObject
         GadgetOpacity = 80;
     }
 
-    public bool IsSaved { get; private set; }
-
-    public void Revert()
-    {
-        var presets = _service.Current.Presets;
-        _service.Restore(_snapshot);
-        _service.Current.Presets = presets;
-        ThemeHelper.Apply(_service.Current);
-        _onApplied();
-        if (_presetsDirty) _service.Save();
-    }
-
-    private bool _presetsDirty;
     private AppearancePreset? _selectedPreset;
     private string _presetName = "";
 
@@ -190,7 +191,7 @@ public sealed class AppearanceViewModel : ObservableObject
         var i = Presets.ToList().FindIndex(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
         if (i >= 0) Presets[i] = p; else Presets.Add(p);
         _service.Current.Presets = Presets.ToList();
-        _presetsDirty = true;
+        _service.Save();
         SelectedPreset = p;
     }
 
@@ -215,27 +216,11 @@ public sealed class AppearanceViewModel : ObservableObject
         if (FindByName() is not { } p) return;
         Presets.Remove(p);
         _service.Current.Presets = Presets.ToList();
-        _presetsDirty = true;
+        _service.Save();
         SelectedPreset = null;
         PresetName = "";
     }
 
-    private void ApplyAndKeep()
-    {
-        Apply();
-        _service.Save();
-        _snapshot = _service.Snapshot();
-        _presetsDirty = false;
-    }
-
-    private void Save()
-    {
-        ApplyAndKeep();
-        IsSaved = true;
-        Saved?.Invoke();
-    }
-
-    // Previews the values without persisting them.
     private void Apply()
     {
         var s = _service.Current;

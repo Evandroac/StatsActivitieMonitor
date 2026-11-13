@@ -16,7 +16,6 @@ public partial class SettingsView : UserControl
     {
         InitializeComponent();
         DataContext = _vm = vm;
-        vm.Saved += () => CloseRequested?.Invoke();
 
         // Refresh after the bindings have pushed the new value into the view model.
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
@@ -25,14 +24,8 @@ public partial class SettingsView : UserControl
         Loaded += (_, _) => RefreshPreview();
     }
 
-    private void OnCancel(object sender, RoutedEventArgs e)
-    {
-        _vm.Revert();
-        CloseRequested?.Invoke();
-    }
-
-    /// <summary>Discards anything not applied or saved (used when navigating away).</summary>
-    public void Discard() { if (!_vm.IsSaved) _vm.Revert(); }
+    /// <summary>Persists any pending change (used when navigating away).</summary>
+    public void Discard() => _vm.Flush();
 
     private void RefreshPreview()
     {
