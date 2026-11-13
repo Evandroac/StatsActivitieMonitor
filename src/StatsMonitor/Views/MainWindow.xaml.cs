@@ -20,7 +20,7 @@ public partial class MainWindow : Window
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();
-        if (settings.Current.SimplifiedView) NavSimple.Tag = "active";
+        ChkSimple.IsChecked = settings.Current.SimplifiedView;
         if (settings.Current.SidebarPinned) { NavPin.Tag = "active"; SetMenu(true); }
         ArrangeCards();
         Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
@@ -63,6 +63,12 @@ public partial class MainWindow : Window
             _tray?.ShowBalloonTip(8000, a.Title, a.Message, System.Windows.Forms.ToolTipIcon.Warning);
             if (_settings.Current.AlertSound) System.Media.SystemSounds.Exclamation.Play();
         };
+    }
+
+    private void ShowTestAlert()
+    {
+        _tray?.ShowBalloonTip(8000, Loc.T("Alerta de teste"), Loc.T("Esta é uma notificação de teste."), System.Windows.Forms.ToolTipIcon.Warning);
+        if (_settings.Current.AlertSound) System.Media.SystemSounds.Exclamation.Play();
     }
 
     private void ExitApp()
@@ -391,7 +397,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = LblSimple.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
         SearchBox.Visibility = v;
         if (!open) SearchPopup.IsOpen = false;
     }
@@ -399,9 +405,8 @@ public partial class MainWindow : Window
     // Saved preference: pinned keeps the menu expanded, unpinned keeps it collapsed.
     private void OnToggleSimplified(object sender, RoutedEventArgs e)
     {
-        _settings.Current.SimplifiedView = !_settings.Current.SimplifiedView;
+        _settings.Current.SimplifiedView = ChkSimple.IsChecked == true;
         _settings.Save();
-        NavSimple.Tag = _settings.Current.SimplifiedView ? "active" : null;
         _vm.ApplySettings();
         ApplyPanelSettings();
     }
@@ -524,6 +529,7 @@ public partial class MainWindow : Window
         });
         vm.ProfileRequested += ApplyProfile;
         var view = new SettingsView(vm);
+            view.TestAlertRequested += ShowTestAlert;
         view.CloseRequested += ShowMain;
         ShowPage(view, NavSettings);
     }

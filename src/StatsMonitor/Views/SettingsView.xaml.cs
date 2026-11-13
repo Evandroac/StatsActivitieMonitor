@@ -22,10 +22,17 @@ public partial class SettingsView : UserControl
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
         AddHandler(ToggleButton.CheckedEvent, refresh);
         AddHandler(ToggleButton.UncheckedEvent, refresh);
-        Action onLang = RefreshPreview;
-        Loaded += (_, _) => { RefreshPreview(); Loc.LanguageChanged += onLang; Units.Changed += onLang; };
+        Action onLang = () => { RefreshPreview(); RefreshTitles(); };
+        Loaded += (_, _) => { RefreshPreview(); RefreshTitles(); Loc.LanguageChanged += onLang; Units.Changed += onLang; };
         Unloaded += (_, _) => { Loc.LanguageChanged -= onLang; Units.Changed -= onLang; };
     }
+
+    public event Action? TestAlertRequested;
+
+    private void OnTestAlert(object sender, RoutedEventArgs e) => TestAlertRequested?.Invoke();
+
+    private void RefreshTitles() =>
+        TxtTempAlerts.Text = Loc.T("🌡️  Alertas de temperatura ({0})", Units.Symbol);
 
     /// <summary>Persists any pending change (used when navigating away).</summary>
     public void Discard() => _vm.Flush();

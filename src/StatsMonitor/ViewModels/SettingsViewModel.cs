@@ -66,6 +66,8 @@ public sealed class SettingsViewModel : ObservableObject
     }
 
     private bool _fahrenheit;
+    public double TempMin => Units.FromCelsius(0);
+    public double TempMax => Units.FromCelsius(150);
     public bool UnitC { get => !_fahrenheit; set => SetUnit(value, false); }
     public bool UnitF { get => _fahrenheit; set => SetUnit(value, true); }
 
@@ -74,6 +76,8 @@ public sealed class SettingsViewModel : ObservableObject
         if (!value || _fahrenheit == fahrenheit) return;
         _fahrenheit = fahrenheit;
         Units.SetFahrenheit(fahrenheit);
+        Raise(nameof(TempMin)); Raise(nameof(TempMax));
+        foreach (var n in new[] { nameof(CpuWarnTemp), nameof(CpuCritTemp), nameof(GpuWarnTemp), nameof(GpuCritTemp) }) Raise(n);
         AutoSave();
     }
 

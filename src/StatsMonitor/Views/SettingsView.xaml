@@ -5,6 +5,7 @@
         xmlns:local="clr-namespace:StatsMonitor.Views"
         FontFamily="Segoe UI">
     <UserControl.Resources>
+        <h:TempUnitConverter x:Key="TempConv"/>
         <Style x:Key="Field" TargetType="TextBox">
             <Setter Property="Width" Value="90"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -12,7 +13,7 @@
     </UserControl.Resources>
     <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-    <Border Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="180" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+    <Border Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="Auto" MinWidth="180" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <StackPanel>
             <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
             <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
@@ -129,7 +130,7 @@
             </StackPanel>
         </Grid>
 
-        <TextBlock Text="{h:Tr '🌡️  Alertas de temperatura (°C)'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <TextBlock x:Name="TxtTempAlerts" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/><ColumnDefinition Width="110"/><ColumnDefinition Width="110"/>
@@ -140,16 +141,17 @@
             <TextBlock Grid.Column="1" Text="{h:Tr 'Atenção'}" Style="{StaticResource Caption}"/>
             <TextBlock Grid.Column="2" Text="{h:Tr 'Crítica'}" Style="{StaticResource Caption}"/>
             <TextBlock Grid.Row="1" Text="{h:Tr 'CPU'}" VerticalAlignment="Center"/>
-            <local:NumericBox Grid.Row="1" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica em atenção'}" Value="{Binding CpuWarnTemp}"/>
-            <local:NumericBox Grid.Row="1" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica crítico'}" Value="{Binding CpuCritTemp}"/>
+            <local:NumericBox Grid.Row="1" Grid.Column="1"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica em atenção'}" Value="{Binding CpuWarnTemp, Converter={StaticResource TempConv}}"/>
+            <local:NumericBox Grid.Row="1" Grid.Column="2"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica crítico'}" Value="{Binding CpuCritTemp, Converter={StaticResource TempConv}}"/>
             <TextBlock Grid.Row="2" Text="{h:Tr 'GPU'}" VerticalAlignment="Center"/>
-            <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica em atenção'}" Value="{Binding GpuWarnTemp}"/>
-            <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica crítico'}" Value="{Binding GpuCritTemp}"/>
+            <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica em atenção'}" Value="{Binding GpuWarnTemp, Converter={StaticResource TempConv}}"/>
+            <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica crítico'}" Value="{Binding GpuCritTemp, Converter={StaticResource TempConv}}"/>
         </Grid>
 
         <TextBlock Text="{h:Tr '🔔  Notificações de alerta'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
         <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
+        <Button Content="{h:Tr '🔔  Testar alerta'}" ToolTip="{h:Tr 'Exibe uma notificação de alerta de teste'}" AutomationProperties.Name="{h:Tr 'Testar alerta'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,6,0,0" Click="OnTestAlert"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="50" Maximum="100" Step="1" ToolTip="{h:Tr 'Uso (%) de CPU, GPU ou RAM a partir do qual o alerta é emitido'}" Value="{Binding AlertLoadPercent}"/>
