@@ -15,7 +15,6 @@ public sealed class HardwareSnapshot
     public double? RamUsedGb { get; init; }
     public double? RamAvailableGb { get; init; }
     public double? RamLoad { get; init; }
-    public double? RamTemp { get; init; }
 
     public string? GpuName { get; init; }
     public double? GpuLoad { get; init; }

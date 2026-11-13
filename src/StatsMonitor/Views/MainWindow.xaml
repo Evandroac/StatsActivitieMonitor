@@ -6,6 +6,22 @@
         Background="{DynamicResource WindowBg}" FontFamily="Segoe UI"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
+        <Style x:Key="TempRow" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding HasTemperature}" Value="True"/>
+                        <Condition Binding="{Binding DataContext.ShowTemperatures, RelativeSource={RelativeSource AncestorType=Window}}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TempLabelRow" TargetType="TextBlock" BasedOn="{StaticResource TempRow}">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
         <!-- CPU / GPU -->
         <DataTemplate x:Key="ProcessorTemplate">
             <Border Style="{StaticResource Card}">
@@ -63,10 +79,9 @@
                             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UsedText}" Margin="0,2"/>
                             <TextBlock Grid.Row="2" Text="Disponível" Style="{StaticResource Caption}" Margin="0,2,14,2"/>
                             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AvailableText}" Margin="0,2"/>
-                            <TextBlock Grid.Row="3" Text="Temp." Style="{StaticResource Caption}" Margin="0,2,14,2"
-                                       Visibility="{Binding DataContext.ShowTemperatures, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"/>
+                            <TextBlock Grid.Row="3" Text="Temp." Margin="0,2,14,2" Style="{StaticResource TempLabelRow}"/>
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding TempText}" Foreground="{Binding TempBrush}" FontWeight="SemiBold" Margin="0,2"
-                                       Visibility="{Binding DataContext.ShowTemperatures, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"/>
+                                       Style="{StaticResource TempRow}"/>
                         </Grid>
                     </Grid>
                     <c:Sparkline Height="60" Margin="0,12,0,0" Values="{Binding History}" Stroke="{DynamicResource Accent2}"/>

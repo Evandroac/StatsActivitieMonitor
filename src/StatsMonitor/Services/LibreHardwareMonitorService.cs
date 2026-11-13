@@ -124,7 +124,6 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             RamUsedGb = ramUsed,
             RamAvailableGb = ramAvail,
             RamLoad = ramLoad,
-            RamTemp = MaxTemp(all.Where(h => h.HardwareType == HardwareType.Memory)),
 
             GpuName = gpu?.Name.Trim(),
             GpuLoad = Value(gpu, SensorType.Load, "GPU Core") ?? Value(gpu, SensorType.Load, "D3D 3D"),

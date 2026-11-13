@@ -24,7 +24,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _settingsService = settingsService;
         Cpu = new ComponentViewModel("CPU", t => Level(t, S.CpuWarnTemp, S.CpuCritTemp).brush);
         Gpu = new ComponentViewModel("GPU", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush);
-        Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush);
+        Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush) { HasTemperature = false };
         Vram = new ComponentViewModel("VRAM", t => Level(t, S.GpuWarnTemp, S.GpuCritTemp).brush);
 
         ApplySettings();
@@ -86,7 +86,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
-        Ram.Update("Memória RAM", s.RamLoad, s.RamTemp, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
+        Ram.Update("Memória RAM", s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
         Vram.Update(s.GpuName is null ? null : "Memória VRAM", s.VramLoad, s.VramTemp, null,
             s.VramTotalGb, s.VramUsedGb, s.VramAvailableGb);
 

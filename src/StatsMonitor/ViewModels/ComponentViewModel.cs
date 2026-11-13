@@ -28,6 +28,7 @@ public sealed class ComponentViewModel : ObservableObject
     }
 
     public string Title { get; }
+    public bool HasTemperature { get; init; } = true;
     public ObservableCollection<double> History { get; } = [];
 
     public string Name { get => _name; private set => Set(ref _name, value); }
