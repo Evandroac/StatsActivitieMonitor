@@ -54,9 +54,27 @@ public sealed class Sparkline : FrameworkElement
         InvalidateVisual();
     }
 
+    private void DrawGrid(DrawingContext dc)
+    {
+        if (ActualWidth <= 0 || ActualHeight <= 0) return;
+        var color = (TryFindResource("TextSecondary") as SolidColorBrush)?.Color ?? Colors.Gray;
+        var light = new Pen(new SolidColorBrush(Color.FromArgb(40, color.R, color.G, color.B)), 1);
+        var strong = new Pen(new SolidColorBrush(Color.FromArgb(90, color.R, color.G, color.B)), 1);
+        light.Freeze(); strong.Freeze();
+
+        for (int pct = 0; pct <= 100; pct += 10)
+        {
+            double y = Math.Round(ActualHeight - pct / 100.0 * (ActualHeight - 2) - 1) + 0.5;
+            dc.DrawLine(pct % 50 == 0 ? strong : light, new Point(0, y), new Point(ActualWidth, y));
+        }
+        for (double x = 0; x <= ActualWidth; x += 20)
+            dc.DrawLine(light, new Point(Math.Round(x) + 0.5, 0), new Point(Math.Round(x) + 0.5, ActualHeight));
+    }
+
     protected override void OnRender(DrawingContext dc)
     {
         dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, ActualWidth, ActualHeight));
+        DrawGrid(dc);
         var values = Values?.Cast<double>().ToList();
         if (values == null || values.Count < 2 || ActualWidth <= 0 || ActualHeight <= 0) return;
 
