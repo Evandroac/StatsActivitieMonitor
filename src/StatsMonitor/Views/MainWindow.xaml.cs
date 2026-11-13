@@ -479,22 +479,26 @@ public partial class MainWindow : Window
         ApplyTree();
     }
 
-    private void OnShortcut(object sender, RoutedEventArgs e)
+    private void OpenComponent(StatsMonitor.Services.ComponentKind kind)
     {
-        if (sender is not FrameworkElement fe) return;
-        var K = typeof(StatsMonitor.Services.ComponentKind);
-        StatsMonitor.Services.ComponentKind? kind = fe.DataContext == _vm.Cpu ? StatsMonitor.Services.ComponentKind.Cpu
-            : fe.DataContext == _vm.Gpu ? StatsMonitor.Services.ComponentKind.Gpu
-            : fe.DataContext == _vm.Ram ? StatsMonitor.Services.ComponentKind.Memory
-            : Enum.TryParse<StatsMonitor.Services.ComponentKind>((fe as Button)?.CommandParameter as string, out var k) ? k : null;
-        if (kind is null) return;
         var nav = kind switch
         {
             StatsMonitor.Services.ComponentKind.Cpu => NavCpu, StatsMonitor.Services.ComponentKind.Gpu => NavGpu,
             StatsMonitor.Services.ComponentKind.Memory => NavRam, StatsMonitor.Services.ComponentKind.Disk => NavDisk,
             StatsMonitor.Services.ComponentKind.Network => NavNet, _ => NavSensors,
         };
-        OnOpenComponent(nav, e);
+        OnOpenComponent(nav, new RoutedEventArgs());
+    }
+
+    private void OnShortcut(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement fe) return;
+        StatsMonitor.Services.ComponentKind? kind = fe.DataContext == _vm.Cpu ? StatsMonitor.Services.ComponentKind.Cpu
+            : fe.DataContext == _vm.Gpu ? StatsMonitor.Services.ComponentKind.Gpu
+            : fe.DataContext == _vm.Ram ? StatsMonitor.Services.ComponentKind.Memory
+            : Enum.TryParse<StatsMonitor.Services.ComponentKind>((fe as Button)?.CommandParameter as string, out var k) ? k : null;
+        if (kind is null) return;
+        OpenComponent(kind.Value);
     }
 
     // Saved preference: pinned keeps the menu expanded, unpinned keeps it collapsed.
@@ -555,6 +559,9 @@ public partial class MainWindow : Window
             case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Appearance: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
+            case SearchPage.Component when r.Kind is { } kind:
+                if (PageHost.Content is not SystemInfoView { Component: { } cur } || cur != kind) OpenComponent(kind);
+                break;
         }
         FrameworkElement root = r.Page == SearchPage.Main ? MainPage : PageHost;
         if (PageHost.Content is SettingsView sv) sv.RevealText(r.Page == SearchPage.Appearance);

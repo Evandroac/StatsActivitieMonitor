@@ -4,10 +4,10 @@ using StatsMonitor.Services;
 
 namespace StatsMonitor.Helpers;
 
-public enum SearchPage { Main, System, Settings, Appearance, Peripherals }
+public enum SearchPage { Main, System, Settings, Appearance, Peripherals, Component }
 
 /// <summary>A searchable item: <paramref name="Match"/> is the text rendered on screen that gets highlighted.</summary>
-public sealed record SearchResult(string Match, string Title, string Location, SearchPage Page);
+public sealed record SearchResult(string Match, string Title, string Location, SearchPage Page, ComponentKind? Kind = null);
 
 public static class SearchIndex
 {
@@ -31,7 +31,29 @@ public static class SearchIndex
                 }
             }
         }
+        void AddComponent(ComponentKind kind, IEnumerable<InfoGroup> groups, params string[] extra)
+        {
+            var page = Loc.T(ComponentDetailService.Title(kind));
+            var loc = $"{Loc.T("Principal")} › {page}";
+            list.Add(new(page, page, Loc.T("Principal"), SearchPage.Component, kind));
+            foreach (var x in extra) list.Add(new(x, x, loc, SearchPage.Component, kind));
+            foreach (var g in groups)
+            {
+                list.Add(new(g.Title, g.Title, loc, SearchPage.Component, kind));
+                foreach (var l in g.Lines)
+                {
+                    list.Add(new(l.Label, l.Label, $"{loc} › {g.Title}", SearchPage.Component, kind));
+                    if (!string.IsNullOrEmpty(l.Value) && l.Value != "N/D" && l.Value != "-")
+                        list.Add(new(l.Value, $"{l.Label}: {l.Value}", $"{loc} › {g.Title}", SearchPage.Component, kind));
+                }
+            }
+        }
         AddGroups(await SystemInfoService.GetAsync(), "Sistema", SearchPage.System);
+        foreach (var kind in Enum.GetValues<ComponentKind>())
+        {
+            try { AddComponent(kind, await ComponentDetailService.GetAsync(kind, null, null), Loc.T("Exportar gráficos")); }
+            catch { /* a failing component must not break the whole index */ }
+        }
         AddGroups(await PeripheralInfoService.GetAsync(), "Periféricos", SearchPage.Peripherals);
         _system = list;
     }
@@ -72,7 +94,8 @@ public static class SearchIndex
             "Intervalo de atualização (s):", "Iniciar com o Windows", "Iniciar minimizado", "Exibir temperaturas",
             "Idioma", "Unidade de temperatura", "Visualização simplificada", "Perfis", "Seguir o tema do Windows", "Atalho global",
             "Exportar configurações", "Importar configurações", "Restaurar padrões", "Notificações de alerta", "Tocar som de alerta", "Testar alerta",
-            "Sensores (ventiladores, energia, tensões, bateria)", "Uso crítico (%):");
+            "Sensores (ventiladores, energia, tensões, bateria)", "Pausar a leitura quando oculto e sem gadget",
+            "Ler sensores de disco e placa-mãe com menos frequência");
         Add(SearchPage.Settings, "Configurações › Gadget",
             "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar",
             "Sobre a tela (flutuante, arrastável)", "Na barra de tarefas, canto direito (widget)",
@@ -81,6 +104,9 @@ public static class SearchIndex
         Add(SearchPage.Settings, "Configurações › Painéis exibidos",
             "Painéis exibidos", "Janela principal", "Gadget (minimizado)", "CPU", "GPU", "Memória RAM", "Discos", "Rede / Internet", "FPS (em jogos)");
         Add(SearchPage.Settings, "Configurações › Alertas de temperatura", "Alertas de temperatura (°C)", "Atenção", "Crítica");
+        Add(SearchPage.Settings, "Configurações › Alertas", "Notificar ao passar do limite crítico", "Uso crítico (%):",
+            "Tempo acima do limite (s):", "Intervalo mínimo entre avisos (min):", "Histórico de alertas", "Limpar", "Nenhum alerta registrado");
+        Add(SearchPage.Settings, "Configurações › Atalho global", "Atalho global", "Ativar atalho para mostrar/ocultar o gadget", "Atalho:");
 
         Add(SearchPage.Appearance, "Personalização › Presets", "Minhas personalizações", "Salvar como", "Carregar", "Excluir");
         Add(SearchPage.Appearance, "Personalização › Tema", "Tema base", "Escuro", "Claro", "Restaurar padrões");
