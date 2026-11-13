@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using StatsMonitor.Settings;
 using StatsMonitor.ViewModels;
@@ -99,7 +99,7 @@ public partial class MainWindow : Window
     {
         if (_gadget == null) return;
         var s = _settings.Current;
-        bool visible = s.ShowGadget && (s.AlwaysShowGadget || WindowState == WindowState.Minimized);
+        bool visible = s.ShowGadget && s.GadgetMode != GadgetDisplayMode.None && (s.AlwaysShowGadget || WindowState == WindowState.Minimized);
         if (visible) _gadget.ShowGadget(); else _gadget.Hide();
     }
 

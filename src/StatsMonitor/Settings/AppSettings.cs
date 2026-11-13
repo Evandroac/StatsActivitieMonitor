@@ -1,9 +1,9 @@
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 
 namespace StatsMonitor.Settings;
 
-public enum GadgetDisplayMode { Floating, Taskbar }
+public enum GadgetDisplayMode { Floating, Taskbar, None }
 
 public sealed class AppearancePreset
 {

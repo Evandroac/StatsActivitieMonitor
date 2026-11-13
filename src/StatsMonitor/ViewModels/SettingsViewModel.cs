@@ -21,7 +21,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowTemperatures = s.ShowTemperatures;
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
-        GadgetOnTaskbar = s.GadgetMode == GadgetDisplayMode.Taskbar;
+        _gadgetMode = s.GadgetMode;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
         ShowCpuGadget = s.ShowCpuGadget; ShowGpuGadget = s.ShowGpuGadget; ShowRamGadget = s.ShowRamGadget;
@@ -42,8 +42,10 @@ public sealed class SettingsViewModel : ObservableObject
     public bool ShowTemperatures { get; set; }
     public bool ShowGadget { get; set; }
     public bool AlwaysShowGadget { get; set; }
-    public bool GadgetOnTaskbar { get; set; }
-    public bool GadgetFloating { get => !GadgetOnTaskbar; set => GadgetOnTaskbar = !value; }
+    private GadgetDisplayMode _gadgetMode;
+    public bool GadgetFloating { get => _gadgetMode == GadgetDisplayMode.Floating; set { if (value) _gadgetMode = GadgetDisplayMode.Floating; } }
+    public bool GadgetOnTaskbar { get => _gadgetMode == GadgetDisplayMode.Taskbar; set { if (value) _gadgetMode = GadgetDisplayMode.Taskbar; } }
+    public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set { if (value) _gadgetMode = GadgetDisplayMode.None; } }
     public bool ShowCpuMain { get; set; }
     public bool ShowGpuMain { get; set; }
     public bool ShowRamMain { get; set; }
@@ -75,7 +77,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowTemperatures = ShowTemperatures;
         s.ShowGadget = ShowGadget;
         s.AlwaysShowGadget = AlwaysShowGadget;
-        s.GadgetMode = GadgetOnTaskbar ? GadgetDisplayMode.Taskbar : GadgetDisplayMode.Floating;
+        s.GadgetMode = _gadgetMode;
         s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
         s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;
         s.ShowCpuGadget = ShowCpuGadget; s.ShowGpuGadget = ShowGpuGadget; s.ShowRamGadget = ShowRamGadget;
