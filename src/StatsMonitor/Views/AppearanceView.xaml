@@ -65,7 +65,7 @@
     </Border>
     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
-            <TextBlock Text="Minhas personalizações" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+            <TextBlock Text="⭐  Minhas personalizações" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
             <DockPanel Margin="0,0,0,0">
                 <Button DockPanel.Dock="Right" Content="Excluir" ToolTip="Exclui a personalização com o nome do campo" Style="{StaticResource PillButton}" Command="{Binding DeletePresetCommand}" Margin="8,0,0,0"/>
                 <Button DockPanel.Dock="Right" Content="Carregar" ToolTip="Carrega como prévia a personalização com o nome do campo" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
@@ -106,22 +106,22 @@
                     <ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Tema base" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+                    <TextBlock Text="🌗  Tema base" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
                     <StackPanel Orientation="Horizontal">
                         <RadioButton GroupName="Theme" Content="Escuro" ToolTip="Usa as cores escuras como base" IsChecked="{Binding DarkTheme}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
                         <RadioButton GroupName="Theme" Content="Claro" ToolTip="Usa as cores claras como base" IsChecked="{Binding LightTheme}" Foreground="{DynamicResource TextPrimary}"/>
                     </StackPanel>
 
-                    <TextBlock Text="Gadget (minimizado)" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+                    <TextBlock Text="🪟  Gadget (minimizado)" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
                     <ItemsControl ItemsSource="{Binding GadgetOptions}" ItemTemplate="{StaticResource ColorRow}"/>
                     <TextBlock Text="{Binding GadgetOpacity, StringFormat=Opacidade do fundo: {0}%}" Margin="0,6,0,0"/>
                     <Slider Minimum="10" Maximum="100" Value="{Binding GadgetOpacity}" ToolTip="Transparência do fundo do gadget (10% = quase transparente)"/>
 
-                    <TextBlock Text="Cores dos alertas de temperatura" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+                    <TextBlock Text="🚨  Cores dos alertas de temperatura" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
                     <ItemsControl ItemsSource="{Binding AlertOptions}" ItemTemplate="{StaticResource ColorRow}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2">
-                    <TextBlock Text="Janela principal (maximizada)" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+                    <TextBlock Text="🖥️  Janela principal (maximizada)" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
                     <ItemsControl ItemsSource="{Binding MainOptions}" ItemTemplate="{StaticResource ColorRow}"/>
                 </StackPanel>
             </Grid>

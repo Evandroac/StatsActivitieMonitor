@@ -74,7 +74,7 @@
         <DataTemplate x:Key="ProcessorTemplate">
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}"/>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,2,0,10"><TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Name}" Click="OnCopy"/></StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -125,7 +125,7 @@
         <DataTemplate x:Key="MemoryTemplate">
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}"/>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/></StackPanel>
                     <TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" Margin="0,2,0,10"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -236,7 +236,7 @@
         <ContentControl x:Name="RamCard" MinHeight="260" Content="{Binding Ram}" ContentTemplate="{StaticResource MemoryTemplate}"/>
         <Border x:Name="VramCard" Style="{StaticResource Card}" MinHeight="260" DataContext="{Binding Disk}">
             <StackPanel>
-                <TextBlock Text="Discos (HD/SSD)" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="💽" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Discos (HD/SSD)" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/></StackPanel>
                 <ItemsControl ItemsSource="{Binding Volumes}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -289,7 +289,7 @@
                         </Ellipse>
                         <TextBlock Text="{Binding Status}" FontSize="13"/>
                     </StackPanel>
-                    <TextBlock Text="Rede / Internet" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}"/>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Rede / Internet" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
                 </DockPanel>
                 <WrapPanel>
                     <StackPanel Width="200" Margin="0,0,12,8">
