@@ -190,6 +190,13 @@ public partial class MainWindow : Window
         catch (System.Runtime.InteropServices.COMException) { }
     }
 
+    private void OnOpenFolder(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string path } || string.IsNullOrWhiteSpace(path)) return;
+        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", $"\"{path}\"") { UseShellExecute = true }); }
+        catch (Exception) { }
+    }
+
     private void OnRunAsAdmin(object sender, RoutedEventArgs e)
     {
         try
