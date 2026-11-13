@@ -339,15 +339,15 @@
             <StackPanel>
                 <WrapPanel>
                     <StackPanel Width="220" Margin="0,0,12,8">
-                        <TextBlock Text="Tempo ligado" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="⏱️" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Tempo ligado" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
                         <TextBlock Text="{Binding UptimeText}" FontSize="16"/>
                     </StackPanel>
                     <StackPanel Width="220" Margin="0,0,12,8">
-                        <TextBlock Text="Última atualização" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="🔄" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Última atualização" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
                         <TextBlock Text="{Binding LastUpdateText}" FontSize="16"/>
                     </StackPanel>
                     <StackPanel Width="220" Margin="0,0,12,8">
-                        <TextBlock Text="Status do hardware" Style="{StaticResource Caption}"/>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="🩺" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Status do hardware" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="{Binding StatusBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <TextBlock Text="{Binding StatusText}" FontSize="16"/>
