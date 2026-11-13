@@ -23,6 +23,10 @@ public sealed class SettingsViewModel : ObservableObject
         AlwaysShowGadget = s.AlwaysShowGadget;
         GadgetOnTaskbar = s.GadgetMode == GadgetDisplayMode.Taskbar;
         DarkTheme = s.DarkTheme;
+        ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
+        ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
+        ShowCpuGadget = s.ShowCpuGadget; ShowGpuGadget = s.ShowGpuGadget; ShowRamGadget = s.ShowRamGadget;
+        ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         NormalColor = s.NormalColor; WarningColor = s.WarningColor; CriticalColor = s.CriticalColor;
@@ -38,6 +42,16 @@ public sealed class SettingsViewModel : ObservableObject
     public bool GadgetOnTaskbar { get; set; }
     public bool GadgetFloating { get => !GadgetOnTaskbar; set => GadgetOnTaskbar = !value; }
     public bool DarkTheme { get; set; }
+    public bool ShowCpuMain { get; set; }
+    public bool ShowGpuMain { get; set; }
+    public bool ShowRamMain { get; set; }
+    public bool ShowVramMain { get; set; }
+    public bool ShowNetworkMain { get; set; }
+    public bool ShowCpuGadget { get; set; }
+    public bool ShowGpuGadget { get; set; }
+    public bool ShowRamGadget { get; set; }
+    public bool ShowVramGadget { get; set; }
+    public bool ShowNetworkGadget { get; set; }
     public double CpuWarnTemp { get; set; }
     public double CpuCritTemp { get; set; }
     public double GpuWarnTemp { get; set; }
@@ -61,6 +75,10 @@ public sealed class SettingsViewModel : ObservableObject
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = GadgetOnTaskbar ? GadgetDisplayMode.Taskbar : GadgetDisplayMode.Floating;
         s.DarkTheme = DarkTheme;
+        s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
+        s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;
+        s.ShowCpuGadget = ShowCpuGadget; s.ShowGpuGadget = ShowGpuGadget; s.ShowRamGadget = ShowRamGadget;
+        s.ShowVramGadget = ShowVramGadget; s.ShowNetworkGadget = ShowNetworkGadget;
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
         s.NormalColor = NormalColor; s.WarningColor = WarningColor; s.CriticalColor = CriticalColor;

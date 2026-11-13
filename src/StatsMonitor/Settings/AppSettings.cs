@@ -16,6 +16,18 @@ public sealed class AppSettings
     public bool AlwaysShowGadget { get; set; }
     public bool DarkTheme { get; set; } = true;
 
+    public bool ShowCpuMain { get; set; } = true;
+    public bool ShowGpuMain { get; set; } = true;
+    public bool ShowRamMain { get; set; } = true;
+    public bool ShowVramMain { get; set; } = true;
+    public bool ShowNetworkMain { get; set; } = true;
+
+    public bool ShowCpuGadget { get; set; } = true;
+    public bool ShowGpuGadget { get; set; } = true;
+    public bool ShowRamGadget { get; set; } = true;
+    public bool ShowVramGadget { get; set; } = true;
+    public bool ShowNetworkGadget { get; set; }
+
     public double CpuWarnTemp { get; set; } = 70;
     public double CpuCritTemp { get; set; } = 85;
     public double GpuWarnTemp { get; set; } = 75;

@@ -25,6 +25,29 @@
         <RadioButton GroupName="GadgetMode" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <CheckBox Content="Tema escuro" IsChecked="{Binding DarkTheme}"/>
 
+        <TextBlock Text="Painéis exibidos" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="Janela principal" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
+                <CheckBox Content="CPU" IsChecked="{Binding ShowCpuMain}"/>
+                <CheckBox Content="GPU" IsChecked="{Binding ShowGpuMain}"/>
+                <CheckBox Content="Memória RAM" IsChecked="{Binding ShowRamMain}"/>
+                <CheckBox Content="Memória VRAM" IsChecked="{Binding ShowVramMain}"/>
+                <CheckBox Content="Rede / Internet" IsChecked="{Binding ShowNetworkMain}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="Gadget (minimizado)" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
+                <CheckBox Content="CPU" IsChecked="{Binding ShowCpuGadget}"/>
+                <CheckBox Content="GPU" IsChecked="{Binding ShowGpuGadget}"/>
+                <CheckBox Content="Memória RAM" IsChecked="{Binding ShowRamGadget}"/>
+                <CheckBox Content="Memória VRAM" IsChecked="{Binding ShowVramGadget}"/>
+                <CheckBox Content="Rede / Internet" IsChecked="{Binding ShowNetworkGadget}"/>
+            </StackPanel>
+        </Grid>
+
         <TextBlock Text="Alertas de temperatura (°C)" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
             <Grid.ColumnDefinitions>

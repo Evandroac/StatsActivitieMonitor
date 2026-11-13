@@ -14,19 +14,12 @@ public partial class MainWindow : Window
     public MainWindow(MainViewModel vm, SettingsService settings)
     {
         InitializeComponent();
-        ArrangeCards();
         DataContext = _vm = vm;
         _settings = settings;
-        Loaded += (_, _) => { UpdateGadget(); ArrangeCards(); };
-        // Start at (and never shrink below) the size that shows every card without scrolling.
-        ContentRendered += (_, _) =>
-        {
-            if (SizeToContent == SizeToContent.Manual) return;
-            double h = Math.Min(ActualHeight, SystemParameters.WorkArea.Height);
-            SizeToContent = SizeToContent.Manual;
-            MinHeight = h;
-            Height = h;
-        };
+        ArrangeCards();
+        Loaded += (_, _) => UpdateGadget();
+        // Start at (and never shrink below) the size that shows every visible card without scrolling.
+        ContentRendered += (_, _) => FitToContent();
         SizeChanged += (_, _) => ArrangeCards();
         StateChanged += (_, _) => UpdateGadget();
         Closed += (_, _) =>
@@ -36,31 +29,58 @@ public partial class MainWindow : Window
         };
     }
 
-    private int _columns;
-
-    /// <summary>Lays the cards out in 2 columns on wide windows and 1 column on narrow ones.</summary>
-    private void ArrangeCards()
+    private void FitToContent()
     {
+        if (SizeToContent == SizeToContent.Manual) return;
+        double h = Math.Min(ActualHeight, SystemParameters.WorkArea.Height);
+        SizeToContent = SizeToContent.Manual;
+        MinHeight = h;
+        Height = h;
+    }
+
+    private void ApplyPanelSettings()
+    {
+        ArrangeCards(force: true);
+        if (WindowState != WindowState.Normal) return;
+        MinHeight = 0;
+        SizeToContent = SizeToContent.Height;
+        Dispatcher.BeginInvoke(FitToContent, System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    private string _layoutKey = "";
+
+    /// <summary>Lays out the enabled cards in 2 columns on wide windows and 1 column on narrow ones.</summary>
+    private void ArrangeCards(bool force = false)
+    {
+        var s = _settings.Current;
         int cols = (ActualWidth > 0 ? ActualWidth : Width) >= 760 ? 2 : 1;
-        if (cols == _columns) return;
-        _columns = cols;
+        var cards = new (FrameworkElement el, bool show)[]
+        {
+            (CpuCard, s.ShowCpuMain), (GpuCard, s.ShowGpuMain), (RamCard, s.ShowRamMain), (VramCard, s.ShowVramMain),
+        };
+        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}";
+        if (!force && key == _layoutKey) return;
+        _layoutKey = key;
 
         CardsGrid.ColumnDefinitions.Clear();
         CardsGrid.RowDefinitions.Clear();
         for (int c = 0; c < cols; c++) CardsGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-        var cards = new FrameworkElement[] { CpuCard, GpuCard, RamCard, VramCard };
-        int rows = (cards.Length + cols - 1) / cols + 2;
-        for (int r = 0; r < rows; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-        for (int i = 0; i < cards.Length; i++)
+        int visible = 0;
+        foreach (var (el, show) in cards)
         {
-            Grid.SetRow(cards[i], i / cols);
-            Grid.SetColumn(cards[i], i % cols);
-            Grid.SetColumnSpan(cards[i], 1);
+            el.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+            if (!show) continue;
+            Grid.SetRow(el, visible / cols);
+            Grid.SetColumn(el, visible % cols);
+            visible++;
         }
-        Grid.SetRow(NetCard, rows - 2);
-        Grid.SetRow(FooterCard, rows - 1);
+        int cardRows = (visible + cols - 1) / cols;
+        for (int r = 0; r < cardRows + 2; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+        NetCard.Visibility = s.ShowNetworkMain ? Visibility.Visible : Visibility.Collapsed;
+        Grid.SetRow(NetCard, cardRows);
+        Grid.SetRow(FooterCard, cardRows + 1);
         foreach (var f in new FrameworkElement[] { NetCard, FooterCard })
         {
             Grid.SetColumn(f, 0);
@@ -113,6 +133,7 @@ public partial class MainWindow : Window
         var vm = new SettingsViewModel(_settings, () =>
         {
             _vm.ApplySettings();
+            ApplyPanelSettings();
             UpdateGadget();
         });
         new SettingsWindow(vm) { Owner = this }.ShowDialog();

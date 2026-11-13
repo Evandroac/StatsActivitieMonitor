@@ -1,4 +1,4 @@
-<Window x:Class="StatsMonitor.Views.GadgetWindow"
+﻿<Window x:Class="StatsMonitor.Views.GadgetWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
@@ -9,32 +9,38 @@
             BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <Grid>
             <StackPanel x:Name="FloatingPanel">
-                <TextBlock FontSize="13">
+                <TextBlock x:Name="FCpu" FontSize="13">
                     <Run Text="CPU: "/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock FontSize="13">
+                <TextBlock x:Name="FRam" FontSize="13">
                     <Run Text="RAM: "/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Ram.UsedText, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock FontSize="13">
+                <TextBlock x:Name="FGpu" FontSize="13">
                     <Run Text="GPU: "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock FontSize="13">
+                <TextBlock x:Name="FVram" FontSize="13">
                     <Run Text="VRAM: "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Vram.UsedText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="FNet" FontSize="13">
+                    <Run Text="NET: ↓ "/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
             </StackPanel>
 
-            <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
-                <TextBlock FontSize="12" Margin="0,0,12,0">
+            <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" Margin="-12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
+                <TextBlock x:Name="TCpu" FontSize="12" Margin="12,0,0,0">
                     <Run Text="CPU "/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock FontSize="12" Margin="0,0,12,0">
+                <TextBlock x:Name="TRam" FontSize="12" Margin="12,0,0,0">
                     <Run Text="RAM "/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock FontSize="12" Margin="0,0,12,0">
+                <TextBlock x:Name="TGpu" FontSize="12" Margin="12,0,0,0">
                     <Run Text="GPU "/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
-                <TextBlock FontSize="12">
+                <TextBlock x:Name="TVram" FontSize="12" Margin="12,0,0,0">
                     <Run Text="VRAM "/><Run Text="{Binding Vram.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="TNet" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="NET ↓ "/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
             </StackPanel>
         </Grid>

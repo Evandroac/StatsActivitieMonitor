@@ -59,6 +59,14 @@ public partial class GadgetWindow : Window
         Root.Padding = taskbar ? new Thickness(10, 4, 10, 4) : new Thickness(12, 8, 12, 8);
         Root.CornerRadius = new CornerRadius(taskbar ? 6 : 10);
         ToolTip = taskbar ? "Duplo clique para abrir" : "Arraste para mover · duplo clique para abrir";
+
+        var s = _settings.Current;
+        static Visibility V(bool b) => b ? Visibility.Visible : Visibility.Collapsed;
+        FCpu.Visibility = TCpu.Visibility = V(s.ShowCpuGadget);
+        FGpu.Visibility = TGpu.Visibility = V(s.ShowGpuGadget);
+        FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
+        FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
+        FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
     }
 
     private void Reposition()
