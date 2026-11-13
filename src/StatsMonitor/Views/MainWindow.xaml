@@ -337,6 +337,7 @@
 
         <Border x:Name="FooterCard" Style="{StaticResource Card}">
             <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"><TextBlock Text="📈" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Status do sistema" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
                 <WrapPanel>
                     <StackPanel Width="220" Margin="0,0,12,8">
                         <StackPanel Orientation="Horizontal"><TextBlock Text="⏱️" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Tempo ligado" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
