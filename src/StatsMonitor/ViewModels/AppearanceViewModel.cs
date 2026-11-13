@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
 using StatsMonitor.Helpers;
@@ -95,6 +96,7 @@ public sealed class AppearanceViewModel : ObservableObject
         SaveCommand = new RelayCommand(Save);
         ApplyCommand = new RelayCommand(Apply);
         ResetCommand = new RelayCommand(Reset);
+        InitPresets();
     }
 
     public IReadOnlyList<ColorOption> MainOptions { get; }
@@ -136,9 +138,82 @@ public sealed class AppearanceViewModel : ObservableObject
 
     public void Revert()
     {
+        var presets = _service.Current.Presets;
         _service.Restore(_snapshot);
+        _service.Current.Presets = presets;
         ThemeHelper.Apply(_service.Current);
         _onApplied();
+        if (_presetsDirty) _service.Save();
+    }
+
+    private bool _presetsDirty;
+    private AppearancePreset? _selectedPreset;
+    private string _presetName = "";
+
+    public ObservableCollection<AppearancePreset> Presets { get; } = new();
+    public ICommand SavePresetCommand { get; private set; } = null!;
+    public ICommand LoadPresetCommand { get; private set; } = null!;
+    public ICommand DeletePresetCommand { get; private set; } = null!;
+
+    public AppearancePreset? SelectedPreset
+    {
+        get => _selectedPreset;
+        set { if (Set(ref _selectedPreset, value) && value is not null) PresetName = value.Name; }
+    }
+
+    public string PresetName { get => _presetName; set => Set(ref _presetName, value); }
+
+    private void InitPresets()
+    {
+        foreach (var p in _service.Current.Presets) Presets.Add(p);
+        SavePresetCommand = new RelayCommand(SavePreset);
+        LoadPresetCommand = new RelayCommand(LoadPreset);
+        DeletePresetCommand = new RelayCommand(DeletePreset);
+    }
+
+    private void SavePreset()
+    {
+        var name = PresetName.Trim();
+        if (name.Length == 0) return;
+        var p = new AppearancePreset
+        {
+            Name = name,
+            DarkTheme = _dark,
+            GadgetOpacity = (int)_gadgetOpacity,
+            ColorOverrides = MainOptions.Concat(GadgetOptions)
+                .Where(o => ThemeHelper.TryParseColor(o.Hex, out _))
+                .ToDictionary(o => o.Key, o => o.Hex.Trim()),
+            NormalColor = AlertOptions[0].Hex,
+            WarningColor = AlertOptions[1].Hex,
+            CriticalColor = AlertOptions[2].Hex,
+        };
+        var i = Presets.ToList().FindIndex(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+        if (i >= 0) Presets[i] = p; else Presets.Add(p);
+        _service.Current.Presets = Presets.ToList();
+        _presetsDirty = true;
+        SelectedPreset = p;
+    }
+
+    private void LoadPreset()
+    {
+        if (SelectedPreset is not { } p) return;
+        DarkTheme = p.DarkTheme;
+        foreach (var o in MainOptions.Concat(GadgetOptions))
+            o.Hex = p.ColorOverrides.TryGetValue(o.Key, out var v) ? v : "";
+        AlertOptions[0].Hex = p.NormalColor;
+        AlertOptions[1].Hex = p.WarningColor;
+        AlertOptions[2].Hex = p.CriticalColor;
+        GadgetOpacity = p.GadgetOpacity;
+        Apply();
+    }
+
+    private void DeletePreset()
+    {
+        if (SelectedPreset is not { } p) return;
+        Presets.Remove(p);
+        _service.Current.Presets = Presets.ToList();
+        _presetsDirty = true;
+        SelectedPreset = null;
     }
 
     private void Save()

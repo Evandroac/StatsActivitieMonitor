@@ -5,8 +5,21 @@ namespace StatsMonitor.Settings;
 
 public enum GadgetDisplayMode { Floating, Taskbar }
 
+public sealed class AppearancePreset
+{
+    public string Name { get; set; } = "";
+    public bool DarkTheme { get; set; } = true;
+    public Dictionary<string, string> ColorOverrides { get; set; } = new();
+    public int GadgetOpacity { get; set; } = 80;
+    public string NormalColor { get; set; } = "#3DDC84";
+    public string WarningColor { get; set; } = "#FFC107";
+    public string CriticalColor { get; set; } = "#FF4D4F";
+}
+
 public sealed class AppSettings
 {
+    public List<AppearancePreset> Presets { get; set; } = new();
+
     public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
     public int UpdateIntervalMs { get; set; } = 1000;
     public bool RunAtStartup { get; set; }

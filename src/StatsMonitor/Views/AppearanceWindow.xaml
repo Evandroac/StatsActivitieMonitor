@@ -53,7 +53,17 @@
     </Window.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
-            <TextBlock Text="Tema base" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+            <TextBlock Text="Minhas personalizações" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+            <ComboBox ItemsSource="{Binding Presets}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedPreset}"/>
+            <DockPanel Margin="0,6,0,0">
+                <Button DockPanel.Dock="Right" Content="Excluir" Style="{StaticResource PillButton}" Command="{Binding DeletePresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="Carregar" Style="{StaticResource PillButton}" Command="{Binding LoadPresetCommand}" Margin="8,0,0,0"/>
+                <Button DockPanel.Dock="Right" Content="Salvar como" Style="{StaticResource PillButton}" Command="{Binding SavePresetCommand}" Margin="8,0,0,0"/>
+                <TextBox Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" ToolTip="Nome da personalização"/>
+            </DockPanel>
+            <TextBlock Text="Carregar mostra a prévia; use Salvar para manter a aplicação. Os presets criados ou excluídos são mantidos mesmo ao cancelar." Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+
+            <TextBlock Text="Tema base" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
             <StackPanel Orientation="Horizontal">
                 <RadioButton GroupName="Theme" Content="Escuro" IsChecked="{Binding DarkTheme}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
                 <RadioButton GroupName="Theme" Content="Claro" IsChecked="{Binding LightTheme}" Foreground="{DynamicResource TextPrimary}"/>
