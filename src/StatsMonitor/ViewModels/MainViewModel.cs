@@ -46,6 +46,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public Brush StatusBrush { get => _statusBrush; private set => Set(ref _statusBrush, value); }
     public string FpsText { get => _fpsText; set => Set(ref _fpsText, value); }
     private string _fpsText = "--";
+    private bool _fpsActive;
+    public bool FpsActive { get => _fpsActive; set => Set(ref _fpsActive, value); }
     public string SensorNote { get => _sensorNote; private set => Set(ref _sensorNote, value); }
     public bool ShowTemperatures { get => _showTemperatures; private set => Set(ref _showTemperatures, value); }
 

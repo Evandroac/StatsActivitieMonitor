@@ -42,7 +42,7 @@ public sealed class FpsMonitor : IDisposable
         if (!_settings.Current.ShowFpsGadget)
         {
             StopTrace();
-            _vm.FpsText = "--";
+            _vm.FpsActive = false;
             return;
         }
 
@@ -58,10 +58,11 @@ public sealed class FpsMonitor : IDisposable
         if (fgPid > 0 && counts.TryGetValue(fgPid, out int frames) && frames >= 5 && seconds > 0)
         {
             _vm.FpsText = (frames / seconds).ToString("0");
+            _vm.FpsActive = true;
         }
         else
         {
-            _vm.FpsText = "--";
+            _vm.FpsActive = false;
         }
     }
 

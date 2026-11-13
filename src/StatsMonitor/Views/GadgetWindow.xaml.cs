@@ -11,6 +11,7 @@ namespace StatsMonitor.Views;
 public partial class GadgetWindow : Window
 {
     private readonly SettingsService _settings;
+    private readonly MainViewModel _vm;
 
     public event EventHandler? RestoreRequested;
 
@@ -19,6 +20,8 @@ public partial class GadgetWindow : Window
         InitializeComponent();
         DataContext = vm;
         _settings = settings;
+        _vm = vm;
+        vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.FpsActive) && IsVisible) { ApplyMode(); Reposition(); } };
 
         MouseLeftButtonDown += OnMouseDown;
         LocationChanged += (_, _) => SavePosition();
@@ -67,7 +70,7 @@ public partial class GadgetWindow : Window
         FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
         FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
         FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
-        FFps.Visibility = TFps.Visibility = V(s.ShowFpsGadget);
+        FFps.Visibility = TFps.Visibility = V(s.ShowFpsGadget && _vm.FpsActive);
 
         if (taskbar) ReserveTaskbarWidths(s);
     }
