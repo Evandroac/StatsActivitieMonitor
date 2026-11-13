@@ -199,6 +199,11 @@ public partial class MainWindow : Window
 
     private void OnCopyAll(object sender, RoutedEventArgs e)
     {
+        if (PageHost.Visibility == Visibility.Visible && PageHost.Content is DependencyObject page)
+        {
+            CopyPage(page);
+            return;
+        }
         var sb = new System.Text.StringBuilder();
         sb.AppendLine($"Stats Monitor - {_vm.LastUpdateText}");
         void Processor(UIElement card, ViewModels.ComponentViewModel c)
@@ -238,6 +243,35 @@ public partial class MainWindow : Window
         sb.AppendLine().AppendLine($"Tempo ligado: {_vm.UptimeText}");
         sb.AppendLine($"Status do hardware: {_vm.StatusText}");
         try { Clipboard.SetText(sb.ToString()); }
+        catch (System.Runtime.InteropServices.COMException) { }
+    }
+
+    // Collects the visible texts and control states of a page, in on-screen order.
+    private static void CopyPage(DependencyObject page)
+    {
+        var lines = new List<string>();
+        void Walk(DependencyObject d)
+        {
+            if (d is UIElement { IsVisible: false }) return;
+            switch (d)
+            {
+                case System.Windows.Controls.Primitives.ToggleButton { Content: string label } tb when tb is CheckBox or RadioButton:
+                    lines.Add($"{(tb.IsChecked == true ? "[x]" : "[ ]")} {label}");
+                    return;
+                case TextBlock tx when !string.IsNullOrWhiteSpace(tx.Text):
+                    lines.Add(tx.Text.Trim());
+                    return;
+                case TextBox box when !string.IsNullOrWhiteSpace(box.Text):
+                    lines.Add($"= {box.Text}");
+                    return;
+                case Button { Content: string s } when s.Length > 2:
+                    return;
+            }
+            int n = System.Windows.Media.VisualTreeHelper.GetChildrenCount(d);
+            for (int i = 0; i < n; i++) Walk(System.Windows.Media.VisualTreeHelper.GetChild(d, i));
+        }
+        Walk(page);
+        try { Clipboard.SetText("Stats Monitor" + Environment.NewLine + string.Join(Environment.NewLine, lines)); }
         catch (System.Runtime.InteropServices.COMException) { }
     }
 

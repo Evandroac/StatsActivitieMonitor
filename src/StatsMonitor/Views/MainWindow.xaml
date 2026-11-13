@@ -234,7 +234,8 @@
         </DockPanel>
     </Border>
 
-    <ContentControl x:Name="PageHost" Grid.Column="1" Margin="14" Visibility="Collapsed" IsTabStop="False"/>
+    <ContentControl x:Name="PageHost" Grid.Column="1" Margin="14,58,14,14" Visibility="Collapsed" IsTabStop="False"/>
+    <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,18,24,0" Content="📋" FontSize="16" Style="{StaticResource PillButton}" ToolTip="Copiar todas as informações exibidas na tela neste momento" Click="OnCopyAll" Visibility="{Binding Visibility, ElementName=PageHost}"/>
 
     <Grid x:Name="MainPage" Grid.Column="1" Margin="14">
         <Grid.RowDefinitions>
