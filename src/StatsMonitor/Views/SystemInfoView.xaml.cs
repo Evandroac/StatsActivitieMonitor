@@ -55,7 +55,7 @@ public partial class SystemInfoView : UserControl
         foreach (var g in _groups)
         {
             sb.AppendLine($"[{g.Title}]");
-            foreach (var l in g.Lines) sb.AppendLine($"{l.Label}: {l.Value}");
+            foreach (var l in g.Lines) sb.AppendLine(l.Value.Length == 0 ? l.Label : $"{l.Label}: {l.Value}");
             sb.AppendLine();
         }
         try { Clipboard.SetText(sb.ToString()); }

@@ -1,4 +1,4 @@
-using StatsMonitor.Helpers;
+﻿using StatsMonitor.Helpers;
 using System.Globalization;
 using System.Management;
 
@@ -46,17 +46,11 @@ public static class PeripheralInfoService
                 string name = Decode(m["UserFriendlyName"]);
                 string maker = Decode(m["ManufacturerName"]);
                 string code = Decode(m["ProductCodeID"]);
-                list.Add(new(string.IsNullOrWhiteSpace(name) ? Loc.T("Monitor") : name,
-                    $"{maker} {code} · {S(m, "YearOfManufacture")}".Trim()));
+                list.Add(new(string.IsNullOrWhiteSpace(name) ? Loc.T("Monitor") : name, ""));
             }
         }
         catch { /* class unavailable */ }
 
-        foreach (var g in SystemInfoService.AllOf("Win32_VideoController", "Name", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate"))
-        {
-            if (S(g, "CurrentHorizontalResolution") == NA) continue;
-            list.Add(new(Loc.T("Resolução ({0})", S(g, "Name")), $"{S(g, "CurrentHorizontalResolution")}x{S(g, "CurrentVerticalResolution")} @ {S(g, "CurrentRefreshRate")} Hz"));
-        }
         return list;
     }
 
@@ -74,10 +68,10 @@ public static class PeripheralInfoService
             using var searcher = new ManagementObjectSearcher($"SELECT {string.Join(",", props)} FROM {cls}" + (where is null ? "" : $" WHERE {where}"));
             foreach (ManagementBaseObject o in searcher.Get())
             {
-                var (label, value) = map(o);
+                var (label, _) = map(o);
                 if (exclude is not null && exclude.Any(x => label.Contains(x, StringComparison.OrdinalIgnoreCase))) continue;
-                if (list.Any(l => l.Label == label && l.Value == value)) continue;
-                list.Add(new(label, value));
+                if (list.Any(l => l.Label == label)) continue;
+                list.Add(new(label, ""));
             }
         }
         catch { /* class unavailable */ }

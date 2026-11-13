@@ -27,6 +27,20 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <DataTemplate x:Key="FullLine">
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="220"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center"/>
+                                                    <Button Tag="{Binding Value}" Click="OnCopy"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource CopyButton}"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value="N/D"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="-"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+        <DataTemplate x:Key="NameLine"><StackPanel Orientation="Horizontal" Margin="0,2"><TextBlock Text="{Binding Label}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Tag="{Binding Label}" Click="OnCopy"/></StackPanel></DataTemplate>
     </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
@@ -40,23 +54,7 @@
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
-                                <ItemsControl ItemsSource="{Binding Lines}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0,2">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="220"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}"/>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center"/>
-                                                    <Button Tag="{Binding Value}" Click="OnCopy"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource CopyButton}"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value="N/D"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="-"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
-                                                </StackPanel>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Lines}"><ItemsControl.ItemTemplate><DataTemplate><ContentControl Content="{Binding}" ContentTemplate="{StaticResource FullLine}"><ContentControl.Style><Style TargetType="ContentControl"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value=""><Setter Property="ContentTemplate" Value="{StaticResource NameLine}"/></DataTrigger></Style.Triggers></Style></ContentControl.Style></ContentControl></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
