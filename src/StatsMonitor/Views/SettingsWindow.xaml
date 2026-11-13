@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         xmlns:local="clr-namespace:StatsMonitor.Views"
-        Title="Configurações" Width="640" MinWidth="560" SizeToContent="Height" ResizeMode="CanResize"
+        Title="Configurações" Width="640" MinWidth="520" MinHeight="360" SizeToContent="Height" ResizeMode="CanResize"
         WindowStartupLocation="CenterOwner" Background="{DynamicResource WindowBg}" FontFamily="Segoe UI">
     <Window.Resources>
         <Style x:Key="Field" TargetType="TextBox">
@@ -11,7 +11,10 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
     </Window.Resources>
-    <StackPanel Margin="20">
+    <Grid>
+    <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="20,20,20,8">
         <TextBlock Text="Geral" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="Intervalo de atualização (s):" VerticalAlignment="Center" Width="200"/>
@@ -85,10 +88,12 @@
             <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="Temperatura (°C) a partir da qual o valor fica em atenção" Value="{Binding GpuWarnTemp}"/>
             <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="Temperatura (°C) a partir da qual o valor fica crítico" Value="{Binding GpuCritTemp}"/>
         </Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+    </StackPanel>
+    </ScrollViewer>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20,8,20,16" Grid.Row="1">
             <Button Content="Cancelar" ToolTip="Fecha e desfaz o que não foi aplicado ou salvo" Style="{StaticResource PillButton}" IsCancel="True" Margin="0,0,8,0"/>
             <Button Content="Aplicar" ToolTip="Aplica e salva as alterações sem fechar a janela" Style="{StaticResource PillButton}" Command="{Binding ApplyCommand}" Margin="0,0,8,0"/>
             <Button Content="Salvar" ToolTip="Aplica, salva e fecha a janela" Style="{StaticResource PillButton}" IsDefault="True" Command="{Binding SaveCommand}"/>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

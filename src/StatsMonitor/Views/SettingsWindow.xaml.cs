@@ -14,6 +14,7 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
         DataContext = _vm = vm;
+        MaxHeight = SystemParameters.WorkArea.Height;
         vm.Saved += Close;
         Closed += (_, _) => { if (!vm.IsSaved) vm.Revert(); };
 
