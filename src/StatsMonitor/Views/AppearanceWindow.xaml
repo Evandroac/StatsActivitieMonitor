@@ -14,8 +14,40 @@
                 <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
                 <TextBox Grid.Column="1" Width="100" HorizontalAlignment="Left" Text="{Binding Hex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTip="Hexadecimal (#RRGGBB ou #AARRGGBB). Vazio = padrão do tema"/>
-                <Border Grid.Column="2" Width="40" Height="22" CornerRadius="4" Background="{Binding Preview}"
-                        BorderBrush="{DynamicResource CardBorder}" BorderThickness="1"/>
+                <ToggleButton x:Name="Toggle" Grid.Column="2" Width="40" Height="22" Cursor="Hand" ToolTip="Abrir seletor RGB"
+                              IsChecked="{Binding IsOpen, ElementName=Pop, Mode=TwoWay}">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border CornerRadius="4" Background="{Binding Preview}"
+                                                BorderBrush="{DynamicResource TextSecondary}" BorderThickness="1"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOpen, ElementName=Pop}" Value="True">
+                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
+                <Popup x:Name="Pop" PlacementTarget="{Binding ElementName=Toggle}" Placement="Left" StaysOpen="False" AllowsTransparency="True">
+                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1"
+                            CornerRadius="8" Padding="12" Margin="6">
+                        <StackPanel Width="230">
+                            <Border Height="28" CornerRadius="4" Background="{Binding Preview}" Margin="0,0,0,8"/>
+                            <DockPanel><TextBlock Text="R" Width="18" Foreground="#FF5555"/><TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding R, StringFormat={}{0:0}}"/>
+                                <Slider Minimum="0" Maximum="255" Value="{Binding R}"/></DockPanel>
+                            <DockPanel><TextBlock Text="G" Width="18" Foreground="#55DD55"/><TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding G, StringFormat={}{0:0}}"/>
+                                <Slider Minimum="0" Maximum="255" Value="{Binding G}"/></DockPanel>
+                            <DockPanel><TextBlock Text="B" Width="18" Foreground="#5599FF"/><TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding B, StringFormat={}{0:0}}"/>
+                                <Slider Minimum="0" Maximum="255" Value="{Binding B}"/></DockPanel>
+                        </StackPanel>
+                    </Border>
+                </Popup>
             </Grid>
         </DataTemplate>
     </Window.Resources>

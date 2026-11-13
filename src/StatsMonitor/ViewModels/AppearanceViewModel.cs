@@ -25,13 +25,26 @@ public sealed class ColorOption : ObservableObject
     public string Hex
     {
         get => _hex;
-        set { if (Set(ref _hex, value)) Raise(nameof(Preview)); }
+        set
+        {
+            if (!Set(ref _hex, value)) return;
+            Raise(nameof(Preview)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B));
+        }
     }
 
-    public Brush Preview => new SolidColorBrush(ThemeHelper.TryParseColor(_hex, out var c) ? c : _default());
+    private Color Current => ThemeHelper.TryParseColor(_hex, out var c) ? c : _default();
+
+    public double R { get => Current.R; set => SetChannel(Color.FromArgb(Current.A, (byte)value, Current.G, Current.B)); }
+    public double G { get => Current.G; set => SetChannel(Color.FromArgb(Current.A, Current.R, (byte)value, Current.B)); }
+    public double B { get => Current.B; set => SetChannel(Color.FromArgb(Current.A, Current.R, Current.G, (byte)value)); }
+
+    private void SetChannel(Color c) =>
+        Hex = c.A == 255 ? $"#{c.R:X2}{c.G:X2}{c.B:X2}" : $"#{c.A:X2}{c.R:X2}{c.G:X2}{c.B:X2}";
+
+    public Brush Preview => new SolidColorBrush(Current);
     public string DefaultHex => _default().ToString();
 
-    public void Refresh() => Raise(nameof(Preview));
+    public void Refresh() { Raise(nameof(Preview)); Raise(nameof(R)); Raise(nameof(G)); Raise(nameof(B)); }
     public void Reset() => Hex = "";
 }
 
