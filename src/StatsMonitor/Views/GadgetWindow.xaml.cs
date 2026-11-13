@@ -25,12 +25,13 @@ public partial class GadgetWindow : Window
         SizeChanged += (_, _) => { if (IsVisible && IsTaskbarMode) Reposition(); };
 
         // Re-check periodically: other tray widgets may appear/disappear, and the taskbar may cover us.
-        var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+        var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
         timer.Tick += (_, _) =>
         {
             if (!IsVisible || !IsTaskbarMode) return;
             Reposition();
-            Topmost = false; Topmost = true;
+            var h = new WindowInteropHelper(this).Handle;
+            SetWindowPos(h, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010); // TOPMOST, NOSIZE|NOMOVE|NOACTIVATE
         };
         timer.Start();
     }
@@ -88,8 +89,10 @@ public partial class GadgetWindow : Window
         int widthPx = (int)Math.Ceiling(ActualWidth * dpi.DpiScaleX);
         int gapPx = (int)Math.Round(4 * dpi.DpiScaleX);
         rightEdge = AvoidNeighbours(rightEdge, widthPx, gapPx, bar);
-        Left = rightEdge / dpi.DpiScaleX - ActualWidth - 4;
-        Top = (bar.Top + bar.Bottom) / 2.0 / dpi.DpiScaleY - ActualHeight / 2;
+        double newLeft = rightEdge / dpi.DpiScaleX - ActualWidth - 4;
+        double newTop = (bar.Top + bar.Bottom) / 2.0 / dpi.DpiScaleY - ActualHeight / 2;
+        if (Math.Abs(Left - newLeft) > 0.5) Left = newLeft;
+        if (Math.Abs(Top - newTop) > 0.5) Top = newTop;
         return true;
     }
 
@@ -162,6 +165,9 @@ public partial class GadgetWindow : Window
 
     private const int GWL_EXSTYLE = -20;
     private const int WS_EX_TOPMOST = 0x8;
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr after, int x, int y, int cx, int cy, uint flags);
+
     private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
     [DllImport("user32.dll")]
