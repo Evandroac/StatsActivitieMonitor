@@ -21,7 +21,7 @@ public partial class MainWindow : Window
         _settings = settings;
         RestoreWindowState();
         ChkSimple.IsChecked = settings.Current.SimplifiedView;
-        if (settings.Current.SidebarPinned) { NavPin.Tag = "active"; SetMenu(true); }
+        if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
         Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
@@ -409,7 +409,12 @@ public partial class MainWindow : Window
 
     private bool _menuOpen;
 
-    private void OnToggleMenu(object sender, RoutedEventArgs e) => SetMenu(!_menuOpen);
+    private void OnToggleMenu(object sender, RoutedEventArgs e)
+    {
+        SetMenu(!_menuOpen);
+        _settings.Current.SidebarPinned = _menuOpen;
+        _settings.Save();
+    }
 
     private void SetMenu(bool open)
     {
@@ -428,14 +433,6 @@ public partial class MainWindow : Window
         _settings.Save();
         _vm.ApplySettings();
         ApplyPanelSettings();
-    }
-
-    private void OnTogglePin(object sender, RoutedEventArgs e)
-    {
-        _settings.Current.SidebarPinned = !_settings.Current.SidebarPinned;
-        _settings.Save();
-        NavPin.Tag = _settings.Current.SidebarPinned ? "active" : null;
-        SetMenu(_settings.Current.SidebarPinned);
     }
 
     private void OnSearchIcon(object sender, RoutedEventArgs e)

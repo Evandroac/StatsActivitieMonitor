@@ -95,6 +95,7 @@ public static class LocData
         ["Ler sensores de disco e placa-mãe com menos frequência"] = "Read disk and motherboard sensors less often",
         ["Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais"] = "Updates disks and motherboard every 10 s: saves resources, but those values are less current",
         ["SEÇÕES"] = "SECTIONS",
+        ["Expandir ou recolher o menu (fica salvo)"] = "Expand or collapse the menu (saved)",
         ["🖼️  Gadget"] = "🖼️  Gadget",
         ["🔔  Alertas"] = "🔔  Alerts",
         ["🎨  Personalização"] = "🎨  Customization",

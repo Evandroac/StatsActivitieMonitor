@@ -187,11 +187,8 @@
             <Button x:Name="NavSettings" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" AutomationProperties.Name="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" Click="OnOpenSettings">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSettings" Text="{h:Tr 'Configurações'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
-        <Button x:Name="NavPin" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)'}" AutomationProperties.Name="{h:Tr 'Alternar menu lateral: fixar visível ou deixar recolhido (fica salvo)'}" Click="OnTogglePin">
-                <StackPanel Orientation="Horizontal"><TextBlock Text="📌" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/></StackPanel>
-            </Button>
         <StackPanel x:Name="NavPanel" Width="48">
-            <Button x:Name="NavMenu" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Menu'}" AutomationProperties.Name="{h:Tr 'Menu'}" Click="OnToggleMenu">
+            <Button x:Name="NavMenu" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Expandir ou recolher o menu (fica salvo)'}" AutomationProperties.Name="{h:Tr 'Expandir ou recolher o menu (fica salvo)'}" Click="OnToggleMenu">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="☰" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMenu" Text="{h:Tr 'Menu'}" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
             <Grid x:Name="SearchRow" Height="40" Margin="4,1">
