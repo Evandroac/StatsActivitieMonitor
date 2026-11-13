@@ -26,6 +26,12 @@
         <RadioButton GroupName="GadgetMode" ToolTip="Gadget solto sobre a tela, que pode ser arrastado" Content="Sobre a tela (flutuante, arrastável)" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Gadget compacto ao lado da área de notificação" Content="Na barra de tarefas, canto direito (widget)" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Ao minimizar, o app apenas minimiza, sem exibir gadget" Content="Não fazer nada (sem gadget)" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <TextBlock Text="Pré-visualização do gadget (valores de exemplo)" Style="{StaticResource Caption}" Margin="0,10,0,2"/>
+        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="10" ToolTip="Mostra como o gadget ficará com as opções marcadas acima">
+            <Border x:Name="PreviewBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" HorizontalAlignment="Left" MinHeight="28">
+                <StackPanel x:Name="PreviewPanel"/>
+            </Border>
+        </Border>
 
         <TextBlock Text="Painéis exibidos" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <Grid>
