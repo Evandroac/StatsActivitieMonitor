@@ -17,6 +17,8 @@
             <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
             <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
             <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
+            <Button Content="{h:Tr '⤓  Exportar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
+            <Button Content="{h:Tr '⤒  Importar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
         </StackPanel>
     </Border>
     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -40,6 +42,7 @@
         </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra o gadget quando o app é minimizado'}" Content="{h:Tr 'Exibir gadget'}" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
         <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
@@ -113,6 +116,7 @@
                 <CheckBox Content="{h:Tr 'Memória RAM'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowRamMain}"/>
                 <CheckBox Content="{h:Tr 'Discos'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowVramMain}"/>
                 <CheckBox Content="{h:Tr 'Rede / Internet'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowNetworkMain}"/>
+        <CheckBox Content="{h:Tr 'Sensores (ventiladores, energia, tensões, bateria)'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowSensorsMain}"/>
             </StackPanel>
             <StackPanel Grid.Column="1">
                 <TextBlock Text="{h:Tr 'Gadget (minimizado)'}" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
@@ -142,6 +146,32 @@
             <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica em atenção'}" Value="{Binding GpuWarnTemp}"/>
             <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="0" Maximum="150" Step="1" ToolTip="{h:Tr 'Temperatura (°C) a partir da qual o valor fica crítico'}" Value="{Binding GpuCritTemp}"/>
         </Grid>
+
+        <TextBlock Text="{h:Tr '🔔  Notificações de alerta'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
+        <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="50" Maximum="100" Step="1" ToolTip="{h:Tr 'Uso (%) de CPU, GPU ou RAM a partir do qual o alerta é emitido'}" Value="{Binding AlertLoadPercent}"/>
+        </StackPanel>
+
+        <TextBlock Text="{h:Tr '⌨️  Atalho global'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <CheckBox Content="{h:Tr 'Ativar atalho para mostrar/ocultar o gadget'}" IsChecked="{Binding HotkeyEnabled}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Atalho:'}" VerticalAlignment="Center" Width="200"/>
+            <ComboBox Width="160" ItemsSource="{Binding HotkeyOptions}" SelectedItem="{Binding GadgetHotkey, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Atalho:'}"/>
+        </StackPanel>
+
+        <TextBlock Text="{h:Tr '🎛️  Perfis'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <ComboBox Width="200" ItemsSource="{Binding ProfileNames}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Perfis'}"/>
+            <Button Content="{h:Tr 'Aplicar'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnApplyProfile"/>
+            <Button Content="{h:Tr 'Excluir'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnDeleteProfile"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBox Width="200" Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{h:Tr 'Nome do perfil (vazio = perfil selecionado)'}" AutomationProperties.Name="{h:Tr 'Nome do perfil'}"/>
+            <Button Content="{h:Tr 'Salvar atual no perfil'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnSaveProfile"/>
+        </StackPanel>
     </StackPanel>
     </ScrollViewer>
     </Grid>

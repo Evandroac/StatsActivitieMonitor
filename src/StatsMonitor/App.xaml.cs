@@ -32,9 +32,11 @@ public partial class App : Application
 
         var settings = new SettingsService();
         settings.Load();
+        if (settings.IsFirstRun) { settings.Current.Language = SettingsService.DetectLanguage(); settings.Save(); }
         Loc.SetLanguage(settings.Current.Language);
         Units.SetFahrenheit(settings.Current.TempUnit == "F");
         ThemeHelper.Apply(settings.Current);
+        Microsoft.Win32.SystemEvents.UserPreferenceChanged += (_, _) => Dispatcher.BeginInvoke(() => ThemeHelper.Apply(settings.Current));
 
         _viewModel = new MainViewModel(new LibreHardwareMonitorService(), settings);
         var main = new MainWindow(_viewModel, settings);

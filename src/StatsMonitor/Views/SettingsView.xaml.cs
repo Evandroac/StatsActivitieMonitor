@@ -37,6 +37,29 @@ public partial class SettingsView : UserControl
         RefreshPreview();
     }
 
+    private void OnApplyProfile(object sender, RoutedEventArgs e) => _vm.ApplySelectedProfile();
+    private void OnSaveProfile(object sender, RoutedEventArgs e) => _vm.SaveProfile();
+    private void OnDeleteProfile(object sender, RoutedEventArgs e) => _vm.DeleteProfile();
+
+    private const string JsonFilter = "JSON (*.json)|*.json";
+
+    private void OnExport(object sender, RoutedEventArgs e)
+    {
+        var dlg = new Microsoft.Win32.SaveFileDialog { Filter = JsonFilter, FileName = "StatsMonitor-settings.json" };
+        if (dlg.ShowDialog() != true) return;
+        try { _vm.Export(dlg.FileName); }
+        catch (Exception ex) { MessageBox.Show(ex.Message, "Stats Monitor", MessageBoxButton.OK, MessageBoxImage.Warning); }
+    }
+
+    private void OnImport(object sender, RoutedEventArgs e)
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog { Filter = JsonFilter };
+        if (dlg.ShowDialog() != true) return;
+        if (!_vm.Import(dlg.FileName))
+            MessageBox.Show(Loc.T("Arquivo de configurações inválido."), "Stats Monitor", MessageBoxButton.OK, MessageBoxImage.Warning);
+        else RefreshPreview();
+    }
+
     private void RefreshPreview()
     {
         var vm = _vm;

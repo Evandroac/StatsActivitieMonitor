@@ -8,8 +8,9 @@ public static class ThemeHelper
 {
     public static void Apply(AppSettings s)
     {
-        bool dark = s.DarkTheme;
-        var uri = new Uri($"Themes/{(dark ? "Dark" : "Light")}.xaml", UriKind.Relative);
+        bool hc = SystemTheme.IsHighContrast;
+        bool dark = ResolveDark(s);
+        var uri = new Uri($"Themes/{(hc ? "HighContrast" : dark ? "Dark" : "Light")}.xaml", UriKind.Relative);
         var dicts = Application.Current.Resources.MergedDictionaries;
         var existing = dicts.FirstOrDefault(d => d.Source?.OriginalString.StartsWith("Themes/") == true);
         if (existing != null) dicts.Remove(existing);
@@ -20,13 +21,14 @@ public static class ThemeHelper
         foreach (var key in ColorKeys)
         {
             Application.Current.Resources.Remove(key);
-            if (s.ColorOverrides.TryGetValue(key, out var hex) && TryParseColor(hex, out var c))
+            if (!hc && s.ColorOverrides.TryGetValue(key, out var hex) && TryParseColor(hex, out var c))
                 Application.Current.Resources[key] = Frozen(c);
         }
 
         ApplyCardChrome(dark);
 
         Application.Current.Resources.Remove("GadgetBg");
+        if (hc) return;
         var baseColor = s.ColorOverrides.TryGetValue("GadgetBg", out var gh) && TryParseColor(gh, out var gc)
             ? gc
             : ((SolidColorBrush)theme["GadgetBg"]).Color;
@@ -34,6 +36,8 @@ public static class ThemeHelper
         else if (!s.ColorOverrides.ContainsKey("GadgetBg")) return;
         Application.Current.Resources["GadgetBg"] = Frozen(baseColor);
     }
+
+    public static bool ResolveDark(AppSettings s) => s.FollowSystemTheme ? SystemTheme.IsDark() : s.DarkTheme;
 
     // Card fill/edge/shadow derive from the active theme colors (including user overrides).
     private static void ApplyCardChrome(bool dark)

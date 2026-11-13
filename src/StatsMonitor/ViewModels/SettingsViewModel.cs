@@ -18,6 +18,7 @@ public sealed class SettingsViewModel : ObservableObject
         _language = service.Current.Language == "en" ? "en" : "pt";
         _fahrenheit = service.Current.TempUnit == "F";
         _loading = false;
+        RefreshProfiles();
         _timer.Tick += (_, _) => Flush();
     }
 
@@ -36,6 +37,9 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
+        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; AlertSound = s.AlertSound;
+        AlertLoadPercent = s.AlertLoadPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
+        ShowSensorsMain = s.ShowSensorsMain;
     }
 
     /// <summary>Restores every option on this page to its default value and saves.</summary>
@@ -127,6 +131,88 @@ public sealed class SettingsViewModel : ObservableObject
     private double _gpuWarnTemp; public double GpuWarnTemp { get => _gpuWarnTemp; set { if (_gpuWarnTemp != value) { _gpuWarnTemp = value; AutoSave(); } } }
     private double _gpuCritTemp; public double GpuCritTemp { get => _gpuCritTemp; set { if (_gpuCritTemp != value) { _gpuCritTemp = value; AutoSave(); } } }
 
+    private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; AutoSave(); } } }
+    private bool _notifyAlerts; public bool NotifyAlerts { get => _notifyAlerts; set { if (_notifyAlerts != value) { _notifyAlerts = value; AutoSave(); } } }
+    private bool _alertSound; public bool AlertSound { get => _alertSound; set { if (_alertSound != value) { _alertSound = value; AutoSave(); } } }
+    private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }
+    private bool _hotkeyEnabled; public bool HotkeyEnabled { get => _hotkeyEnabled; set { if (_hotkeyEnabled != value) { _hotkeyEnabled = value; AutoSave(); } } }
+    private string _gadgetHotkey = "Ctrl+Alt+G"; public string GadgetHotkey { get => _gadgetHotkey; set { if (_gadgetHotkey != value && value is not null) { _gadgetHotkey = value; AutoSave(); } } }
+    private bool _showSensorsMain; public bool ShowSensorsMain { get => _showSensorsMain; set { if (_showSensorsMain != value) { _showSensorsMain = value; AutoSave(); } } }
+
+    public string[] HotkeyOptions { get; } = ["Ctrl+Alt+G", "Ctrl+Alt+S", "Ctrl+Shift+G", "Ctrl+Alt+M", "Win+Shift+G"];
+
+    // Profiles
+    public System.Collections.ObjectModel.ObservableCollection<string> ProfileNames { get; } = new();
+    private string? _selectedProfile;
+    public string? SelectedProfile { get => _selectedProfile; set { _selectedProfile = value; Raise(); } }
+    private string _newProfileName = "";
+    public string NewProfileName { get => _newProfileName; set { _newProfileName = value; Raise(); } }
+
+    /// <summary>Raised when the user picks a profile to apply; the host applies it and reopens this page.</summary>
+    public event Action<string>? ProfileRequested;
+
+    public void RefreshProfiles()
+    {
+        ProfileService.EnsureDefaults(_service.Current);
+        ProfileNames.Clear();
+        foreach (var p in _service.Current.Profiles) ProfileNames.Add(p.Name);
+        _selectedProfile = _service.Current.ActiveProfile is { } a && ProfileNames.Contains(a) ? a : ProfileNames.FirstOrDefault();
+        Raise(nameof(SelectedProfile));
+    }
+
+    public void ApplySelectedProfile()
+    {
+        Flush();
+        if (SelectedProfile is { Length: > 0 } n) ProfileRequested?.Invoke(n);
+    }
+
+    public void SaveProfile()
+    {
+        Flush();
+        var name = string.IsNullOrWhiteSpace(NewProfileName) ? SelectedProfile : NewProfileName.Trim();
+        if (string.IsNullOrWhiteSpace(name)) return;
+        ProfileService.Capture(_service.Current, name);
+        _service.Save();
+        NewProfileName = "";
+        RefreshProfiles();
+        SelectedProfile = name;
+    }
+
+    public void DeleteProfile()
+    {
+        if (SelectedProfile is not { } n) return;
+        ProfileService.Delete(_service.Current, n);
+        _service.Save();
+        RefreshProfiles();
+    }
+
+    public void Export(string path)
+    {
+        Flush();
+        _service.Export(path);
+    }
+
+    /// <summary>Imports settings, then re-applies language, unit and theme. Returns false for an invalid file.</summary>
+    public bool Import(string path)
+    {
+        _timer.Stop();
+        if (!_service.Import(path)) return false;
+        var s = _service.Current;
+        _loading = true;
+        Load(s);
+        _language = s.Language == "en" ? "en" : "pt";
+        _fahrenheit = s.TempUnit == "F";
+        _loading = false;
+        Loc.SetLanguage(_language);
+        Units.SetFahrenheit(_fahrenheit);
+        ThemeHelper.Apply(s);
+        StartupService.SetEnabled(s.RunAtStartup);
+        RefreshProfiles();
+        Raise(string.Empty);
+        _onApplied();
+        return true;
+    }
+
     private void Apply()
     {
         var s = _service.Current;
@@ -145,6 +231,12 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowVramGadget = ShowVramGadget; s.ShowNetworkGadget = ShowNetworkGadget; s.ShowFpsGadget = ShowFpsGadget;
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
+
+        s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.AlertSound = AlertSound;
+        s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.HotkeyEnabled = HotkeyEnabled;
+        s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
+        s.ShowSensorsMain = ShowSensorsMain;
+        ThemeHelper.Apply(s);
 
         _onApplied();
     }

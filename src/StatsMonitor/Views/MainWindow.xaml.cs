@@ -22,7 +22,7 @@ public partial class MainWindow : Window
         RestoreWindowState();
         if (settings.Current.SidebarPinned) { NavPin.Tag = "active"; SetMenu(true); }
         ArrangeCards();
-        Loaded += (_, _) => UpdateGadget();
+        Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
         ContentRendered += (_, _) => FitToContent();
         SizeChanged += (_, _) => ArrangeCards();
@@ -43,7 +43,11 @@ public partial class MainWindow : Window
         var menu = new System.Windows.Forms.ContextMenuStrip();
         var openItem = menu.Items.Add(Loc.T("Abrir Stats Monitor"), null, (_, _) => RestoreFromGadget());
         var exitItem = menu.Items.Add(Loc.T("Sair"), null, (_, _) => ExitApp());
-        Loc.LanguageChanged += () => { openItem.Text = Loc.T("Abrir Stats Monitor"); exitItem.Text = Loc.T("Sair"); };
+        var profilesItem = new System.Windows.Forms.ToolStripMenuItem();
+        menu.Items.Insert(1, profilesItem);
+        menu.Opening += (_, _) => RebuildProfileMenu(profilesItem);
+        RebuildProfileMenu(profilesItem);
+        Loc.LanguageChanged += () => { openItem.Text = Loc.T("Abrir Stats Monitor"); exitItem.Text = Loc.T("Sair"); RebuildProfileMenu(profilesItem); };
         _tray = new System.Windows.Forms.NotifyIcon
         {
             Text = "Stats Monitor",
@@ -52,6 +56,12 @@ public partial class MainWindow : Window
             Icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!) ?? System.Drawing.SystemIcons.Application,
         };
         _tray.DoubleClick += (_, _) => RestoreFromGadget();
+
+        _vm.AlertRaised += a =>
+        {
+            _tray?.ShowBalloonTip(8000, a.Title, a.Message, System.Windows.Forms.ToolTipIcon.Warning);
+            if (_settings.Current.AlertSound) System.Media.SystemSounds.Exclamation.Play();
+        };
     }
 
     private void ExitApp()
@@ -169,12 +179,67 @@ public partial class MainWindow : Window
     }
 
     /// <summary>Shows the gadget while minimized (or always, if configured) and when enabled in settings.</summary>
+    private bool? _gadgetOverride;
+    private GlobalHotkey? _hotkey;
+
     public void UpdateGadget()
     {
         if (_gadget == null) return;
         var s = _settings.Current;
-        bool visible = s.ShowGadget && s.GadgetMode != GadgetDisplayMode.None && (s.AlwaysShowGadget || WindowState == WindowState.Minimized);
+        bool visible = _gadgetOverride ?? (s.ShowGadget && s.GadgetMode != GadgetDisplayMode.None && (s.AlwaysShowGadget || WindowState == WindowState.Minimized));
+        if (visible && s.GadgetMode == GadgetDisplayMode.None) visible = false;
         if (visible) _gadget.ShowGadget(); else _gadget.Hide();
+    }
+
+    private void ToggleGadget()
+    {
+        _gadgetOverride = !(_gadget?.IsVisible ?? false);
+        UpdateGadget();
+    }
+
+    public void RegisterHotkey()
+    {
+        var s = _settings.Current;
+        _hotkey ??= CreateHotkey();
+        if (s.HotkeyEnabled) _hotkey.Register(s.GadgetHotkey); else _hotkey.Unregister();
+    }
+
+    private GlobalHotkey CreateHotkey()
+    {
+        var h = new GlobalHotkey();
+        h.Pressed += ToggleGadget;
+        Closed += (_, _) => h.Dispose();
+        return h;
+    }
+
+    /// <summary>Applies a named profile, persists it and refreshes every dependent view.</summary>
+    public void ApplyProfile(string name)
+    {
+        if (!StatsMonitor.Services.ProfileService.Apply(_settings.Current, name)) return;
+        _settings.Save();
+        _gadgetOverride = null;
+        _vm.ApplySettings();
+        ApplyPanelSettings();
+        RegisterHotkey();
+        UpdateGadget();
+        if (PageHost.Content is SettingsView) OnOpenSettings(this, new RoutedEventArgs());
+    }
+
+    private void RebuildProfileMenu(System.Windows.Forms.ToolStripMenuItem root)
+    {
+        root.Text = Loc.T("Perfis");
+        root.DropDownItems.Clear();
+        StatsMonitor.Services.ProfileService.EnsureDefaults(_settings.Current);
+        foreach (var p in _settings.Current.Profiles)
+        {
+            var name = p.Name;
+            var item = new System.Windows.Forms.ToolStripMenuItem(Loc.T(name))
+            {
+                Checked = string.Equals(_settings.Current.ActiveProfile, name, StringComparison.OrdinalIgnoreCase),
+            };
+            item.Click += (_, _) => { ApplyProfile(name); RebuildProfileMenu(root); };
+            root.DropDownItems.Add(item);
+        }
     }
 
     private void RestoreFromGadget()
@@ -436,8 +501,10 @@ public partial class MainWindow : Window
         {
             _vm.ApplySettings();
             ApplyPanelSettings();
+            RegisterHotkey();
             UpdateGadget();
         });
+        vm.ProfileRequested += ApplyProfile;
         var view = new SettingsView(vm);
         view.CloseRequested += ShowMain;
         ShowPage(view, NavSettings);

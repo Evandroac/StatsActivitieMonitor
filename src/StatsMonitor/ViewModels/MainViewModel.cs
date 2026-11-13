@@ -124,8 +124,15 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void OnSnapshot(object? sender, HardwareSnapshot s)
     {
-        Application.Current?.Dispatcher.BeginInvoke(() => Apply(s));
+        Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            Apply(s);
+            foreach (var a in _alerts.Evaluate(s, S)) AlertRaised?.Invoke(a);
+        });
     }
+
+    private readonly Services.AlertNotifier _alerts = new();
+    public event Action<Services.AlertEvent>? AlertRaised;
 
     private void OnError(object? sender, Exception ex)
     {
