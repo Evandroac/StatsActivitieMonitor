@@ -60,7 +60,7 @@ public partial class SettingsView : UserControl
         TaskbarBox.Visibility = Show(vm.GadgetOnTaskbar && !off);
         BarBox.Visibility = Show(vm.GadgetFloatingBar && !off);
         TopBox.Visibility = Show(vm.GadgetDockedTop && !off);
-        OffText.Visibility = Show(off);
+        OffText.Parent.SetValue(UIElement.VisibilityProperty, Show(off));
         ModeBadge.Text = off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetOnTaskbar ? "Barra de tarefas" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo";
     }
 
