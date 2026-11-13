@@ -227,9 +227,6 @@
             <Button x:Name="NavPeripherals" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Periféricos conectados: monitores, teclado, mouse, áudio, câmeras e mais'}" AutomationProperties.Name="{h:Tr 'Periféricos conectados: monitores, teclado, mouse, áudio, câmeras e mais'}" Click="OnOpenPeripherals">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="🖱️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblPeripherals" Text="{h:Tr 'Periféricos'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
-            <Button x:Name="NavAppearance" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Temas, cores e presets de personalização'}" AutomationProperties.Name="{h:Tr 'Temas, cores e presets de personalização'}" Click="OnOpenAppearance">
-                <StackPanel Orientation="Horizontal"><TextBlock Text="🎨" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblAppearance" Text="{h:Tr 'Personalização'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
-            </Button>
             <Button x:Name="NavSettings" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" AutomationProperties.Name="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" Click="OnOpenSettings">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSettings" Text="{h:Tr 'Configurações'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>

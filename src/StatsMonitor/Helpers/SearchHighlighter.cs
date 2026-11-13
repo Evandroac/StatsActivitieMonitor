@@ -25,6 +25,8 @@ public static class SearchHighlighter
         }
     }
 
+    public static bool Contains(DependencyObject root, string text) => Find(root, text) is not null;
+
     private static (FrameworkElement target, TextBlock text)? Find(DependencyObject root, string text)
     {
         string wanted = SearchIndex.Normalize(text).Trim();

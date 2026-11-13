@@ -10,13 +10,23 @@ namespace StatsMonitor.Views;
 public partial class SettingsView : UserControl
 {
     private readonly SettingsViewModel _vm;
+    private readonly AppearanceView? _appearance;
 
     public event Action? CloseRequested;
 
-    public SettingsView(SettingsViewModel vm)
+    public string CurrentSection { get; private set; } = "general";
+
+    public SettingsView(SettingsViewModel vm, AppearanceView? appearance = null)
     {
         InitializeComponent();
         DataContext = _vm = vm;
+        _appearance = appearance;
+        if (appearance is not null)
+        {
+            appearance.Embedded();
+            AppearanceHost.Content = appearance;
+        }
+        TabGeneral.IsChecked = true;
 
         // Refresh after the bindings have pushed the new value into the view model.
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
@@ -35,7 +45,68 @@ public partial class SettingsView : UserControl
         TxtTempAlerts.Text = Loc.T("🌡️  Alertas de temperatura ({0})", Units.Symbol);
 
     /// <summary>Persists any pending change (used when navigating away).</summary>
-    public void Discard() => _vm.Flush();
+    public void Discard() { _vm.Flush(); _appearance?.Discard(); }
+
+    private void OnSection(object sender, RoutedEventArgs e)
+    {
+        if (sender is RadioButton { Tag: string tag } && IsLoadedOrInit) ApplySection(tag);
+    }
+
+    private bool IsLoadedOrInit => SecGeneral is not null && SecProfiles is not null;
+
+    private void ApplySection(string tag)
+    {
+        CurrentSection = tag;
+        bool app = tag == "appearance";
+        SecGeneral.Visibility = Show(tag == "general");
+        SecGadget.Visibility = Show(tag == "gadget");
+        SecPanels.Visibility = Show(tag == "panels");
+        SecAlerts.Visibility = Show(tag == "alerts");
+        SecProfiles.Visibility = Show(tag == "profiles");
+        SettingsScroll.Visibility = Show(!app);
+        AppearanceHost.Visibility = Show(app);
+        BtnResetColors.Visibility = Show(app);
+        SettingsScroll.ScrollToTop();
+    }
+
+    public void SelectSection(string tag)
+    {
+        foreach (var rb in LogicalChildren<RadioButton>(this))
+            if ((string?)rb.Tag == tag) { rb.IsChecked = true; return; }
+    }
+
+    private static IEnumerable<T> LogicalChildren<T>(DependencyObject root) where T : DependencyObject
+    {
+        foreach (var c in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
+        {
+            if (c is T t) yield return t;
+            foreach (var d in LogicalChildren<T>(c)) yield return d;
+        }
+    }
+
+    /// <summary>Switches to the section that shows the given text, so search results can be highlighted.</summary>
+    public void RevealText(string text, bool preferAppearance)
+    {
+        if (!IsLoaded)
+        {
+            RoutedEventHandler? h = null;
+            h = (_, _) => { Loaded -= h; RevealText(text, preferAppearance); };
+            Loaded += h;
+            return;
+        }
+        var order = new List<string> { "general", "gadget", "panels", "alerts", "profiles", "appearance" };
+        if (preferAppearance) { order.Remove("appearance"); order.Insert(0, "appearance"); }
+        foreach (var tag in order)
+        {
+            if (tag == "appearance" && _appearance is null) continue;
+            SelectSection(tag);
+            UpdateLayout();
+            if (SearchHighlighter.Contains(this, text)) return;
+        }
+        SelectSection(preferAppearance ? "appearance" : "general");
+    }
+
+    private void OnResetColors(object sender, RoutedEventArgs e) => _appearance?.ResetColors();
 
     private void OnResetDefaults(object sender, RoutedEventArgs e)
     {

@@ -16,6 +16,11 @@ public partial class AppearanceView : System.Windows.Controls.UserControl
     /// <summary>Persists any pending change (used when navigating away).</summary>
     public void Discard() { if (DataContext is AppearanceViewModel vm) vm.Flush(); }
 
+    /// <summary>Hides the own actions panel when shown as a section of the settings page.</summary>
+    public void Embedded() => ActionsPanel.Visibility = Visibility.Collapsed;
+
+    public void ResetColors() { if (DataContext is AppearanceViewModel vm) vm.ResetCommand.Execute(null); }
+
     private void OnSwatch(object sender, RoutedEventArgs e)
     {
         if (sender is System.Windows.Controls.Button { Tag: string hex, DataContext: not null } b

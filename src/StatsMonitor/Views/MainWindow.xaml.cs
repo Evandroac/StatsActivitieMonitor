@@ -248,7 +248,7 @@ public partial class MainWindow : Window
         ApplyPanelSettings();
         RegisterHotkey();
         UpdateGadget();
-        if (PageHost.Content is SettingsView) OnOpenSettings(this, new RoutedEventArgs());
+        if (PageHost.Content is SettingsView cur) OpenSettings(cur.CurrentSection);
     }
 
     private void RebuildProfileMenu(System.Windows.Forms.ToolStripMenuItem root)
@@ -416,7 +416,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = LblAppearance.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = v;
         SearchBox.Visibility = v;
         if (!open) SearchPopup.IsOpen = false;
     }
@@ -486,9 +486,10 @@ public partial class MainWindow : Window
             case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false }) OnOpenSystem(this, new RoutedEventArgs()); break;
             case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
-            case SearchPage.Appearance: if (PageHost.Content is not AppearanceView) OnOpenAppearance(this, new RoutedEventArgs()); break;
+            case SearchPage.Appearance: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
         }
         FrameworkElement root = r.Page == SearchPage.Main ? MainPage : PageHost;
+        if (PageHost.Content is SettingsView sv) sv.RevealText(r.Match, r.Page == SearchPage.Appearance);
         SearchHighlighter.Show(root, r.Match);
     }
 
@@ -500,7 +501,6 @@ public partial class MainWindow : Window
         switch (PageHost.Content)
         {
             case SettingsView s: s.Discard(); break;
-            case AppearanceView a: a.Discard(); break;
         }
         PageHost.Content = null;
         PageHost.Visibility = Visibility.Collapsed;
@@ -512,7 +512,6 @@ public partial class MainWindow : Window
     private void ShowPage(FrameworkElement view, Button nav)
     {
         if (PageHost.Content is SettingsView s) s.Discard();
-        else if (PageHost.Content is AppearanceView a) a.Discard();
         PageHost.Content = view;
         PageHost.Visibility = Visibility.Visible;
         MainPage.Visibility = Visibility.Collapsed;
@@ -521,26 +520,16 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavPeripherals, NavSettings, NavAppearance }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavPeripherals, NavSettings }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenSystem(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(), NavSystem);
 
     private void OnOpenPeripherals(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(peripherals: true), NavPeripherals);
 
-    private void OnOpenAppearance(object sender, RoutedEventArgs e)
-    {
-        var vm = new AppearanceViewModel(_settings, () =>
-        {
-            _vm.ApplySettings();
-            UpdateGadget();
-        });
-        var view = new AppearanceView(vm);
-        view.CloseRequested += ShowMain;
-        ShowPage(view, NavAppearance);
-    }
+    private void OnOpenSettings(object sender, RoutedEventArgs e) => OpenSettings(null);
 
-    private void OnOpenSettings(object sender, RoutedEventArgs e)
+    private void OpenSettings(string? section)
     {
         var vm = new SettingsViewModel(_settings, () =>
         {
@@ -550,9 +539,15 @@ public partial class MainWindow : Window
             UpdateGadget();
         });
         vm.ProfileRequested += ApplyProfile;
-        var view = new SettingsView(vm);
+        var avm = new AppearanceViewModel(_settings, () =>
+        {
+            _vm.ApplySettings();
+            UpdateGadget();
+        });
+        var view = new SettingsView(vm, new AppearanceView(avm));
             view.TestAlertRequested += ShowTestAlert;
         view.CloseRequested += ShowMain;
         ShowPage(view, NavSettings);
+        if (section is not null) view.SelectSection(section);
     }
 }
