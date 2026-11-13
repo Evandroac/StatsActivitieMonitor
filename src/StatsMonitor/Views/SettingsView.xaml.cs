@@ -56,11 +56,15 @@ public partial class SettingsView : UserControl
         Fill(BarPanel, taskbar, 12, true);
         Fill(TopPanel, taskbar, 12, true);
 
-        Mark(FloatingBox, FloatingCaption, "Flutuante", vm.GadgetFloating && !off, off);
-        Mark(TaskbarBox, TaskbarCaption, "Barra de tarefas", vm.GadgetOnTaskbar && !off, off);
-        Mark(BarBox, BarCaption, "Barra flutuante", vm.GadgetFloatingBar && !off, off);
-        Mark(TopBox, TopCaption, "Faixa no topo", vm.GadgetDockedTop && !off, off);
+        FloatingBox.Visibility = Show(vm.GadgetFloating && !off);
+        TaskbarBox.Visibility = Show(vm.GadgetOnTaskbar && !off);
+        BarBox.Visibility = Show(vm.GadgetFloatingBar && !off);
+        TopBox.Visibility = Show(vm.GadgetDockedTop && !off);
+        OffText.Visibility = Show(off);
+        ModeBadge.Text = off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetOnTaskbar ? "Barra de tarefas" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo";
     }
+
+    private static Visibility Show(bool v) => v ? Visibility.Visible : Visibility.Collapsed;
 
     private static void Fill(Panel panel, List<string> rows, double size, bool horizontal)
     {
@@ -69,13 +73,6 @@ public partial class SettingsView : UserControl
             panel.Children.Add(Line(rows[i], size, horizontal ? new Thickness(i > 0 ? 14 : 0, 0, 0, 0) : null));
     }
 
-    // The mode currently selected gets an accent border; everything dims when the gadget won't be shown.
-    private static void Mark(Border box, TextBlock caption, string name, bool selected, bool off)
-    {
-        box.SetResourceReference(Border.BorderBrushProperty, selected ? "Accent" : "CardBorder");
-        box.Opacity = off ? 0.45 : selected ? 1 : 0.8;
-        caption.Text = selected ? $"{name} ✔ (selecionado)" : name;
-    }
     private static TextBlock Line(string text, double size, Thickness? margin)
     {
         var tb = new TextBlock { Text = text, FontFamily = new FontFamily("Consolas"), FontSize = size };

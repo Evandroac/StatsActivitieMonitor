@@ -39,34 +39,32 @@
         <RadioButton GroupName="GadgetMode" ToolTip="Barra horizontal de uma linha, solta sobre a tela e arrastável" Content="Barra horizontal flutuante (arrastável)" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Faixa horizontal fixa, centralizada no topo da tela" Content="Faixa fixa no topo da tela" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="Ao minimizar, o app apenas minimiza, sem exibir gadget" Content="Não fazer nada (sem gadget)" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <TextBlock Text="Pré-visualização do gadget (valores de exemplo)" Style="{StaticResource Caption}" Margin="0,4,0,2"/>
-        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="10" ToolTip="Mostra como o gadget ficará em cada modo, com os indicadores marcados acima">
-            <WrapPanel Orientation="Horizontal">
-                <StackPanel Margin="0,0,16,8">
-                    <TextBlock x:Name="FloatingCaption" Text="Flutuante" Style="{StaticResource Caption}" Margin="0,0,0,4"/>
-                    <Border x:Name="FloatingBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" HorizontalAlignment="Left">
-                        <StackPanel x:Name="FloatingPanel"/>
+        <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="Mostra como o gadget ficará no modo escolhido, com os indicadores marcados">
+            <StackPanel>
+                <DockPanel>
+                    <Border DockPanel.Dock="Right" CornerRadius="10" Padding="10,2" Background="{DynamicResource Accent}" VerticalAlignment="Center">
+                        <TextBlock x:Name="ModeBadge" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
                     </Border>
-                </StackPanel>
-                <StackPanel Margin="0,0,16,8">
-                    <TextBlock x:Name="TaskbarCaption" Text="Barra de tarefas" Style="{StaticResource Caption}" Margin="0,0,0,4"/>
-                    <Border x:Name="TaskbarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="10,4" HorizontalAlignment="Left">
-                        <WrapPanel x:Name="TaskbarPanel" MaxWidth="360"/>
-                    </Border>
-                </StackPanel>
-                <StackPanel Margin="0,0,16,8">
-                    <TextBlock x:Name="BarCaption" Text="Barra flutuante" Style="{StaticResource Caption}" Margin="0,0,0,4"/>
-                    <Border x:Name="BarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="12,6" HorizontalAlignment="Left">
-                        <WrapPanel x:Name="BarPanel" MaxWidth="360"/>
-                    </Border>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,8">
-                    <TextBlock x:Name="TopCaption" Text="Faixa no topo" Style="{StaticResource Caption}" Margin="0,0,0,4"/>
-                    <Border x:Name="TopBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="0,0,10,10" Padding="14,5" HorizontalAlignment="Left">
-                        <WrapPanel x:Name="TopPanel" MaxWidth="360"/>
-                    </Border>
-                </StackPanel>
-            </WrapPanel>
+                    <TextBlock Text="👁  Pré-visualização" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </DockPanel>
+                <Border Margin="0,10,0,0" CornerRadius="8" Padding="16" MinHeight="90" Background="{DynamicResource WindowBg}">
+                    <Grid>
+                        <Border x:Name="FloatingBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="10" Padding="12,8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <StackPanel x:Name="FloatingPanel"/>
+                        </Border>
+                        <Border x:Name="TaskbarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="6" Padding="10,4" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <WrapPanel x:Name="TaskbarPanel" MaxWidth="420"/>
+                        </Border>
+                        <Border x:Name="BarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="8" Padding="12,6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <WrapPanel x:Name="BarPanel" MaxWidth="420"/>
+                        </Border>
+                        <Border x:Name="TopBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="0,0,10,10" Padding="14,5" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-16,0,0">
+                            <WrapPanel x:Name="TopPanel" MaxWidth="420"/>
+                        </Border>
+                        <TextBlock x:Name="OffText" Text="Sem gadget neste modo" Style="{StaticResource Caption}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
         </Border>
         </StackPanel>
         <TextBlock Text="Painéis exibidos" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
