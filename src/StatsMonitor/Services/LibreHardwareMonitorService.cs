@@ -203,15 +203,21 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
                        ?? Value(d, SensorType.Level, "Available Spare");
             string? health = _health.FirstOrDefault(kv => name.Contains(kv.Key, StringComparison.OrdinalIgnoreCase)
                                                           || kv.Key.Contains(name, StringComparison.OrdinalIgnoreCase)).Value;
-            list.Add(new DiskSnapshot(name,
-                FirstValue(d, SensorType.Temperature),
-                Value(d, SensorType.Throughput, "Read Rate"),
-                Value(d, SensorType.Throughput, "Write Rate"),
-                Value(d, SensorType.Load, "Total Activity"),
-                life, health));
+            double? read = Value(d, SensorType.Throughput, "Read Rate") ?? Like(d, SensorType.Throughput, "read");
+            double? write = Value(d, SensorType.Throughput, "Write Rate") ?? Like(d, SensorType.Throughput, "write");
+            double? activity = Value(d, SensorType.Load, "Total Activity") ?? Like(d, SensorType.Load, "activity");
+            if (read is null || write is null || activity is null)
+            {
+                var perf = DiskPerfService.Find(name);
+                read ??= perf?.ReadBps; write ??= perf?.WriteBps; activity ??= perf?.Activity;
+            }
+            list.Add(new DiskSnapshot(name, FirstValue(d, SensorType.Temperature), read, write, activity, life, health));
         }
         return list;
     }
+
+    private static double? Like(IHardware hw, SensorType type, string part) =>
+        Valid(type, hw.Sensors.FirstOrDefault(s => s.SensorType == type && s.Name.Contains(part, StringComparison.OrdinalIgnoreCase) && s.Value.HasValue)?.Value);
 
     private static List<VolumeSnapshot> ReadVolumes()
     {
