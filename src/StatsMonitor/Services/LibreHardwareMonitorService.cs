@@ -1,4 +1,4 @@
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using LibreHardwareMonitor.Hardware;
 using StatsMonitor.Models;
 
@@ -132,6 +132,12 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             GpuName = gpu?.Name.Trim(),
             GpuLoad = Value(gpu, SensorType.Load, "GPU Core") ?? Value(gpu, SensorType.Load, "D3D 3D"),
             GpuClockMhz = Value(gpu, SensorType.Clock, "GPU Core"),
+            GpuMemClockMhz = Value(gpu, SensorType.Clock, "GPU Memory")
+                             ?? Max(gpu, SensorType.Clock, n => n.Contains("Memory", StringComparison.OrdinalIgnoreCase)),
+            GpuPowerW = Value(gpu, SensorType.Power, "GPU Package")
+                        ?? Value(gpu, SensorType.Power, "GPU Power")
+                        ?? Max(gpu, SensorType.Power, _ => true),
+            GpuFanRpm = Max(gpu, SensorType.Fan, _ => true),
             GpuTemp = Value(gpu, SensorType.Temperature, "GPU Core")
                       ?? Value(gpu, SensorType.Temperature, "GPU Hot Spot")
                       ?? FirstValue(gpu, SensorType.Temperature),
@@ -171,6 +177,14 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     {
         var v = hw?.Sensors.FirstOrDefault(s =>         s.SensorType == type && Valid(type, s.Value).HasValue)?.Value;
                 return Valid(type, v);
+    }
+
+    private static double? Max(IHardware? hw, SensorType type, Func<string, bool> nameFilter)
+    {
+        var values = hw?.Sensors
+            .Where(s => s.SensorType == type && s.Value.HasValue && nameFilter(s.Name))
+            .Select(s => (double)s.Value!.Value).ToList();
+        return values is { Count: > 0 } ? values.Max() : null;
     }
 
     private static double? Average(IHardware? hw, SensorType type, Func<string, bool> nameFilter)

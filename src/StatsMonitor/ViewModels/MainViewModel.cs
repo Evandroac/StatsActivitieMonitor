@@ -34,11 +34,17 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _monitor.ErrorOccurred += OnError;
     }
 
+    private DetailItem? _gpuMemClock, _gpuVram, _gpuPower, _gpuFan;
     private DetailItem? _procItem, _threadItem, _handleItem;
 
     private void InitCpuDetails()
     {
         var info = CpuInfoService.Read();
+        _gpuMemClock = new DetailItem("Frequência da memória", ComponentViewModel.NotAvailable);
+        _gpuVram = new DetailItem("Uso da VRAM", ComponentViewModel.NotAvailable);
+        _gpuPower = new DetailItem("Consumo energético", ComponentViewModel.NotAvailable);
+        _gpuFan = new DetailItem("Ventoinhas", ComponentViewModel.NotAvailable);
+        foreach (var d in new[] { _gpuVram, _gpuMemClock, _gpuPower, _gpuFan }) Gpu.Details.Add(d);
         _procItem = new DetailItem("Processos", "--");
         _threadItem = new DetailItem("Threads", "--");
         _handleItem = new DetailItem("Identificadores", "--");
@@ -129,6 +135,12 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     private void Apply(HardwareSnapshot s)
     {
         UpdateCounts();
+        string NA = ComponentViewModel.NotAvailable;
+        _gpuMemClock!.Value = s.GpuMemClockMhz is { } mc ? (mc >= 1000 ? $"{mc / 1000:0.00} GHz" : $"{mc:0} MHz") : NA;
+        _gpuVram!.Value = s.VramUsedGb.HasValue && s.VramTotalGb.HasValue
+            ? $"{s.VramUsedGb:0.0} / {s.VramTotalGb:0.0} GB" + (s.VramLoad.HasValue ? $" ({s.VramLoad:0}%)" : "") : NA;
+        _gpuPower!.Value = s.GpuPowerW is { } w ? $"{w:0.#} W" : NA;
+        _gpuFan!.Value = s.GpuFanRpm is { } f ? $"{f:0} RPM" : NA;
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
         Ram.Update("Memória RAM", s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
