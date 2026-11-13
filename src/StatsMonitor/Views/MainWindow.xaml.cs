@@ -46,6 +46,24 @@ public partial class MainWindow : Window
         Activate();
     }
 
+    private void OnRunAsAdmin(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = Environment.ProcessPath!,
+                UseShellExecute = true,
+                Verb = "runas"
+            });
+            Application.Current.Shutdown();
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            // User declined the UAC prompt.
+        }
+    }
+
     private void OnOpenSettings(object sender, RoutedEventArgs e)
     {
         var vm = new SettingsViewModel(_settings, () =>

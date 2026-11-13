@@ -136,8 +136,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             VramAvailableGb = vramFree,
             VramLoad = vramLoad,
             VramTemp = gpu?.Sensors
-                .Where(s => s.SensorType == SensorType.Temperature && s.Value.HasValue
-                            && s.Name.Contains("Memory", StringComparison.OrdinalIgnoreCase))
+                .Where(s => s.SensorType == SensorType.                Temperature && Valid(s.SensorType, s.Value).HasValue                            && s.Name.Contains("Memory", StringComparison.OrdinalIgnoreCase))
                 .Select(s => (double?)s.Value!.Value).Max(),
         };
     }
@@ -152,13 +151,21 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     private static double? Value(IHardware? hw, SensorType type, string name)
     {
         var v = hw?.Sensors.FirstOrDefault(s => s.SensorType == type && s.Name == name)?.Value;
-        return v.HasValue ? v.Value : null;
+        return Valid(type, v);
+    }
+
+    // A temperature of 0 (or absurd) means the sensor could not really be read.
+    private static double? Valid(SensorType type, float? v)
+    {
+        if (!v.HasValue) return null;
+        if (type == SensorType.Temperature && (v.Value <= 0 || v.Value > 125)) return null;
+        return v.Value;
     }
 
     private static double? FirstValue(IHardware? hw, SensorType type)
     {
-        var v = hw?.Sensors.FirstOrDefault(s => s.SensorType == type && s.Value.HasValue)?.Value;
-        return v.HasValue ? v.Value : null;
+        var v = hw?.Sensors.FirstOrDefault(s =>         s.SensorType == type && Valid(type, s.Value).HasValue)?.Value;
+                return Valid(type, v);
     }
 
     private static double? Average(IHardware? hw, SensorType type, Func<string, bool> nameFilter)
@@ -172,7 +179,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     private static double? MaxTemp(IEnumerable<IHardware> hardware)
     {
         var values = hardware.SelectMany(h => h.Sensors)
-            .Where(s => s.SensorType == SensorType.Temperature && s.Value.HasValue)
+            .Where(s => s.SensorType == SensorType.Temperature && Valid(s.SensorType, s.Value).HasValue)
             .Select(s => (double)s.Value!.Value).ToList();
         return values.Count > 0 ? values.Max() : null;
     }

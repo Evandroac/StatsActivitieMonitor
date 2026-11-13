@@ -88,6 +88,7 @@
         </Grid.ColumnDefinitions>
 
         <DockPanel Grid.ColumnSpan="2" Margin="6,0,6,6">
+            <Button DockPanel.Dock="Right" Content="🛡  Executar como administrador" Style="{StaticResource PillButton}" Click="OnRunAsAdmin" Margin="0,0,8,0"/>
             <Button DockPanel.Dock="Right" Content="⚙  Configurações" Style="{StaticResource PillButton}" Click="OnOpenSettings"/>
             <TextBlock Text="Stats Monitor" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </DockPanel>
