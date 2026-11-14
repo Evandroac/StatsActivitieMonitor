@@ -22,6 +22,9 @@ public partial class GadgetWindow : Window
         DataContext = vm;
         _settings = settings;
         _vm = vm;
+        UiScale.Set(settings.Current.FontScalePercent);
+        UiScale.Apply(Root);
+        UiScale.Changed += () => { UiScale.Apply(Root); if (IsVisible) Reposition(); };
         vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.FpsActive) && IsVisible) { ApplyMode(); Reposition(); } };
 
         Loc.LanguageChanged += () => { if (IsVisible) { ApplyMode(); Reposition(); } };

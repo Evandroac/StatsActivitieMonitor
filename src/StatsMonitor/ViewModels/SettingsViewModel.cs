@@ -16,6 +16,7 @@ public sealed class SettingsViewModel : ObservableObject
         _onApplied = onApplied;
         Load(service.Current);
         _language = service.Current.Language == "en" ? "en" : "pt";
+ _fontScale = UiScale.Clamp(service.Current.FontScalePercent);
         _fahrenheit = service.Current.TempUnit == "F";
         _loading = false;
         RefreshProfiles();
@@ -53,7 +54,10 @@ public sealed class SettingsViewModel : ObservableObject
         Persist();
     }
 
-    private string _language = "pt";
+    private double _fontScale = 110;
+ public double FontScalePercent { get => _fontScale; set { var v = UiScale.Clamp(value); if (_fontScale != v) { _fontScale = v; UiScale.Set(v); Raise(nameof(FontScalePercent)); Raise(nameof(FontScaleText)); AutoSave(); } } }
+ public string FontScaleText => $"{_fontScale:0}%";
+ private string _language = "pt";
     public string Language { get => _language; set => SetLanguage(value); }
 
     // The language switches instantly; persistence follows the usual debounce.
@@ -227,6 +231,7 @@ public sealed class SettingsViewModel : ObservableObject
         _loading = true;
         Load(s);
         _language = s.Language == "en" ? "en" : "pt";
+ _fontScale = UiScale.Clamp(s.FontScalePercent); UiScale.Set(_fontScale);
         _fahrenheit = s.TempUnit == "F";
         _loading = false;
         Loc.SetLanguage(_language);
@@ -250,6 +255,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = _gadgetMode;
         s.Language = _language;
+ s.FontScalePercent = _fontScale;
         s.TempUnit = _fahrenheit ? "F" : "C";
         s.ShowCpuMain = ShowCpuMain; s.ShowGpuMain = ShowGpuMain; s.ShowRamMain = ShowRamMain;
         s.ShowVramMain = ShowVramMain; s.ShowNetworkMain = ShowNetworkMain;

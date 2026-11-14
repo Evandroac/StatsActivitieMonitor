@@ -87,6 +87,11 @@
         </StackPanel>
         <TextBlock Style="{StaticResource WarnText}" Text="{Binding IntervalWarning}"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr '🔠  Tamanho da fonte:'}" VerticalAlignment="Center" Width="200"/>
+            <Slider Width="160" Minimum="90" Maximum="130" TickFrequency="5" SmallChange="5" LargeChange="10" IsSnapToTickEnabled="True" TickPlacement="BottomRight" VerticalAlignment="Center" ToolTip="{h:Tr 'Tamanho dos textos de todo o programa (90% a 130%)'}" AutomationProperties.Name="{h:Tr 'Tamanho da fonte'}" Value="{Binding FontScalePercent}"/>
+            <TextBlock Text="{Binding FontScaleText}" VerticalAlignment="Center" Margin="8,0,0,0" MinWidth="40"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
             <ComboBox Width="160" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" SelectedValuePath="Tag" SelectedValue="{Binding Language, Mode=TwoWay}">
                 <ComboBoxItem Content="Português" Tag="pt"/>

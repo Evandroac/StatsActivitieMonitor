@@ -74,6 +74,7 @@ public sealed class AppSettings
     public int LogIntervalSeconds { get; set; } = 5;
     public bool SlowSensors { get; set; }
     public string Language { get; set; } = "pt";
+ public double FontScalePercent { get; set; } = 110;
     public string TempUnit { get; set; } = "C";
     public bool FollowSystemTheme { get; set; }
 

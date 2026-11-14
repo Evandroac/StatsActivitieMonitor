@@ -21,6 +21,9 @@ public partial class MainWindow : Window
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();
+        UiScale.Set(settings.Current.FontScalePercent);
+        ApplyUiScale();
+        UiScale.Changed += ApplyUiScale;
         ChkSimple.IsChecked = settings.Current.SimplifiedView;
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
@@ -186,6 +189,19 @@ public partial class MainWindow : Window
         MinHeight = 0;
         SizeToContent = SizeToContent.Height;
         Dispatcher.BeginInvoke(FitToContent, System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    private double _baseMinWidth = double.NaN;
+
+    private void ApplyUiScale()
+    {
+        var first = double.IsNaN(_baseMinWidth);
+        if (first) _baseMinWidth = MinWidth;
+        var old = MinWidth;
+        UiScale.Apply(RootScale);
+        MinWidth = _baseMinWidth * UiScale.Factor;
+        if (WindowState != WindowState.Normal) return;
+        Width = first ? Math.Max(MinWidth, Width) : Math.Max(MinWidth, Width * MinWidth / old);
     }
 
     private string _layoutKey = "";
