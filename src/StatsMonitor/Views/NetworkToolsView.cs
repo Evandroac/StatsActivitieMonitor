@@ -67,12 +67,11 @@ public sealed class NetworkToolsView : UserControl
 
         var head = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
         head.Children.Add(new TextBlock { Text = "🌐  " + L("Testes de conexão", "Connection tests"), FontSize = 20, FontWeight = FontWeights.SemiBold });
-        head.Children.Add(Caption(L("Ferramentas de rede para diagnosticar problemas: execute, compare e copie os resultados.",
-                                    "Network tools to troubleshoot problems: run, compare and copy the results.")));
         root.Children.Add(head);
 
         var tabs = new StackPanel();
         tabs.Children.Add(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Opacity = 0.7, Margin = new Thickness(2, 0, 0, 8) });
+        tabs.Children.Add(new TextBlock { Text = L("Ferramentas de rede para diagnosticar problemas: execute, compare e copie os resultados.", "Network tools to troubleshoot problems: run, compare and copy the results."), TextWrapping = TextWrapping.Wrap, Opacity = 0.7, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) });
         string[] names =
         [
             "🩺  " + L("Diagnóstico", "Diagnostics"), "📡  Ping", "🧭  Traceroute", "🔎  DNS", "🔌  " + L("Portas", "Ports"),
