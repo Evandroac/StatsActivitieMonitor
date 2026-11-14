@@ -25,7 +25,7 @@ public partial class ProcessesView : UserControl
     private bool _busy, _ready, _running;
     private int _detailToken;
 
-    public static readonly string[] Keywords = ["Processos", "Gerenciador de tarefas", "Finalizar tarefa", "Finalizar árvore de processos", "Reiniciar", "Prioridade", "Abrir local do arquivo", "Copiar caminho", "Expandir tudo", "Recolher tudo", "Gráfico de linha do tempo", "Pesquisar processo", "CPU", "Memória", "Disco", "Rede"];
+    public static readonly string[] Keywords = ["Processos", "Gerenciador de tarefas", "Finalizar tarefa", "Finalizar árvore de processos", "Reiniciar", "Prioridade", "Abrir local do arquivo", "Copiar caminho", "Colunas", "Reordenar colunas", "Ocultar colunas", "Expandir tudo", "Recolher tudo", "Gráfico de linha do tempo", "Pesquisar processo", "CPU", "Memória", "Disco", "Rede"];
 
     public ProcessesView()
     {
@@ -36,6 +36,11 @@ public partial class ProcessesView : UserControl
         _timer.Tick += async (_, _) => await TickAsync();
         FillCombos();
         _query.Type = ProcType.App;
+        BuildHeader();
+        HeaderGrid.ContextMenu = new ContextMenu();
+        HeaderGrid.ContextMenuOpening += (_, _) => FillColumnsMenu(HeaderGrid.ContextMenu);
+        Loaded += (_, _) => { ProcessColumns.Changed -= OnColumnsChanged; ProcessColumns.Changed += OnColumnsChanged; };
+        Unloaded += (_, _) => ProcessColumns.Changed -= OnColumnsChanged;
         ApplyTexts();
         _ready = true;
         Loaded += (_, _) => UpdateRunning();
@@ -69,7 +74,7 @@ public partial class ProcessesView : UserControl
     {
         Fill(TypeBox, L("Todos os tipos", "All types"), L("Aplicativos", "Apps"), L("Segundo plano", "Background"), L("Processos do Windows", "Windows processes"));
         Fill(StatusBox, L("Todos os status", "All statuses"), L("Em execução", "Running"), L("Não está respondendo", "Not responding"));
-        Fill(SortBox, L("Nome", "Name"), "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"), "PID");
+        Fill(SortBox, L("Nome", "Name"), "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"), "PID", L("Status", "Status"), L("Tipo", "Type"), "Threads", L("PID pai", "Parent PID"), L("Executável", "Executable"), L("Caminho", "Path"), L("Iniciado em", "Started"));
         if (SortBox.SelectedIndex < 0 || !_ready) SortBox.SelectedIndex = 1;
         if (!_ready) TypeBox.SelectedIndex = 1;
         Fill(MetricBox, "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"));
@@ -106,6 +111,8 @@ public partial class ProcessesView : UserControl
         PriorityButton.Content = L("⚡  Prioridade", "⚡  Priority");
         LocationButton.Content = L("📂  Abrir local do arquivo", "📂  Open file location");
         CopyButton.Content = L("📋  Copiar caminho", "📋  Copy path");
+        ColumnsButton.Content = L("🗂  Colunas", "🗂  Columns");
+        ColumnsButton.ToolTip = L("Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)", "Show or hide columns (drag the list headings to reorder)");
         ChartTitle.Text = "📈  " + L("Linha do tempo", "Timeline");
         UpdateHeaders();
         UpdateButtons();
@@ -123,28 +130,165 @@ public partial class ProcessesView : UserControl
         b.Content = sp;
     }
 
+    private readonly Dictionary<string, Button> _hdr = [];
+    private Border? _dropLine;
+    private Button? _dragBtn;
+    private Point _dragStart;
+    private bool _dragging;
+    private int _dropIndex;
+
+    private string TotalFor(ColumnDef c) => c.Id switch
+    {
+        "name" => L($"{_rows.Count} processos", $"{_rows.Count} processes"),
+        "cpu" => Pct(_totCpu),
+        "mem" => Pct(_totMem),
+        "disk" => Pct(_totDisk),
+        "net" => ProcessRow.NetAvailable ? Pct(_totNet) : "—",
+        _ => " ",
+    };
+
     private void UpdateHeaders()
     {
-        string Arrow(ProcSort s) => _query.Sort == s ? (_query.Descending ? " ▼" : " ▲") : "";
-        SetHeader(HName, L("Nome", "Name") + Arrow(ProcSort.Name), L($"{_rows.Count} processos", $"{_rows.Count} processes"), TextAlignment.Left);
-        SetHeader(HStatus, L("Status", "Status"), " ", TextAlignment.Left);
-        SetHeader(HCpu, "CPU" + Arrow(ProcSort.Cpu), Pct(_totCpu), TextAlignment.Right);
-        SetHeader(HMem, L("Memória", "Memory") + Arrow(ProcSort.Memory), Pct(_totMem), TextAlignment.Right);
-        SetHeader(HDisk, L("Disco", "Disk") + Arrow(ProcSort.Disk), Pct(_totDisk), TextAlignment.Right);
-        SetHeader(HNet, L("Rede", "Network") + Arrow(ProcSort.Network), ProcessRow.NetAvailable ? Pct(_totNet) : "—", TextAlignment.Right);
+        string Arrow(ProcSort? s) => s != null && _query.Sort == s ? (_query.Descending ? " ▼" : " ▲") : "";
+        foreach (var c in ProcessColumns.Visible)
+            if (_hdr.TryGetValue(c.Id, out var b))
+            {
+                b.ToolTip = c.Sort != null ? L("Clique para ordenar; arraste para mover a coluna", "Click to sort; drag to move the column")
+                                           : L("Arraste para mover a coluna", "Drag to move the column");
+                SetHeader(b, c.Title + Arrow(c.Sort), TotalFor(c), c.Right ? TextAlignment.Right : TextAlignment.Left);
+            }
         DirButton.Content = _query.Descending ? "▼" : "▲";
+    }
+
+    private void BuildHeader()
+    {
+        HeaderGrid.Children.Clear();
+        HeaderGrid.ColumnDefinitions.Clear();
+        _hdr.Clear();
+        var style = (Style)FindResource("HeaderButton");
+        var split = (Style)FindResource("ColSplit");
+        int i = 0;
+        foreach (var c in ProcessColumns.Visible)
+        {
+            var cd = new ColumnDefinition { MinWidth = c.Star ? 200 : 0 };
+            cd.SetBinding(ColumnDefinition.WidthProperty, new System.Windows.Data.Binding(nameof(ColumnDef.GridWidth)) { Source = c, Mode = System.Windows.Data.BindingMode.OneWay });
+            HeaderGrid.ColumnDefinitions.Add(cd);
+            var b = new Button { Style = style, HorizontalContentAlignment = HorizontalAlignment.Stretch, Tag = c };
+            b.PreviewMouseLeftButtonDown += OnHdrDown;
+            b.PreviewMouseMove += OnHdrMove;
+            b.PreviewMouseLeftButtonUp += OnHdrUp;
+            Grid.SetColumn(b, i);
+            HeaderGrid.Children.Add(b);
+            _hdr[c.Id] = b;
+            if (!c.Star)
+            {
+                var th = new System.Windows.Controls.Primitives.Thumb { Style = split, Tag = c };
+                th.DragDelta += OnSplitDrag;
+                th.DragCompleted += (_, _) => ProcessColumns.Save();
+                Grid.SetColumn(th, i);
+                HeaderGrid.Children.Add(th);
+            }
+            i++;
+        }
+        _dropLine = new Border { Width = 3, Background = (System.Windows.Media.Brush)FindResource("Accent"), HorizontalAlignment = HorizontalAlignment.Left, Visibility = Visibility.Collapsed, IsHitTestVisible = false, CornerRadius = new CornerRadius(1.5) };
+        Grid.SetColumnSpan(_dropLine, Math.Max(1, i));
+        HeaderGrid.Children.Add(_dropLine);
+        UpdateHeaders();
+    }
+
+    private int ColumnIndexAt(double x)
+    {
+        double acc = 0;
+        for (int i = 0; i < HeaderGrid.ColumnDefinitions.Count; i++)
+        {
+            acc += HeaderGrid.ColumnDefinitions[i].ActualWidth;
+            if (x < acc) return i;
+        }
+        return Math.Max(0, HeaderGrid.ColumnDefinitions.Count - 1);
+    }
+
+    private void OnHdrDown(object s, MouseButtonEventArgs e)
+    {
+        _dragBtn = (Button)s;
+        _dragStart = e.GetPosition(HeaderGrid);
+        _dragging = false;
+        _dragBtn.CaptureMouse();
+        e.Handled = true;
+    }
+
+    private void OnHdrMove(object s, MouseEventArgs e)
+    {
+        if (_dragBtn != s || e.LeftButton != MouseButtonState.Pressed || _dropLine == null) return;
+        var p = e.GetPosition(HeaderGrid);
+        if (!_dragging && Math.Abs(p.X - _dragStart.X) > 6) { _dragging = true; _dragBtn.Opacity = 0.5; }
+        if (!_dragging) return;
+        _dropIndex = ColumnIndexAt(p.X);
+        int from = Grid.GetColumn(_dragBtn);
+        double left = 0;
+        for (int i = 0; i < _dropIndex; i++) left += HeaderGrid.ColumnDefinitions[i].ActualWidth;
+        if (_dropIndex > from) left += HeaderGrid.ColumnDefinitions[_dropIndex].ActualWidth;
+        _dropLine.Margin = new Thickness(Math.Max(0, left - 1.5), 4, 0, 4);
+        _dropLine.Visibility = Visibility.Visible;
+    }
+
+    private void OnHdrUp(object s, MouseButtonEventArgs e)
+    {
+        if (_dragBtn != s) return;
+        var b = _dragBtn; _dragBtn = null;
+        b.ReleaseMouseCapture();
+        b.Opacity = 1;
+        if (_dropLine != null) _dropLine.Visibility = Visibility.Collapsed;
+        e.Handled = true;
+        var def = (ColumnDef)b.Tag;
+        if (_dragging) { _dragging = false; ProcessColumns.MoveTo(def, _dropIndex); }
+        else if (def.Sort is { } sort) SortBy(sort);
+    }
+
+    private void OnColumnsChanged()
+    {
+        BuildHeader();
+    }
+
+    private void FillColumnsMenu(ContextMenu menu)
+    {
+        menu.Items.Clear();
+        foreach (var c in ProcessColumns.All)
+        {
+            var col = c;
+            var mi = new MenuItem { Header = col.Title, IsCheckable = true, IsChecked = col.Visible, IsEnabled = !col.Required, StaysOpenOnClick = true };
+            mi.Click += (_, _) => ProcessColumns.SetVisible(col, mi.IsChecked);
+            menu.Items.Add(mi);
+        }
+        menu.Items.Add(new Separator());
+        var reset = new MenuItem { Header = L("Restaurar colunas padrão", "Restore default columns") };
+        reset.Click += (_, _) => ProcessColumns.Reset();
+        menu.Items.Add(reset);
+    }
+
+    private void OnColumnsButton(object s, RoutedEventArgs e)
+    {
+        var menu = new ContextMenu { PlacementTarget = (UIElement)s, Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom };
+        FillColumnsMenu(menu);
+        menu.IsOpen = true;
     }
 
     private void OnSplitDrag(object s, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
     {
-        var w = ColWidths.I;
-        double Clamp(double v) => Math.Clamp(v, 60, 400);
-        if (s == Split0) w.Status = Clamp(w.Status - e.HorizontalChange);
-        else if (s == Split1) w.Status = Clamp(w.Status + e.HorizontalChange);
-        else if (s == Split2) w.Cpu = Clamp(w.Cpu + e.HorizontalChange);
-        else if (s == Split3) w.Mem = Clamp(w.Mem + e.HorizontalChange);
-        else if (s == Split4) w.Disk = Clamp(w.Disk + e.HorizontalChange);
+        var c = (ColumnDef)((FrameworkElement)s).Tag;
+        c.Width = Math.Clamp(c.Width + e.HorizontalChange, 50, 800);
     }
+
+    private void SortBy(ProcSort sort)
+    {
+        if (_query.Sort == sort) _query.Descending = !_query.Descending;
+        else { _query.Sort = sort; _query.Descending = DescendingFirst(sort); }
+        _ready = false; SortBox.SelectedIndex = (int)sort; _ready = true;
+        UpdateHeaders();
+        ApplyTexts();
+        Rebuild();
+    }
+
+    private static bool DescendingFirst(ProcSort s) => s is ProcSort.Cpu or ProcSort.Memory or ProcSort.Disk or ProcSort.Network or ProcSort.Threads or ProcSort.Started;
 
     private void OnMetricChanged(object s, SelectionChangedEventArgs e) { if (_ready) UpdateChart(); }
 
@@ -249,20 +393,9 @@ public partial class ProcessesView : UserControl
         if (sort != _query.Sort)
         {
             _query.Sort = sort;
-            _query.Descending = sort is not (ProcSort.Name or ProcSort.Pid);
+            _query.Descending = DescendingFirst(sort);
         }
         UpdateHeaders();
-        Rebuild();
-    }
-
-    private void OnHeaderClick(object s, RoutedEventArgs e)
-    {
-        var sort = s == HName ? ProcSort.Name : s == HCpu ? ProcSort.Cpu : s == HMem ? ProcSort.Memory : s == HDisk ? ProcSort.Disk : ProcSort.Network;
-        if (_query.Sort == sort) _query.Descending = !_query.Descending;
-        else { _query.Sort = sort; _query.Descending = sort != ProcSort.Name; }
-        _ready = false; SortBox.SelectedIndex = (int)sort; _ready = true;
-        UpdateHeaders();
-        ApplyTexts();
         Rebuild();
     }
 
@@ -284,7 +417,7 @@ public partial class ProcessesView : UserControl
 
     private void OnToggleExpand(object s, RoutedEventArgs e)
     {
-        if (((FrameworkElement)s).DataContext is ProcessRow r) { r.IsExpanded = !r.IsExpanded; Rebuild(); }
+        if (e.OriginalSource is Button { DataContext: ProcessRow r }) { r.IsExpanded = !r.IsExpanded; Rebuild(); }
         e.Handled = true;
     }
 

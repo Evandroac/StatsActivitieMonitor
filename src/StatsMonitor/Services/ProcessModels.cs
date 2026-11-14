@@ -1,11 +1,11 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using StatsMonitor.Helpers;
 
 namespace StatsMonitor.Services;
 
 public enum ProcType { App, Background, Windows }
-public enum ProcSort { Name, Cpu, Memory, Disk, Network, Pid }
+public enum ProcSort { Name, Cpu, Memory, Disk, Network, Pid, Status, Type, Threads, Parent, Exe, Path, Started }
 
 public sealed record ProcSample(int Pid, int Parent, long Created, string Name, string Path, string Description,
     ImageSource? Icon, bool HasWindow, bool Hung, int Threads, double Cpu, long WorkingSet, double DiskBps, double NetBps);
@@ -19,18 +19,6 @@ public sealed class ProcessQuery
     public ProcSort Sort { get; set; } = ProcSort.Cpu;
     public bool Descending { get; set; } = true;
     public bool Flat => Search.Trim().Length > 0 || Type != null || Hung != null;
-}
-
-/// <summary>User-adjustable column widths shared by the header and every row.</summary>
-public sealed class ColWidths : ObservableObject
-{
-    public static readonly ColWidths I = new();
-    private double _status = 140, _cpu = 84, _mem = 84, _disk = 84, _net = 84;
-    public double Status { get => _status; set => Set(ref _status, value); }
-    public double Cpu { get => _cpu; set => Set(ref _cpu, value); }
-    public double Mem { get => _mem; set => Set(ref _mem, value); }
-    public double Disk { get => _disk; set => Set(ref _disk, value); }
-    public double Net { get => _net; set => Set(ref _net, value); }
 }
 
 public sealed class ProcessRow : ObservableObject
@@ -130,6 +118,7 @@ public sealed class ProcessRow : ObservableObject
         if (Hung != s.Hung) { Hung = s.Hung; Raise(nameof(StatusText)); Raise(nameof(StatusBrush)); }
         OwnCpu = s.Cpu; OwnMem = s.WorkingSet; OwnDisk = s.DiskBps; OwnNet = s.NetBps;
         Raise(nameof(NameText)); Raise(nameof(Icon)); Raise(nameof(Tip));
+        Raise(nameof(ThreadsText)); Raise(nameof(TypeText)); Raise(nameof(ParentText)); Raise(nameof(Path));
     }
 
     public bool IsExpanded
@@ -151,7 +140,7 @@ public sealed class ProcessRow : ObservableObject
 
     public void RefreshTexts()
     {
-        foreach (var n in new[] { nameof(StatusText), nameof(NetText), nameof(MemTip), nameof(DiskTip), nameof(NetTip), nameof(Tip) }) Raise(n);
+        foreach (var n in new[] { nameof(StatusText), nameof(NetText), nameof(MemTip), nameof(DiskTip), nameof(NetTip), nameof(Tip), nameof(TypeText), nameof(StartedText) }) Raise(n);
     }
 
     private static string Pct(double v) => v < 0.05 ? "0%" : v < 10 ? $"{v:0.0}%" : $"{v:0}%";
@@ -177,6 +166,11 @@ public sealed class ProcessRow : ObservableObject
     public string MemTip => $"{_mem / 1048576.0:#,0.#} MB";
     public string DiskTip => Rate(_disk);
     public string NetTip => NetAvailable ? Rate(_net) : En("Indisponível (requer administrador)", "Unavailable (requires administrator)");
+    public string PidText => Pid.ToString();
+    public string ParentText => ParentPid.ToString();
+    public string ThreadsText => Threads.ToString();
+    public string TypeText => Type switch { ProcType.App => En("Aplicativo", "App"), ProcType.Windows => En("Processo do Windows", "Windows process"), _ => En("Segundo plano", "Background") };
+    public string StartedText => Created > 0 ? DateTime.FromFileTime(Created).ToString("g") : "—";
     public string Tip => $"{Name}  •  PID {Pid}" + (Path.Length > 0 ? "\n" + Path : "");
     public Thickness Indent => new(_depth * 18, 0, 0, 0);
     public string Glyph => _expanded ? "▾" : "▸";
@@ -274,6 +268,13 @@ public static class ProcessTree
             ProcSort.Disk => a.DiskBps.CompareTo(b.DiskBps),
             ProcSort.Network => a.NetBps.CompareTo(b.NetBps),
             ProcSort.Pid => a.Pid.CompareTo(b.Pid),
+            ProcSort.Parent => a.ParentPid.CompareTo(b.ParentPid),
+            ProcSort.Threads => a.Threads.CompareTo(b.Threads),
+            ProcSort.Started => a.Created.CompareTo(b.Created),
+            ProcSort.Status => a.Hung.CompareTo(b.Hung),
+            ProcSort.Type => a.Type.CompareTo(b.Type),
+            ProcSort.Exe => string.Compare(a.Name, b.Name, StringComparison.CurrentCultureIgnoreCase),
+            ProcSort.Path => string.Compare(a.Path, b.Path, StringComparison.CurrentCultureIgnoreCase),
             _ => string.Compare(a.NameText, b.NameText, StringComparison.CurrentCultureIgnoreCase),
         };
         if (q.Descending) c = -c;
