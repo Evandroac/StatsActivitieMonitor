@@ -38,6 +38,10 @@ public static class PetStore
         try { Directory.CreateDirectory(Path.GetDirectoryName(BgPath)!); File.WriteAllText(BgPath, i.ToString()); } catch { }
     }
 
+    private static readonly string FoldPath = Path.Combine(Path.GetDirectoryName(FilePath)!, "pets-collapsed.txt");
+    public static bool LoadCollapsed() { try { return File.Exists(FoldPath) && File.ReadAllText(FoldPath).Trim() == "1"; } catch { return false; } }
+    public static void SaveCollapsed(bool v) { try { Directory.CreateDirectory(Path.GetDirectoryName(FoldPath)!); File.WriteAllText(FoldPath, v ? "1" : "0"); } catch { } }
+
     public static void Save(IEnumerable<PetData> pets)
     {
         try
@@ -106,6 +110,7 @@ public sealed class PetsView : UserControl
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(40) };
     private TextBlock? _hint;
     private Border? _frame;
+    private bool _collapsed = PetStore.LoadCollapsed();
     private readonly ComboBox _bg = new() { Margin = new Thickness(0, 0, 0, 4) };
     private Point? _food;
     private TextBlock? _foodVisual;
@@ -126,11 +131,19 @@ public sealed class PetsView : UserControl
         var head = new DockPanel { Margin = new Thickness(0, 0, 0, 4) };
         var feed = MakeButton("🍖", (_, _) => Feed(), false);
         feed.ToolTip = L("Alimentar os pets", "Feed the pets");
+        var fold = MakeButton(_collapsed ? "▸" : "▾", null!, false);
+        fold.ToolTip = L("Esconder / mostrar a área dos pets", "Hide / show the pets area");
+        fold.Margin = new Thickness(0, 0, 4, 0);
+        fold.Click += (_, _) => { _collapsed = !_collapsed; PetStore.SaveCollapsed(_collapsed); Build(); };
+        DockPanel.SetDock(fold, Dock.Left);
         DockPanel.SetDock(feed, Dock.Right);
-        head.Children.Add(feed);
+        head.Children.Add(fold);
+        if (!_collapsed) head.Children.Add(feed);
         head.Children.Add(new TextBlock { Text = "🐾 Pets", FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
         root.Children.Add(head);
         root.Children.Add(_status);
+        if (_collapsed) { Content = root; _timer.Stop(); return; }
+        if (IsVisible) _timer.Start();
 
         var frame = new Border { CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1), Child = Detach(_field), Margin = new Thickness(0, 0, 0, 6) };
         _frame = frame;
