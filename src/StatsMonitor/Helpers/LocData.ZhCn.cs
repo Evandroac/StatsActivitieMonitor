@@ -721,5 +721,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "按内容调整“名称”列宽度（再次单击恢复自动）",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "显示或隐藏列（拖动列表标题可重新排序）",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "标题显示各列的总使用百分比。拖动分隔线可调整宽度，使用“名称”旁的 ↔ 按钮可按内容调整该列宽度，将列标题拖到其他位置可重新排序。使用“列”按钮（或右键单击标题）可隐藏或添加 PID、线程、类型、可执行文件、启动时间和路径等列；您的选择会被保存。",
+        ["Minimizar"] = "最小化",
+        ["Maximizar"] = "最大化",
+        ["Fechar"] = "关闭",
+        ["Restaurar"] = "还原",
     };
 }

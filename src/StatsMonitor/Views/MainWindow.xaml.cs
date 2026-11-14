@@ -22,6 +22,7 @@ public partial class MainWindow : Window
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();
+        UpdateCaption();
         UiScale.Set(settings.Current.FontScalePercent);
         ApplyUiScale();
         UiScale.Changed += ApplyUiScale;
@@ -35,7 +36,7 @@ public partial class MainWindow : Window
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
         ContentRendered += (_, _) => FitToContent();
         SizeChanged += (_, _) => ArrangeCards();
-        StateChanged += (_, _) => UpdateGadget();
+        StateChanged += (_, _) => { UpdateGadget(); UpdateCaption(); };
         Closing += OnClosing;
         IsVisibleChanged += (_, _) => UpdateGadget();
         Closed += (_, _) =>
@@ -47,6 +48,19 @@ public partial class MainWindow : Window
         Application.Current.SessionEnding += (_, _) => { SaveWindowState(); _exiting = true; };
         CreateTrayIcon();
         if (settings.IsFirstRun) ShowFirstRunHealth();
+    }
+
+    private void OnCaptionMin(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void OnCaptionMax(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    private void OnCaptionClose(object sender, RoutedEventArgs e) => Close();
+
+    private void UpdateCaption()
+    {
+        bool max = WindowState == WindowState.Maximized;
+        MaxBtn.Content = max ? "\uE923" : "\uE922";
+        MaxBtn.ToolTip = Loc.T(max ? "Restaurar" : "Maximizar");
+        // A chrome-less maximized window overflows the screen by the resize border.
+        FrameRoot.Margin = max ? new Thickness(SystemParameters.WindowResizeBorderThickness.Left + 1) : new Thickness(0);
     }
 
     private void ShowFirstRunHealth()

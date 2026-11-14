@@ -720,5 +720,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "ضبط عرض عمود الاسم حسب المحتوى (انقر مرة أخرى للعودة إلى التلقائي)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "إظهار الأعمدة أو إخفاؤها (اسحب عناوين القائمة لإعادة الترتيب)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "تعرض العناوين إجمالي النسبة المستخدمة في كل عمود. اسحب الفواصل لتغيير العرض، واستخدم الزر ↔ بجوار الاسم لضبط هذا العمود حسب محتواه، واسحب عنوان العمود إلى موضع آخر لإعادة ترتيبه. استخدم زر الأعمدة (أو انقر بزر الماوس الأيمن على العنوان) لإخفاء أو إضافة أعمدة مثل PID والخيوط والنوع والملف التنفيذي ووقت البدء والمسار؛ ويتم حفظ اختيارك.",
+        ["Minimizar"] = "تصغير",
+        ["Maximizar"] = "تكبير",
+        ["Fechar"] = "إغلاق",
+        ["Restaurar"] = "استعادة",
     };
 }

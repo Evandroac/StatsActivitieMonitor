@@ -720,5 +720,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "नाम कॉलम की चौड़ाई सामग्री के अनुसार करें (स्वचालित पर लौटने के लिए फिर क्लिक करें)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "कॉलम दिखाएँ या छिपाएँ (क्रम बदलने के लिए सूची के शीर्षक खींचें)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "हेडर हर कॉलम में उपयोग हुआ कुल % दिखाते हैं। चौड़ाई बदलने के लिए विभाजक खींचें, नाम के पास ↔ बटन से उस कॉलम को सामग्री के अनुसार करें, और कॉलम का शीर्षक दूसरी जगह खींचकर उसका क्रम बदलें। PID, थ्रेड, प्रकार, निष्पादन योग्य, शुरू हुआ और पथ जैसे कॉलम छिपाने या जोड़ने के लिए कॉलम बटन (या हेडर पर राइट-क्लिक) का उपयोग करें; आपकी पसंद सहेजी जाती है।",
+        ["Minimizar"] = "छोटा करें",
+        ["Maximizar"] = "बड़ा करें",
+        ["Fechar"] = "बंद करें",
+        ["Restaurar"] = "पुनर्स्थापित करें",
     };
 }

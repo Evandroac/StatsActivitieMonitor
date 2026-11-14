@@ -720,5 +720,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "이름 열 너비를 내용에 맞춤(다시 클릭하면 자동으로 복귀)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "열 표시 또는 숨기기(목록 머리글을 드래그하여 순서 변경)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "머리글에는 각 열의 사용률 합계가 표시됩니다. 구분선을 드래그해 너비를 조정하고, 이름 옆의 ↔ 버튼으로 해당 열을 내용에 맞추며, 열 제목을 다른 위치로 드래그해 순서를 바꿀 수 있습니다. 열 버튼(또는 머리글 우클릭)으로 PID, 스레드, 유형, 실행 파일, 시작 시간, 경로 등의 열을 숨기거나 추가할 수 있으며 선택은 저장됩니다.",
+        ["Minimizar"] = "최소화",
+        ["Maximizar"] = "최대화",
+        ["Fechar"] = "닫기",
+        ["Restaurar"] = "복원",
     };
 }

@@ -719,5 +719,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "Подогнать ширину столбца «Имя» под содержимое (щёлкните ещё раз, чтобы вернуть авто)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "Показать или скрыть столбцы (перетащите заголовки списка для изменения порядка)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "Заголовки показывают суммарный % использования по каждому столбцу. Перетаскивайте разделители, чтобы менять ширину; кнопка ↔ рядом с «Имя» подгоняет столбец под содержимое; перетащите заголовок столбца в другое место, чтобы изменить порядок. Кнопка «Столбцы» (или правый щелчок по заголовку) позволяет скрывать и добавлять столбцы, например PID, Потоки, Тип, Исполняемый файл, Запущен и Путь; выбор сохраняется.",
+        ["Minimizar"] = "Свернуть",
+        ["Maximizar"] = "Развернуть",
+        ["Fechar"] = "Закрыть",
+        ["Restaurar"] = "Восстановить",
     };
 }

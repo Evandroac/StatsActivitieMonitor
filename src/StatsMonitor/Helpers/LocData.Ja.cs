@@ -731,5 +731,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "「名前」列の幅を内容に合わせる（もう一度クリックで自動に戻す）",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "列の表示/非表示（リストの見出しをドラッグして並べ替え）",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "見出しには各列の使用率の合計が表示されます。区切りをドラッグして幅を変更し、「名前」の横の ↔ ボタンでその列を内容に合わせ、列の見出しを別の位置へドラッグして並べ替えます。「列」ボタン（または見出しを右クリック）で、PID、スレッド、種類、実行ファイル、開始日時、パスなどの列を非表示または追加できます。設定は保存されます。",
+        ["Minimizar"] = "最小化",
+        ["Maximizar"] = "最大化",
+        ["Fechar"] = "閉じる",
+        ["Restaurar"] = "元に戻す",
     };
 }

@@ -719,5 +719,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "Ajuster la largeur de la colonne Nom à son contenu (cliquez à nouveau pour revenir à l'automatique)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "Afficher ou masquer des colonnes (faites glisser les titres de la liste pour réorganiser)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "Les en-têtes affichent le total en % utilisé dans chaque colonne. Faites glisser les séparateurs pour redimensionner, utilisez le bouton ↔ à côté de Nom pour ajuster cette colonne à son contenu et faites glisser le titre d'une colonne vers une autre position pour la réorganiser. Utilisez le bouton Colonnes (ou clic droit sur l'en-tête) pour masquer ou ajouter des colonnes comme PID, Threads, Type, Exécutable, Démarré et Chemin ; votre choix est enregistré.",
+        ["Minimizar"] = "Réduire",
+        ["Maximizar"] = "Agrandir",
+        ["Fechar"] = "Fermer",
+        ["Restaurar"] = "Restaurer",
     };
 }

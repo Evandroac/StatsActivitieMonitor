@@ -720,5 +720,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "Breite der Spalte Name an den Inhalt anpassen (erneut klicken für automatisch)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "Spalten ein- oder ausblenden (Listenüberschriften zum Neuanordnen ziehen)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "Die Kopfzeilen zeigen die Summe der genutzten % je Spalte. Ziehen Sie die Trennlinien zum Ändern der Breite, nutzen Sie die Schaltfläche ↔ neben Name, um diese Spalte an den Inhalt anzupassen, und ziehen Sie einen Spaltentitel an eine andere Position, um ihn neu anzuordnen. Mit der Schaltfläche Spalten (oder Rechtsklick auf die Kopfzeile) blenden Sie Spalten wie PID, Threads, Typ, Ausführbare Datei, Gestartet und Pfad aus oder ein; Ihre Auswahl wird gespeichert.",
+        ["Minimizar"] = "Minimieren",
+        ["Maximizar"] = "Maximieren",
+        ["Fechar"] = "Schließen",
+        ["Restaurar"] = "Wiederherstellen",
     };
 }

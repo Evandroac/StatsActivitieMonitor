@@ -720,5 +720,9 @@ public static partial class LocData
         ["Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)"] = "Ajustar el ancho de la columna Nombre a su contenido (haz clic otra vez para volver al automático)",
         ["Mostrar ou ocultar colunas (arraste os títulos da lista para reordenar)"] = "Mostrar u ocultar columnas (arrastra los encabezados de la lista para reordenar)",
         ["Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva."] = "Los encabezados muestran el total de % usado en cada columna. Arrastra los divisores para cambiar el ancho, usa el botón ↔ junto a Nombre para ajustar esa columna a su contenido y arrastra el título de una columna a otra posición para reordenarla. Usa el botón Columnas (o clic derecho en el encabezado) para ocultar o añadir columnas como PID, Subprocesos, Tipo, Ejecutable, Iniciado y Ruta; tu elección se guarda.",
+        ["Minimizar"] = "Minimizar",
+        ["Maximizar"] = "Maximizar",
+        ["Fechar"] = "Cerrar",
+        ["Restaurar"] = "Restaurar",
     };
 }
