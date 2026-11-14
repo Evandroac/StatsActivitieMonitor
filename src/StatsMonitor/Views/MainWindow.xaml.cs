@@ -29,7 +29,7 @@ public partial class MainWindow : Window
         NavBattery.Visibility = _vm.HasBattery ? Visibility.Visible : Visibility.Collapsed;
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
-        Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
+        Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); PageAnimator.Play(MainPage, settings.Current.AnimationsEnabled); };
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
         ContentRendered += (_, _) => FitToContent();
         SizeChanged += (_, _) => ArrangeCards();
@@ -645,6 +645,7 @@ public partial class MainWindow : Window
         PageHost.Visibility = Visibility.Collapsed;
         PageHelpBtn.Visibility = Visibility.Collapsed;
         MainPage.Visibility = Visibility.Visible;
+        if (hadPage) PageAnimator.Play(MainPage, _settings.Current.AnimationsEnabled);
         SetActiveNav(NavMain);
         if (_panelRefitPending) { _panelRefitPending = false; ApplyPanelSettings(); }
     }
@@ -656,6 +657,7 @@ public partial class MainWindow : Window
         PageHost.Content = view;
         if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Visible;
+        PageAnimator.Play(PageHost, _settings.Current.AnimationsEnabled);
         MainPage.Visibility = Visibility.Collapsed;
         SetActiveNav(nav);
         bool onHelp = view is HelpView;

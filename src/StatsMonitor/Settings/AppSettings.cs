@@ -77,6 +77,7 @@ public sealed class AppSettings
     public double? GadgetTop { get; set; }
     public double GadgetScale { get; set; } = 1;
     public bool GadgetLocked { get; set; }
+    public bool AnimationsEnabled { get; set; } = true;
     public double GadgetXOffset { get; set; }
     public double GadgetYOffset { get; set; }
     public bool GadgetFaded { get; set; }
