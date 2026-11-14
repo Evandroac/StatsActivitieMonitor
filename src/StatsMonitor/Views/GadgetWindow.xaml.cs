@@ -238,8 +238,13 @@ public partial class GadgetWindow : Window
     {
         // The window lags behind the cursor while resizing/moving; keep the controls alive during a drag.
         hover |= Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging;
-        Tools.Visibility = BtnLock.Visibility = hover ? Visibility.Visible : Visibility.Hidden;
+        var want = hover ? Visibility.Visible : Visibility.Collapsed;
+        bool changed = Tools.Visibility != want;
+        Tools.Visibility = BtnLock.Visibility = want;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
+        // The tools row changes the height; keep pinned layouts anchored to their edge.
+        if (changed && IsVisible && IsFixedPosition && !(Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging))
+            Dispatcher.BeginInvoke(new Action(() => { UpdateLayout(); Reposition(); }), System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private void OnToggleLock(object sender, RoutedEventArgs e)
