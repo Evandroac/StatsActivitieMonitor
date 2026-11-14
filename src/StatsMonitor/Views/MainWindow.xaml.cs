@@ -503,7 +503,7 @@ public partial class MainWindow : Window
         NavPanel.Width = open ? _settings.Current.SidebarWidth : 48;
         NavResizer.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = LblPets.Visibility = v;
         SearchBox.Visibility = v;
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
@@ -667,7 +667,7 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavBattery, NavProcesses, NavNetTools, NavDiagnostics, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavBattery, NavProcesses, NavNetTools, NavDiagnostics, NavSettings, NavHelp, NavPets }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenComponent(object sender, RoutedEventArgs e)
@@ -683,7 +683,14 @@ public partial class MainWindow : Window
 
     private void OnOpenNetTools(object sender, RoutedEventArgs e) => ShowPage(new NetworkToolsView(), NavNetTools);
 
-    private void OnOpenDiagnostics(object sender, RoutedEventArgs e) => ShowPage(new DiagnosticsView(_vm), NavDiagnostics);
+    private DiagnosticsView? _diagView;
+    private void OnOpenDiagnostics(object sender, RoutedEventArgs e)
+    {
+        if (_diagView == null || !_diagView.IsBusy) _diagView = new DiagnosticsView(_vm);
+        ShowPage(_diagView, NavDiagnostics);
+    }
+
+    private void OnOpenPets(object sender, RoutedEventArgs e) => ShowPage(new PetsView(), NavPets);
 
     private void OnOpenHelp(object sender, RoutedEventArgs e) => ShowPage(new HelpView(), NavHelp);
 

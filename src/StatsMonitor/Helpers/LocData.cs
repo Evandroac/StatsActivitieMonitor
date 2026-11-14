@@ -472,6 +472,8 @@ public static class LocData
         ["Segure para pausar as leituras; arraste para mover na vertical (funciona mesmo com o gadget fixo)"] = "Hold to pause readings; drag to move vertically (works even when the gadget is locked)",
         ["Animações suaves ao abrir e trocar de tela"] = "Smooth animations when opening and switching screens",
         ["Efeito de transição (esmaecer e deslizar) ao abrir o app e ao navegar entre as telas"] = "Transition effect (fade and slide) when opening the app and navigating between screens",
+        ["Pets: passe o tempo com bichinhos enquanto aguarda um diagnóstico"] = "Pets: pass the time with pets while a diagnostic runs",
+        ["Pets"] = "Pets",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",

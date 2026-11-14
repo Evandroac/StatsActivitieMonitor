@@ -78,7 +78,6 @@ public sealed class DiagnosticsView : UserControl
         _vm.SnapshotApplied -= OnSnapshot;
         Live.Alert -= OnAlert;
         Loc.LanguageChanged -= OnLanguage;
-        _cts?.Cancel();
     }
 
     private void OnLanguage() { Build(); }
@@ -127,6 +126,8 @@ public sealed class DiagnosticsView : UserControl
     }
 
     private bool _running => _cts != null;
+    public bool IsBusy => _running;
+    public static string? Status { get; private set; }
 
     // ---------- layout ----------
 
@@ -371,7 +372,7 @@ public sealed class DiagnosticsView : UserControl
     {
         Dispatcher.BeginInvoke(() =>
         {
-            if (pct >= 0) { _progress = pct; _progressText = text; if (_bar != null) _bar.Value = pct; if (_barText != null) _barText.Text = $"{pct}% — {text}"; }
+            if (pct >= 0) { Status = $"{pct}% — {text}"; _progress = pct; _progressText = text; if (_bar != null) _bar.Value = pct; if (_barText != null) _barText.Text = $"{pct}% — {text}"; }
             Log(text);
         });
     }
@@ -389,7 +390,7 @@ public sealed class DiagnosticsView : UserControl
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { Log("✖ " + ex.Message); Store.Audit("diagnostic error: " + ex.Message); }
-        finally { _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); PowerSaver.TrimSoon(); }
+        finally { Status = null; _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); PowerSaver.TrimSoon(); }
     }
 
     // ---------- component pages ----------

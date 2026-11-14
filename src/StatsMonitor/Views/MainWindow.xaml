@@ -191,6 +191,9 @@
             <Button x:Name="NavHelp" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Tutorial: como o app funciona, ressalvas e dúvidas comuns'}" AutomationProperties.Name="{h:Tr 'Tutorial: como o app funciona, ressalvas e dúvidas comuns'}" Click="OnOpenHelp">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📖" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblHelp" Text="{h:Tr 'Ajuda'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
+            <Button x:Name="NavPets" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Pets: passe o tempo com bichinhos enquanto aguarda um diagnóstico'}" AutomationProperties.Name="{h:Tr 'Pets: passe o tempo com bichinhos enquanto aguarda um diagnóstico'}" Click="OnOpenPets">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🐾" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblPets" Text="{h:Tr 'Pets'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
         <StackPanel x:Name="NavPanel" Width="48">
             <Button x:Name="NavMenu" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Expandir ou recolher o menu (fica salvo)'}" AutomationProperties.Name="{h:Tr 'Expandir ou recolher o menu (fica salvo)'}" Click="OnToggleMenu">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="☰" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblMenu" Text="{h:Tr 'Menu'}" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
