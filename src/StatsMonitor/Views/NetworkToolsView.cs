@@ -53,22 +53,41 @@ public sealed class NetworkToolsView : UserControl
         _runners.Clear();
     }
 
+    private TextBlock _pageTitle = new() { FontSize = 24, FontWeight = FontWeights.SemiBold };
+
+    private static void TintText(Button b)
+    {
+        var st = new Style(typeof(TextBlock));
+        st.Setters.Add(new Setter(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("Foreground") { RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.FindAncestor, typeof(Button), 1) }));
+        b.Resources[typeof(TextBlock)] = st;
+    }
+
+    private static TextBlock Themed(TextBlock tb) { tb.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); return tb; }
+
     private void Build()
     {
         _tabs.Clear();
         _tabButtons.Clear();
+        var outer = new Grid();
+        outer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        outer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         var root = new Grid { Margin = new Thickness(16) };
-        root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        Grid.SetColumn(root, 1);
         root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
+        _pageTitle = new TextBlock { FontSize = 24, FontWeight = FontWeights.SemiBold };
         var head = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
-        head.Children.Add(new TextBlock { Text = "🌐  " + L("Testes de conexão", "Connection tests"), FontSize = 20, FontWeight = FontWeights.SemiBold });
-        head.Children.Add(Caption(L("Ferramentas de rede para diagnosticar problemas: execute, compare e copie os resultados.",
-                                    "Network tools to troubleshoot problems: run, compare and copy the results.")));
+        head.Children.Add(new TextBlock { Text = "🌐  " + L("Testes de conexão", "Connection tests"), FontSize = 12, Opacity = 0.7, FontWeight = FontWeights.SemiBold });
+        head.Children.Add(_pageTitle);
+        var rule = new Border { Height = 2, CornerRadius = new CornerRadius(1), Opacity = 0.6, Margin = new Thickness(0, 8, 0, 0), HorizontalAlignment = HorizontalAlignment.Stretch };
+        rule.SetResourceReference(Border.BackgroundProperty, "Accent");
+        head.Children.Add(rule);
         root.Children.Add(head);
 
-        var tabs = new WrapPanel { Margin = new Thickness(0, 0, 0, 8) };
+        var tabs = new StackPanel();
+        tabs.Children.Add(Themed(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) }));
+        tabs.Children.Add(Themed(new TextBlock { Text = L("Ferramentas de rede para diagnosticar problemas: execute, compare e copie os resultados.", "Network tools to troubleshoot problems: run, compare and copy the results."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) }));
         string[] names =
         [
             "🩺  " + L("Diagnóstico", "Diagnostics"), "📡  Ping", "🧭  Traceroute", "🔎  DNS", "🔌  " + L("Portas", "Ports"),
@@ -77,18 +96,21 @@ public sealed class NetworkToolsView : UserControl
         for (int i = 0; i < names.Length; i++)
         {
             int idx = i;
-            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("PillButton")!, Margin = new Thickness(0, 0, 6, 6) };
+            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("TabButton")!, Margin = new Thickness(0, 0, 0, 8), Padding = new Thickness(12, 8, 12, 8) };
             b.Click += (_, _) => Select(idx);
             _tabButtons.Add(b);
             tabs.Children.Add(b);
         }
-        Grid.SetRow(tabs, 1);
-        root.Children.Add(tabs);
+        var actions = new Border { Margin = new Thickness(16, 20, 0, 20), Padding = new Thickness(14), VerticalAlignment = VerticalAlignment.Top, CornerRadius = new CornerRadius(12), Width = 240, BorderThickness = new Thickness(1), Child = tabs };
+        actions.SetResourceReference(Border.BackgroundProperty, "CardBg");
+        actions.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
+        outer.Children.Add(actions);
 
         var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _body };
-        Grid.SetRow(scroll, 2);
+        Grid.SetRow(scroll, 1);
         root.Children.Add(scroll);
-        Content = root;
+        outer.Children.Add(root);
+        Content = outer;
         Select(_tab);
     }
 
@@ -103,10 +125,10 @@ public sealed class NetworkToolsView : UserControl
             _tabs[i] = content;
         }
         _body.Child = content;
+        _pageTitle.Text = _tabButtons[i].Content?.ToString() ?? "";
         for (int k = 0; k < _tabButtons.Count; k++)
         {
-            _tabButtons[k].FontWeight = k == i ? FontWeights.Bold : FontWeights.Normal;
-            _tabButtons[k].SetResourceReference(BackgroundProperty, k == i ? "TrackBrush" : "InputBg");
+            _tabButtons[k].Tag = k == i ? "active" : null;
         }
     }
 
@@ -189,6 +211,11 @@ public sealed class NetworkToolsView : UserControl
         var r = new Runner();
         _runners.Add(r);
         btn.Content = "▶  " + run;
+        btn.Style = (Style)FindResourceOrNull("PrimaryButton")!;
+        btn.FontSize = 13;
+        btn.Padding = new Thickness(20, 8, 20, 8);
+        btn.Margin = new Thickness(0, 0, 10, 8);
+        TintText(btn);
         btn.Click += async (_, _) =>
         {
             if (r.Cts != null) { r.Cts.Cancel(); return; }

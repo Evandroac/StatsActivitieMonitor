@@ -22,8 +22,15 @@ public sealed class NetworkViewModel : ObservableObject
     public string TotalReceived { get => _totalRx; private set => Set(ref _totalRx, value); }
     public string TotalSent { get => _totalTx; private set => Set(ref _totalTx, value); }
 
+    public System.Collections.ObjectModel.ObservableCollection<double> DownHistory { get; } = new(new double[ComponentViewModel.HistoryLength]);
+    private double _rateMax = 10;
+    /// <summary>Chart ceiling in Mbps (auto-scaled to the recent peak).</summary>
+    public double RateMax { get => _rateMax; private set => Set(ref _rateMax, value); }
+
     public void Update(NetworkSnapshot s)
     {
+        DownHistory.RemoveAt(0); DownHistory.Add(s.DownloadBps * 8 / 1e6);
+        RateMax = Math.Max(10, DownHistory.Max() * 1.2);
         Online = s.Connected && s.InternetReachable;
         Status = !s.Connected ? Loc.T("Sem conexão") : s.InternetReachable ? Loc.T("Conectado") : Loc.T("Sem acesso à internet");
         Adapter = s.Connected ? $"{s.ConnectionType} · {s.AdapterName}" : NA;

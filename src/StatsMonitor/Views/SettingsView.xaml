@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         xmlns:local="clr-namespace:StatsMonitor.Views"
-        FontFamily="Segoe UI">
+        FontFamily="{DynamicResource AppFont}">
     <UserControl.Resources>
         <h:TempUnitConverter x:Key="TempConv"/>
         <Style x:Key="WarnText" TargetType="TextBlock">
@@ -29,7 +29,14 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="Bd" CornerRadius="8" Padding="10,7" Margin="0,1" Background="Transparent">
-                            <ContentPresenter VerticalAlignment="Center"/>
+                            <ContentPresenter VerticalAlignment="Center">
+                                <ContentPresenter.Resources>
+                                    <!-- The global TextBlock style sets Foreground explicitly, so inheritance alone would not recolor the label. -->
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -37,7 +44,7 @@
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Accent}"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Foreground" Value="{DynamicResource OnAccent}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -53,7 +60,17 @@
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
     <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
     <StackPanel Margin="16,20,0,20" VerticalAlignment="Top" Width="240">
-    <Border Padding="10" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+    <Border Padding="14" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <StackPanel>
+            <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
+            <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
+            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" AutomationProperties.Name="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
+            <Button Content="{h:Tr '⤓  Exportar configurações'}" ToolTip="{h:Tr 'Salva todas as configurações em um arquivo'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
+            <Button Content="{h:Tr '⤒  Importar configurações'}" ToolTip="{h:Tr 'Carrega as configurações de um arquivo exportado'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
+                        <Button x:Name="BtnResetColors" Content="{h:Tr '↺  Restaurar cores do tema'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" AutomationProperties.Name="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnResetColors"/>
+        </StackPanel>
+    </Border>
+    <Border Margin="0,12,0,0" Padding="10" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <StackPanel>
             <TextBlock Text="{h:Tr 'SEÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="6,2,0,6"/>
             <RadioButton x:Name="TabGeneral" Tag="general" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '⚙️  Geral'}" Checked="OnSection"/>
@@ -63,16 +80,6 @@
             <RadioButton Tag="logging" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '📝  Registro de dados'}" Checked="OnSection"/>
             <RadioButton Tag="appearance" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🎨  Personalização'}" Checked="OnSection"/>
             <RadioButton Tag="profiles" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🎛️  Perfis'}" Checked="OnSection"/>
-        </StackPanel>
-    </Border>
-    <Border Margin="0,12,0,0" Padding="14" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
-        <StackPanel>
-            <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
-            <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
-            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" AutomationProperties.Name="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
-            <Button Content="{h:Tr '⤓  Exportar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
-            <Button Content="{h:Tr '⤒  Importar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
-                        <Button x:Name="BtnResetColors" Content="{h:Tr '↺  Restaurar cores do tema'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" AutomationProperties.Name="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnResetColors"/>
         </StackPanel>
     </Border>
                 </StackPanel>
@@ -105,7 +112,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🔠  Tamanho da fonte:'}" VerticalAlignment="Center" Width="200"/>
-            <Slider Width="160" Minimum="90" Maximum="130" TickFrequency="5" SmallChange="5" LargeChange="10" IsSnapToTickEnabled="True" TickPlacement="BottomRight" VerticalAlignment="Center" ToolTip="{h:Tr 'Tamanho dos textos de todo o programa (90% a 130%)'}" AutomationProperties.Name="{h:Tr 'Tamanho da fonte'}" Value="{Binding FontScalePercent}"/>
+            <local:NumericBox Minimum="90" Maximum="130" Step="5" ToolTip="{h:Tr 'Tamanho dos textos de todo o programa (90% a 130%)'}" AutomationProperties.Name="{h:Tr 'Tamanho da fonte'}" Value="{Binding FontScalePercent}"/>
             <TextBlock Text="{Binding FontScaleText}" VerticalAlignment="Center" Margin="8,0,0,0" MinWidth="40"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
@@ -134,21 +141,28 @@
         <CheckBox ToolTip="{h:Tr 'Mostra o gadget quando o app é minimizado'}" Content="{h:Tr 'Exibir gadget'}" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
         <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
         <CheckBox ToolTip="{h:Tr 'Mantém o gadget na tela mesmo com a janela principal aberta'}" Content="{h:Tr 'Manter gadget sempre visível'}" IsChecked="{Binding AlwaysShowGadget}"/>
-        <TextBlock Text="{h:Tr 'Exibição do gadget ao minimizar'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto superior esquerdo da tela'}" Content="{h:Tr 'Canto superior esquerdo'}" IsChecked="{Binding GadgetTopLeft}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto superior direito da tela'}" Content="{h:Tr 'Canto superior direito'}" IsChecked="{Binding GadgetTopRight}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto inferior esquerdo da tela'}" Content="{h:Tr 'Canto inferior esquerdo'}" IsChecked="{Binding GadgetBottomLeft}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto inferior direito da tela'}" Content="{h:Tr 'Canto inferior direito'}" IsChecked="{Binding GadgetBottomRight}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada na parte de baixo da tela'}" Content="{h:Tr 'Faixa fixa na parte inferior da tela'}" IsChecked="{Binding GadgetDockedBottom}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <TextBlock Text="{h:Tr 'Visão do gadget'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" ToolTip="{h:Tr 'Simplificada: apenas texto. Detalhada: mais informações e mini gráfico de uso de cada recurso'}" AutomationProperties.Name="{h:Tr 'Visão do gadget'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetViewKey, Mode=TwoWay}">
+            <ComboBoxItem Tag="Simple" Content="{h:Tr 'Simplificada'}"/>
+            <ComboBoxItem Tag="Detailed" Content="{h:Tr 'Detalhada (mais informações e mini gráficos)'}"/>
+        </ComboBox>
+        <TextBlock Text="{h:Tr 'Posição do gadget'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" AutomationProperties.Name="{h:Tr 'Exibição do gadget ao minimizar'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetModeKey, Mode=TwoWay}">
+            <ComboBoxItem Tag="Floating" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}"/>
+            <ComboBoxItem Tag="TopLeft" ToolTip="{h:Tr 'Gadget fixo no canto superior esquerdo da tela'}" Content="{h:Tr 'Canto superior esquerdo'}"/>
+            <ComboBoxItem Tag="TopRight" ToolTip="{h:Tr 'Gadget fixo no canto superior direito da tela'}" Content="{h:Tr 'Canto superior direito'}"/>
+            <ComboBoxItem Tag="BottomLeft" ToolTip="{h:Tr 'Gadget fixo no canto inferior esquerdo da tela'}" Content="{h:Tr 'Canto inferior esquerdo'}"/>
+            <ComboBoxItem Tag="BottomRight" ToolTip="{h:Tr 'Gadget fixo no canto inferior direito da tela'}" Content="{h:Tr 'Canto inferior direito'}"/>
+            <ComboBoxItem Tag="FloatingBar" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}"/>
+            <ComboBoxItem Tag="DockedTop" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}"/>
+            <ComboBoxItem Tag="DockedBottom" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada na parte de baixo da tela'}" Content="{h:Tr 'Faixa fixa na parte inferior da tela'}"/>
+            <ComboBoxItem Tag="None" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}"/>
+        </ComboBox>
         <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="{h:Tr 'Mostra como o gadget ficará no modo escolhido, com os indicadores marcados'}">
             <StackPanel>
                 <DockPanel>
                     <Border DockPanel.Dock="Right" CornerRadius="10" Padding="10,2" Background="{DynamicResource Accent}" VerticalAlignment="Center">
-                        <TextBlock x:Name="ModeBadge" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="ModeBadge" Foreground="{DynamicResource OnAccent}" FontSize="11" FontWeight="SemiBold"/>
                     </Border>
                     <TextBlock Text="{h:Tr '👁  Pré-visualização'}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </DockPanel>
@@ -196,7 +210,7 @@
         </Border>
         </StackPanel>
         <TextBlock Text="{h:Tr '⌨️  Atalho global'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
-        <CheckBox Content="{h:Tr 'Ativar atalho para mostrar/ocultar o gadget'}" IsChecked="{Binding HotkeyEnabled}"/>
+        <CheckBox Content="{h:Tr 'Ativar atalho para mostrar/ocultar o gadget'}" ToolTip="{h:Tr 'Liga o atalho de teclado global que mostra ou esconde o gadget'}" IsChecked="{Binding HotkeyEnabled}"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Atalho:'}" VerticalAlignment="Center" Width="200"/>
             <ComboBox Width="160" ItemsSource="{Binding HotkeyOptions}" SelectedItem="{Binding GadgetHotkey, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Atalho:'}"/>
@@ -261,9 +275,9 @@
             </ComboBox>
         </StackPanel>
         <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
-        <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
-                    <CheckBox Content="{h:Tr 'Saudações (bom dia, boa tarde, boa noite)'}" IsChecked="{Binding NotifyGreetings}"/>
-                    <CheckBox Content="{h:Tr 'Alertas inteligentes de rede (sem conexão, sem internet, latência alta)'}" IsChecked="{Binding NotifyNetworkAlerts}"/>
+        <CheckBox Content="{h:Tr 'Tocar som de alerta'}" ToolTip="{h:Tr 'Emite um som quando um alerta é disparado'}" IsChecked="{Binding AlertSound}"/>
+                    <CheckBox Content="{h:Tr 'Saudações (bom dia, boa tarde, boa noite)'}" ToolTip="{h:Tr 'Exibe uma saudação de acordo com o horário ao abrir o app'}" IsChecked="{Binding NotifyGreetings}"/>
+                    <CheckBox Content="{h:Tr 'Alertas inteligentes de rede (sem conexão, sem internet, latência alta)'}" ToolTip="{h:Tr 'Avisa quando a conexão cai, a internet some ou a latência fica alta'}" IsChecked="{Binding NotifyNetworkAlerts}"/>
         <Button Content="{h:Tr '🔔  Testar alerta'}" ToolTip="{h:Tr 'Exibe uma notificação de alerta de teste'}" AutomationProperties.Name="{h:Tr 'Testar alerta'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,6,0,0" Click="OnTestAlert"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
@@ -287,7 +301,7 @@
         </StackPanel>
         <TextBlock Style="{StaticResource WarnText}" Text="{Binding AlertWarning}"/>
         <DockPanel Margin="0,14,0,6">
-            <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
+            <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" ToolTip="{h:Tr 'Apaga todo o histórico de alertas'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
             <TextBlock Text="{h:Tr '🕘  Histórico de alertas'}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
         </DockPanel>
         <TextBlock x:Name="AlertHistoryEmpty" Text="{h:Tr 'Nenhum alerta registrado'}" Style="{StaticResource Caption}"/>
@@ -314,12 +328,12 @@
         <TextBlock Text="{h:Tr '🎛️  Perfis'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <ComboBox Width="200" ItemsSource="{Binding ProfileNames}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Perfis'}"/>
-            <Button Content="{h:Tr 'Aplicar'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnApplyProfile"/>
-            <Button Content="{h:Tr 'Excluir'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnDeleteProfile"/>
+            <Button Content="{h:Tr 'Aplicar'}" ToolTip="{h:Tr 'Aplica as configurações do perfil selecionado'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnApplyProfile"/>
+            <Button Content="{h:Tr 'Excluir'}" ToolTip="{h:Tr 'Exclui o perfil selecionado'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnDeleteProfile"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBox Width="200" Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{h:Tr 'Nome do perfil (vazio = perfil selecionado)'}" AutomationProperties.Name="{h:Tr 'Nome do perfil'}"/>
-            <Button Content="{h:Tr 'Salvar atual no perfil'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnSaveProfile"/>
+            <Button Content="{h:Tr 'Salvar atual no perfil'}" ToolTip="{h:Tr 'Salva as configurações atuais em um perfil'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnSaveProfile"/>
         </StackPanel>
                     </StackPanel></Border>
     </StackPanel>

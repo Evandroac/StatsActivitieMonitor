@@ -9,6 +9,7 @@ public sealed class AppearancePreset
 {
     public string Name { get; set; } = "";
     public bool DarkTheme { get; set; } = true;
+    public string ThemeId { get; set; } = "";
     public Dictionary<string, string> ColorOverrides { get; set; } = new();
     public int GadgetOpacity { get; set; } = 80;
     public string NormalColor { get; set; } = "#3DDC84";
@@ -28,6 +29,8 @@ public sealed class AppSettings
     public List<AppearancePreset> Presets { get; set; } = new();
 
     public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
+    /// <summary>False = simplified gadget (text only); true = detailed gadget with extra info and mini charts.</summary>
+    public bool GadgetDetailed { get; set; }
     public int UpdateIntervalMs { get; set; } = 1000;
     /// <summary>Per-component update interval in ms; 0 follows the general interval.</summary>
     public int CpuIntervalMs { get; set; }
@@ -41,6 +44,7 @@ public sealed class AppSettings
     public bool AlwaysShowGadget { get; set; }
     
     public bool DarkTheme { get; set; } = true;
+    public string ThemeId { get; set; } = "";
 
     // Custom colors keyed by theme resource name (WindowBg, CardBg, ...); missing/empty means theme default.
     public Dictionary<string, string> ColorOverrides { get; set; } = new();
@@ -71,8 +75,13 @@ public sealed class AppSettings
 
     public double? GadgetLeft { get; set; }
     public double? GadgetTop { get; set; }
+    public double GadgetScale { get; set; } = 1;
+    public bool GadgetLocked { get; set; }
+    public double GadgetXOffset { get; set; }
+    public bool GadgetFaded { get; set; }
 
     public bool SidebarPinned { get; set; }
+    public double SidebarWidth { get; set; } = 220;
     public bool SimplifiedView { get; set; }
     public bool PauseWhenHidden { get; set; }
     public bool EcoWhenMinimized { get; set; } = true;

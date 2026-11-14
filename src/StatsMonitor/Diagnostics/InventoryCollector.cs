@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
@@ -24,6 +24,15 @@ public static class InventoryCollector
             progress?.Invoke(Comp.Title(Comp.All[i], Loc.Lang == "en"), i * 100 / Comp.All.Length);
             Collect(inv, Comp.All[i], live);
         }
+        return inv;
+    }
+
+    /// <summary>Fast subset used by the overview so identification data appears before the slow collectors finish.</summary>
+    public static Inventory CollectBasics(HardwareSnapshot? live)
+    {
+        var inv = new Inventory();
+        foreach (var c in new[] { Comp.Hardware, Comp.Cpu, Comp.Memory, Comp.Gpu }) Collect(inv, c, live);
+        try { OsBasics(inv, []); } catch (Exception ex) { inv.Errors.Add($"{Comp.Os}/Windows: {ex.Message}"); }
         return inv;
     }
 

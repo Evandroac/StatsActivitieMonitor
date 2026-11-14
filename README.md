@@ -19,12 +19,12 @@ src/StatsMonitor
 
 - **Biblioteca de hardware:** [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) atrás de `IHardwareMonitorService`, podendo ser trocada sem alterar UI/ViewModels.
 - **Segundo plano:** a coleta roda em uma `Task` própria (fora da thread de UI) e continua com a janela aberta, minimizada ou oculta. Recursos são liberados ao encerrar.
-- **Gadget:** janela WPF compacta, sem borda, translúcida e *topmost*, que pode ficar flutuante (arrastável) ou fixa em um dos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. Não usa o recurso descontinuado de barras de ferramentas (*appbar/deskband*) e não interfere em outros programas. Aparece ao minimizar a janela principal (ou sempre, se configurado); arraste para mover (posição salva) e dê duplo clique para restaurar a janela principal.
+- **Gadget:** janela WPF compacta, sem borda, translúcida e *topmost*, que pode ficar flutuante (arrastável) ou fixa em um dos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. A visão pode ser **simplificada** (texto) ou **detalhada** (mais informações e mini gráfico de uso de CPU, RAM, GPU, disco e rede). Não usa o recurso descontinuado de barras de ferramentas (*appbar/deskband*) e não interfere em outros programas. Aparece ao minimizar a janela principal (ou sempre, se configurado); arraste para mover (posição salva) e dê duplo clique para restaurar a janela principal.
 - **Sensores:** detectados automaticamente. Nunca são exibidos valores fictícios: sensor indisponível = **N/D**. Alguns sensores de temperatura da CPU exigem privilégios de administrador; o app roda sem elevação e informa isso na interface.
 
 ## Telas principais
 
-- **Principal / Sistema / CPU / GPU / Memória / Discos / Rede / Sensores / Periféricos:** leituras em tempo real, com intervalo de atualização individual por componente e pesquisa geral.
+- **Principal / Sistema e periféricos (página unificada com filtro) / CPU / GPU / Memória / Discos / Rede / Sensores:** leituras em tempo real, com intervalo de atualização individual por componente e pesquisa geral.
 - **Bateria (notebooks):** nível, status, tempo restante, tempo para carga completa, saúde e fonte de energia.
 - **Processos:** visão estilo Gerenciador de Tarefas (árvore, CPU/RAM/disco/rede, filtros, ordenação, finalizar/reiniciar, gráfico timeline).
 - **Testes de conexão:** diagnóstico, ping, traceroute, DNS, portas, HTTP e velocidade.
@@ -54,11 +54,11 @@ Via CLI: `dotnet run --project src/StatsMonitor`
 
 ## Configurações
 
-Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, posição do gadget (flutuante, cantos, faixa superior ou inferior), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
+Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, visão do gadget (simplificada ou detalhada), posição do gadget (flutuante, cantos, faixa superior ou inferior), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
 
 ## Personalização
 
-Botão "Personalização" na janela principal (separado das configurações): tema base escuro/claro, cores de fundo, painéis, bordas, textos e destaques da janela principal, cor/texto/opacidade do gadget e cores dos alertas. Campos vazios usam o padrão do tema; "Restaurar padrões" limpa tudo.
+Botão "Personalização" na janela principal (separado das configurações): tema base escuro/claro, **temas visuais** em quadros de seleção (Windows XP/98, Cyberpunk e futurismo, Retrô 80/90, Vaporwave, Arcade 8-bit, CRT/Terminal, Moderno, Minimalista, Anime/kawaii, artísticos — cada um com paleta e fonte próprias, definidos em `Helpers\ThemeCatalog.cs`), cores de fundo, painéis, bordas, textos e destaques da janela principal, cor/texto/opacidade do gadget e cores dos alertas. Campos vazios usam o padrão do tema; "Restaurar padrões" limpa tudo.
 
 ## Testes
 

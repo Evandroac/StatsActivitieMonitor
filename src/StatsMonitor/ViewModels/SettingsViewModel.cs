@@ -35,6 +35,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowTemperatures = s.ShowTemperatures;
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
+        _gadgetDetailed = s.GadgetDetailed;
         _gadgetMode = s.GadgetMode == GadgetDisplayMode.Taskbar ? GadgetDisplayMode.BottomRight : s.GadgetMode;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
@@ -151,6 +152,17 @@ public sealed class SettingsViewModel : ObservableObject
     public bool GadgetTopRight { get => _gadgetMode == GadgetDisplayMode.TopRight; set => SetMode(value, GadgetDisplayMode.TopRight); }
     public bool GadgetBottomLeft { get => _gadgetMode == GadgetDisplayMode.BottomLeft; set => SetMode(value, GadgetDisplayMode.BottomLeft); }
     public bool GadgetBottomRight { get => _gadgetMode == GadgetDisplayMode.BottomRight; set => SetMode(value, GadgetDisplayMode.BottomRight); }
+    private bool _gadgetDetailed;
+    public string GadgetViewKey
+    {
+        get => _gadgetDetailed ? "Detailed" : "Simple";
+        set { bool d = value == "Detailed"; if (_gadgetDetailed != d) { _gadgetDetailed = d; Raise(); AutoSave(); } }
+    }
+    public string GadgetModeKey
+    {
+        get => _gadgetMode.ToString();
+        set { if (Enum.TryParse<GadgetDisplayMode>(value, out var m)) SetMode(true, m); }
+    }
     public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set => SetMode(value, GadgetDisplayMode.None); }
     private bool _showCpuMain; public bool ShowCpuMain { get => _showCpuMain; set { if (_showCpuMain != value) { _showCpuMain = value; AutoSave(); } } }
     private bool _showGpuMain; public bool ShowGpuMain { get => _showGpuMain; set { if (_showGpuMain != value) { _showGpuMain = value; AutoSave(); } } }
@@ -281,6 +293,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.ShowGadget = ShowGadget;
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = _gadgetMode;
+        s.GadgetDetailed = _gadgetDetailed;
         s.Language = _language;
  s.FontScalePercent = _fontScale;
         s.TempUnit = _fahrenheit ? "F" : "C";

@@ -53,6 +53,8 @@ public sealed class DiagnosticsView : UserControl
     private TextBlock? _barText;
     private TextBox? _logBox;
     private bool _loading;
+    private string? _diagComp;
+    private string _compNote = "";
 
     public DiagnosticsView(MainViewModel vm)
     {
@@ -109,6 +111,12 @@ public sealed class DiagnosticsView : UserControl
         {
             var snap = _vm.LastSnapshot;
             var ses = DiagnosticRunner.NewSession(false, snap);
+            if (_cur.Inventory.Collected.Count == 0)
+            {
+                var quick = DiagnosticRunner.NewSession(false, snap);
+                quick.Inventory = await Task.Run(() => InventoryCollector.CollectBasics(snap));
+                if (!_running && _cur.Inventory.Collected.Count == 0) { _cur = quick; if (_sec == 0) Show(0); }
+            }
             ses.Inventory = await Task.Run(() => InventoryCollector.CollectAll(snap, null));
             ses.Model = ses.Inventory.S("hardware.model") ?? "";
             DiagnosticEngine.Analyze(ses, snap, Limits);
@@ -139,16 +147,21 @@ public sealed class DiagnosticsView : UserControl
         var root = new Grid { Margin = new Thickness(16) };
         root.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        var left = new StackPanel { Margin = new Thickness(0, 0, 12, 0), Width = 210 };
-        left.Children.Add(new TextBlock { Text = "🩻  " + L("Diagnóstico", "Diagnostics"), FontSize = 20, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 8) });
+        var left = new StackPanel();
+        left.Children.Add(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) });
+        left.Children.Add(new TextBlock { Text = L("Escolha uma seção para analisar hardware, software, testes, histórico e relatórios do computador.", "Pick a section to review the computer's hardware, software, tests, history and reports."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) });
         for (int i = 0; i < Sections.Length; i++)
         {
             int idx = i;
-            var b = new Button { Content = $"{Sections[i].Icon}  {L(Sections[i].Pt, Sections[i].En)}", Style = (Style?)Res("PillButton"), Margin = new Thickness(0, 0, 0, 4), HorizontalContentAlignment = HorizontalAlignment.Left, Padding = new Thickness(10, 6, 10, 6) };
+            var b = new Button { Content = $"{Sections[i].Icon}  {L(Sections[i].Pt, Sections[i].En)}", Style = (Style?)Res("TabButton"), Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(10, 6, 10, 6) };
             b.Click += (_, _) => Show(idx);
             _nav.Add(b); left.Children.Add(b);
         }
-        root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = left });
+        foreach (var tb in left.Children.OfType<TextBlock>()) tb.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
+        var panel = new Border { Margin = new Thickness(0, 4, 14, 4), Padding = new Thickness(14), VerticalAlignment = VerticalAlignment.Top, CornerRadius = new CornerRadius(12), Width = 240, BorderThickness = new Thickness(1), Child = left };
+        panel.SetResourceReference(Border.BackgroundProperty, "CardBg");
+        panel.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
+        root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = panel });
         var sv = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _body };
         Grid.SetColumn(sv, 1);
         root.Children.Add(sv);
@@ -158,11 +171,11 @@ public sealed class DiagnosticsView : UserControl
 
     private void Show(int i)
     {
+        if (i != _sec) _compNote = "";
         _sec = i;
         for (int k = 0; k < _nav.Count; k++)
         {
-            _nav[k].FontWeight = k == i ? FontWeights.Bold : FontWeights.Normal;
-            _nav[k].SetResourceReference(BackgroundProperty, k == i ? "TrackBrush" : "InputBg");
+            _nav[k].Tag = k == i ? "active" : null;
         }
         _body.Children.Clear(); _liveText.Clear(); _charts.Clear();
         _body.Children.Add(Header(i));
@@ -192,7 +205,7 @@ public sealed class DiagnosticsView : UserControl
 
     private Border Card(UIElement child, double? width = null)
     {
-        var b = new Border { Padding = new Thickness(12), CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1), Margin = new Thickness(0, 0, 10, 10), HorizontalAlignment = HorizontalAlignment.Left, MaxWidth = 980, Child = child };
+        var b = new Border { Padding = new Thickness(12), CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1), Margin = new Thickness(0, 0, 10, 10), HorizontalAlignment = HorizontalAlignment.Left, MaxWidth = 1100, Child = child };
         if (width != null) b.Width = width.Value;
         b.SetResourceReference(Border.BackgroundProperty, "CardBg");
         b.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
@@ -201,7 +214,7 @@ public sealed class DiagnosticsView : UserControl
 
     private Button Pill(string text, RoutedEventHandler click)
     {
-        var b = new Button { Content = text, HorizontalContentAlignment = HorizontalAlignment.Left, Style = (Style?)Res("PillButton"), Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(14, 7, 14, 7) };
+        var b = new Button { Content = text, HorizontalContentAlignment = HorizontalAlignment.Left, Style = (Style?)Res("PillButton"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(14, 7, 14, 7) };
         b.Click += click;
         return b;
     }
@@ -215,16 +228,22 @@ public sealed class DiagnosticsView : UserControl
 
     private UIElement FactGrid(IEnumerable<Fact> facts)
     {
-        var g = new Grid { MinWidth = 520 };
-        g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(230) });
+        var g = new Grid { MinWidth = 780 };
+        g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(270) });
         g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         int r = 0;
         foreach (var f in facts)
         {
             g.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            var l = new TextBlock { Text = f.Label, Opacity = 0.7, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 8, 2) };
+            var band = new Border { CornerRadius = new CornerRadius(6) };
+            if (r % 2 == 0) band.SetResourceReference(Border.BackgroundProperty, "InputBg");
+            Grid.SetRow(band, r); Grid.SetColumnSpan(band, 2);
+            g.Children.Add(band);
+            var l = new TextBlock { Text = f.Label, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(10, 6, 10, 6), VerticalAlignment = VerticalAlignment.Center };
+            l.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
             bool na = f.Value.StartsWith("Indispon", StringComparison.OrdinalIgnoreCase) || f.Value.StartsWith("Unavail", StringComparison.OrdinalIgnoreCase);
-            var v = new TextBlock { Text = f.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2), Foreground = na ? Warn : null, IsHitTestVisible = true };
+            var v = new TextBlock { Text = f.Value, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 6, 10, 6), VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = true };
+            if (na) v.Foreground = Warn;
             if (na) v.ToolTip = L("Dado indisponível: não é tratado como saudável.", "Unavailable data: not treated as healthy.");
             Grid.SetRow(l, r); Grid.SetRow(v, r); Grid.SetColumn(v, 1);
             g.Children.Add(l); g.Children.Add(v); r++;
@@ -269,14 +288,20 @@ public sealed class DiagnosticsView : UserControl
     private void Overview()
     {
         var inv = _cur.Inventory;
-        string S(string k) => inv.S(k) ?? InventoryCollector.NA;
+        string pending = _loading ? L("Coletando…", "Collecting…") : InventoryCollector.NA;
+        string S(string k) => inv.S(k) is { Length: > 0 } v ? v : pending;
+        string Hw(string pt) => inv.Sections.TryGetValue(Comp.Hardware, out var hw) && hw.FirstOrDefault(x => x.Label == L(pt, pt == "Placa-mãe" ? "Motherboard" : "BIOS date")) is { } fact ? fact.Value : pending;
         var ident = new List<Fact>
         {
-            new(L("Computador", "Computer"), Environment.MachineName),
-            new(L("Fabricante / modelo", "Manufacturer / model"), $"{S("hardware.maker")} {S("hardware.model")}"),
-            new(L("Sistema", "System"), $"{S("os.caption")} (build {S("os.build")})"),
+            new(L("Computador", "Computer"), inv.S("hardware.name") is { Length: > 0 } cn ? cn : Environment.MachineName),
+            new(L("Fabricante", "Manufacturer"), S("hardware.maker")),
+            new(L("Modelo", "Model"), S("hardware.model")),
+            new(L("Placa-mãe", "Motherboard"), Hw("Placa-mãe")),
+            new(L("Data da BIOS", "BIOS date"), Hw("Data da BIOS")),
+            new(L("Usuário", "User"), Environment.UserName),
+            new(L("Sistema", "System"), inv.S("os.caption") is { Length: > 0 } oc ? $"{oc} (build {S("os.build")})" : pending),
             new(L("Processador", "Processor"), S("cpu.name")),
-            new("RAM", inv.N("memory.totalGb") is { } m ? $"{m:0.0} GB" : InventoryCollector.NA),
+            new("RAM", inv.N("memory.totalGb") is { } m ? $"{m:0.0} GB" : pending),
             new(L("Placa de vídeo", "Graphics"), S("gpu.name")),
             new(L("Administrador", "Administrator"), _vm.LastSnapshot?.IsElevated == true ? L("Sim", "Yes") : L("Não — alguns sensores/dados ficam indisponíveis", "No — some sensors/data stay unavailable")),
         };
@@ -306,7 +331,10 @@ public sealed class DiagnosticsView : UserControl
         _body.Children.Add(health);
 
         var run = Pill(_running ? "⏹  " + L("CANCELAR DIAGNÓSTICO", "CANCEL DIAGNOSTIC") : "▶  " + L("INICIAR DIAGNÓSTICO COMPLETO", "START FULL DIAGNOSTIC"), async (_, _) => await ToggleFullAsync());
-        run.FontWeight = FontWeights.Bold;
+        run.Style = (Style?)Res("PrimaryButton");
+        run.Padding = new Thickness(28, 12, 28, 12);
+        run.Margin = new Thickness(0, 4, 0, 8);
+        run.ToolTip = L("Executa o diagnóstico completo do computador", "Runs the full computer diagnostic");
         _body.Children.Add(run);
         _body.Children.Add(Cap(L("Executa inventário, testes de CPU, RAM (256 MB), disco (arquivo temporário de 128 MB), rede e análise. Leva cerca de 30 s. O computador pode ficar mais lento durante o teste de CPU.", "Runs inventory, CPU, RAM (256 MB), disk (128 MB temp file) and network tests plus analysis. Takes about 30 s. The computer may slow down during the CPU test.")));
         _bar = new ProgressBar { Height = 10, Maximum = 100, Value = _progress, Margin = new Thickness(0, 8, 0, 2), MaxWidth = 760, HorizontalAlignment = HorizontalAlignment.Left, Width = 760 };
@@ -361,7 +389,7 @@ public sealed class DiagnosticsView : UserControl
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { Log("✖ " + ex.Message); Store.Audit("diagnostic error: " + ex.Message); }
-        finally { _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); }
+        finally { _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); PowerSaver.TrimSoon(); }
     }
 
     // ---------- component pages ----------
@@ -380,7 +408,11 @@ public sealed class DiagnosticsView : UserControl
         hp.Children.Add(Badge(health));
         _body.Children.Add(hp);
 
-        _body.Children.Add(Pill("🔄  " + L("Diagnosticar este componente", "Diagnose this component"), async (_, _) => await DiagnoseComponentAsync(comp)));
+        bool busy = _diagComp == comp;
+        var diag = Pill(busy ? "⏳  " + L("Diagnosticando…", "Diagnosing…") : "🔄  " + L("Diagnosticar este componente", "Diagnose this component"), async (_, _) => await DiagnoseComponentAsync(comp));
+        diag.IsEnabled = !_running;
+        _body.Children.Add(diag);
+        if (_compNote.Length > 0 && !busy) _body.Children.Add(Cap(_compNote));
         _body.Children.Add(Cap(L("Atualiza a leitura e executa o teste do componente (quando existir).", "Refreshes the reading and runs the component test (when one exists).")));
 
         foreach (var t in _cur.Tests.Where(x => x.Component == comp))
@@ -390,9 +422,11 @@ public sealed class DiagnosticsView : UserControl
 
     private async Task DiagnoseComponentAsync(string comp)
     {
-        if (_running || _loading) return;
-        _loading = true;
+        if (_running) return;
         _cts = new CancellationTokenSource();
+        _diagComp = comp;
+        _compNote = "";
+        Show(_sec);
         try
         {
             var snap = _vm.LastSnapshot;
@@ -411,12 +445,13 @@ public sealed class DiagnosticsView : UserControl
                 _ => null,
             };
             if (r != null) ses.Tests.Add(r);
+            else _compNote = L("Este componente não tem teste de desempenho; a leitura foi atualizada.", "This component has no performance test; the reading was refreshed.");
             DiagnosticEngine.Analyze(ses, snap, Limits);
             Store.Audit($"component diagnostic {comp}");
         }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { Log("✖ " + ex.Message); }
-        finally { _cts?.Dispose(); _cts = null; _loading = false; Show(_sec); }
+        catch (Exception ex) { Log("✖ " + ex.Message); _compNote = "⚠ " + L("Falha no diagnóstico: ", "Diagnostic failed: ") + ex.Message; }
+        finally { _cts?.Dispose(); _cts = null; _diagComp = null; Show(_sec); }
     }
 
     private UIElement TestCard(TestResult t)

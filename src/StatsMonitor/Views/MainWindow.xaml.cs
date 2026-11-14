@@ -493,15 +493,26 @@ public partial class MainWindow : Window
     private void SetMenu(bool open)
     {
         _menuOpen = open;
-        NavPanel.Width = open ? 220 : 48;
+        NavPanel.Width = open ? _settings.Current.SidebarWidth : 48;
+        NavResizer.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblPeripherals.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
         ApplyTree();
         if (!open) SearchPopup.IsOpen = false;
     }
+
+    private void OnNavResize(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        if (!_menuOpen) return;
+        var w = Math.Clamp(NavPanel.Width + e.HorizontalChange, 160, 420);
+        _settings.Current.SidebarWidth = w;
+        NavPanel.Width = w;
+    }
+
+    private void OnNavResizeDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e) => _settings.Save();
 
     private bool _treeOpen = true;
 
@@ -510,6 +521,8 @@ public partial class MainWindow : Window
         NavTree.Visibility = !_menuOpen || _treeOpen ? Visibility.Visible : Visibility.Collapsed;
         NavTreeToggle.Content = _treeOpen ? "▾" : "▸";
     }
+
+    private void OnOpenWindowsUpdate(object sender, RoutedEventArgs e) => StatsMonitor.Services.WindowsUpdateChecker.OpenWindowsUpdate();
 
     private void OnToggleTree(object sender, RoutedEventArgs e)
     {
@@ -593,8 +606,8 @@ public partial class MainWindow : Window
         switch (r.Page)
         {
             case SearchPage.Main: ShowMain(); break;
-            case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false, Component: null }) OnOpenSystem(this, new RoutedEventArgs()); break;
-            case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
+            case SearchPage.System: if (PageHost.Content is not SystemInfoView { Component: null }) OnOpenSystem(this, new RoutedEventArgs()); (PageHost.Content as SystemInfoView)?.ShowSection("system"); break;
+            case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { Component: null }) OnOpenSystem(this, new RoutedEventArgs()); (PageHost.Content as SystemInfoView)?.ShowSection("peripherals"); break;
             case SearchPage.Processes: if (PageHost.Content is not ProcessesView) OnOpenProcesses(this, new RoutedEventArgs()); break;
             case SearchPage.Diagnostics: if (PageHost.Content is not DiagnosticsView) OnOpenDiagnostics(this, new RoutedEventArgs()); break;
         case SearchPage.NetTools: if (PageHost.Content is not NetworkToolsView) OnOpenNetTools(this, new RoutedEventArgs()); break;
@@ -619,8 +632,11 @@ public partial class MainWindow : Window
         {
             case SettingsView s: s.Discard(); break;
         }
+        bool hadPage = PageHost.Content != null;
         PageHost.Content = null;
+        if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Collapsed;
+        PageHelpBtn.Visibility = Visibility.Collapsed;
         MainPage.Visibility = Visibility.Visible;
         SetActiveNav(NavMain);
         if (_panelRefitPending) { _panelRefitPending = false; ApplyPanelSettings(); }
@@ -629,15 +645,20 @@ public partial class MainWindow : Window
     private void ShowPage(FrameworkElement view, Button nav)
     {
         if (PageHost.Content is SettingsView s) s.Discard();
+        bool hadPage = PageHost.Content != null;
         PageHost.Content = view;
+        if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Visible;
         MainPage.Visibility = Visibility.Collapsed;
         SetActiveNav(nav);
+        bool onHelp = view is HelpView;
+        PageHelpBtn.Visibility = onHelp ? Visibility.Collapsed : Visibility.Visible;
+        PageCopyBtn.Margin = new Thickness(0, 18, onHelp ? 24 : 72, 0);
     }
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavBattery, NavPeripherals, NavProcesses, NavNetTools, NavDiagnostics, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavBattery, NavProcesses, NavNetTools, NavDiagnostics, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenComponent(object sender, RoutedEventArgs e)
@@ -648,7 +669,6 @@ public partial class MainWindow : Window
 
     private void OnOpenSystem(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(), NavSystem);
 
-    private void OnOpenPeripherals(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(peripherals: true), NavPeripherals);
 
     private void OnOpenProcesses(object sender, RoutedEventArgs e) => ShowPage(new ProcessesView(), NavProcesses);
 
@@ -657,6 +677,20 @@ public partial class MainWindow : Window
     private void OnOpenDiagnostics(object sender, RoutedEventArgs e) => ShowPage(new DiagnosticsView(_vm), NavDiagnostics);
 
     private void OnOpenHelp(object sender, RoutedEventArgs e) => ShowPage(new HelpView(), NavHelp);
+
+    // Opens Help focused on the topic that matches the screen currently shown.
+    private void OnHelpForPage(object sender, RoutedEventArgs e)
+    {
+        int topic = PageHost.Visibility != Visibility.Visible ? 0 : PageHost.Content switch
+        {
+            ProcessesView => 7,
+            NetworkToolsView => 8,
+            DiagnosticsView => 10,
+            SystemInfoView { Component: StatsMonitor.Services.ComponentKind.Battery } => 9,
+            _ => 1,
+        };
+        ShowPage(new HelpView(topic), NavHelp);
+    }
 
     private void OnOpenSettings(object sender, RoutedEventArgs e) => OpenSettings(null);
 

@@ -81,6 +81,17 @@ public partial class ProcessesView : UserControl
         SearchBox.ToolTip = L("Pesquisar por nome, PID ou caminho", "Search by name, PID or path");
         SortBox.ToolTip = L("Ordenar por", "Sort by");
         RefreshBox.ToolTip = L("Velocidade de atualização", "Refresh rate");
+        TypeBox.ToolTip = L("Filtrar por tipo de processo", "Filter by process type");
+        StatusBox.ToolTip = L("Filtrar por status", "Filter by status");
+        MetricBox.ToolTip = L("Recurso exibido no gráfico da linha do tempo", "Resource shown in the timeline chart");
+        ExpandButton.ToolTip = L("Expande todos os grupos de processos", "Expands all process groups");
+        CollapseButton.ToolTip = L("Recolhe todos os grupos de processos", "Collapses all process groups");
+        EndButton.ToolTip = L("Encerra o processo selecionado", "Ends the selected process");
+        EndTreeButton.ToolTip = L("Encerra o processo selecionado e todos os seus filhos", "Ends the selected process and all its children");
+        RestartButton.ToolTip = L("Encerra e abre novamente o processo selecionado", "Closes and reopens the selected process");
+        PriorityButton.ToolTip = L("Altera a prioridade do processo selecionado", "Changes the priority of the selected process");
+        LocationButton.ToolTip = L("Abre a pasta do arquivo do processo no Explorador", "Opens the process file folder in Explorer");
+        CopyButton.ToolTip = L("Copia o caminho do arquivo do processo", "Copies the process file path");
         DirButton.Content = _query.Descending ? "▼" : "▲";
         DirButton.ToolTip = _query.Descending ? L("Decrescente (maior primeiro)", "Descending (highest first)") : L("Crescente (menor primeiro)", "Ascending (lowest first)");
         SearchHint.Text = "🔍  " + L("Pesquisar processo (nome, PID ou caminho)...", "Search process (name, PID or path)...");

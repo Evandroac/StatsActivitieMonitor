@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media.Animation;
 using StatsMonitor.Helpers;
 
@@ -13,6 +13,16 @@ public partial class SplashWindow : Window
         InitializeComponent();
         SubtitleText.Text = L("Monitor de hardware e desempenho", "Hardware and performance monitor");
         SetStatus(L("Iniciando…", "Starting…"), 0);
+        CancelBtn.Content = L("Cancelar", "Cancel");
+    }
+
+    public bool CancelRequested { get; private set; }
+
+    private void OnCancel(object sender, RoutedEventArgs e)
+    {
+        CancelRequested = true;
+        CancelBtn.IsEnabled = false;
+        StatusText.Text = L("Cancelando…", "Cancelling…");
     }
 
     private static string L(string pt, string en) => Loc.Lang == "en" ? en : pt;

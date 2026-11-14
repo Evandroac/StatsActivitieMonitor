@@ -39,12 +39,14 @@ public partial class App : Application
         if (settings.IsFirstRun) { settings.Current.Language = SettingsService.DetectLanguage(); settings.Save(); }
         Loc.SetLanguage(settings.Current.Language);
 
+        ThemeHelper.Apply(settings.Current);
         var splash = new SplashWindow();
         if (settings.Current.ShowSplash) splash.Show();
         async Task Step(string pt, string en, double pct)
         {
             splash.Log(SplashWindow.Text(pt, en), pct);
             await System.Windows.Threading.Dispatcher.Yield(System.Windows.Threading.DispatcherPriority.Background);
+            if (splash.CancelRequested) throw new OperationCanceledException();
         }
 
         try
@@ -80,7 +82,10 @@ public partial class App : Application
             {
                 await Step("Aguardando leitura dos dados…", "Waiting for the first readings…", c.pct - 10);
                 while (!c.ready() && DateTime.UtcNow - started < TimeSpan.FromSeconds(20))
+                {
                     await Task.Delay(100);
+                    if (splash.CancelRequested) throw new OperationCanceledException();
+                }
                 if (c.ready()) await Step(c.pt, c.en, c.pct);
                 else await Step(SplashWindow.Text("Sem resposta (seguindo): ", "No response (continuing): ") + c.pt, c.en, c.pct);
             }
@@ -95,6 +100,7 @@ public partial class App : Application
             main.Show();
             if (showSplash) await splash.FadeOutAsync();
         }
+        catch (OperationCanceledException) { Shutdown(); }
         finally { splash.Close(); }
     }
 

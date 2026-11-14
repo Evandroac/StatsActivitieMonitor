@@ -27,8 +27,12 @@ public partial class GadgetWindow : Window
         UiScale.Changed += () => { UiScale.Apply(Root); if (IsVisible) Reposition(); };
         vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.FpsActive) && IsVisible) { ApplyMode(); Reposition(); } };
 
-        Loc.LanguageChanged += () => { if (IsVisible) { ApplyMode(); Reposition(); } };
+        Loc.LanguageChanged += () => { ApplyLockAndFade(); if (IsVisible) { ApplyMode(); Reposition(); } };
         MouseLeftButtonDown += OnMouseDown;
+        MouseEnter += (_, _) => UpdateTools(true);
+        MouseLeave += (_, _) => UpdateTools(false);
+        ApplyScale();
+        ApplyLockAndFade();
         LocationChanged += (_, _) => SavePosition();
         SizeChanged += (_, _) => { if (IsVisible && IsFixedPosition) Reposition(); };
 
@@ -57,8 +61,13 @@ public partial class GadgetWindow : Window
     {
         bool taskbar = IsHorizontalRow;
         var mode = Mode;
-        FloatingPanel.Visibility = taskbar ? Visibility.Collapsed : Visibility.Visible;
-        TaskbarPanel.Visibility = taskbar ? Visibility.Visible : Visibility.Collapsed;
+        bool detailed = _settings.Current.GadgetDetailed;
+        FloatingPanel.Visibility = taskbar || detailed ? Visibility.Collapsed : Visibility.Visible;
+        TaskbarPanel.Visibility = taskbar && !detailed ? Visibility.Visible : Visibility.Collapsed;
+        DetailPanel.Visibility = detailed ? Visibility.Visible : Visibility.Collapsed;
+        DetailPanel.Orientation = taskbar ? System.Windows.Controls.Orientation.Horizontal : System.Windows.Controls.Orientation.Vertical;
+        foreach (FrameworkElement block in DetailPanel.Children)
+            block.Margin = taskbar ? new Thickness(0, 0, 14, 0) : new Thickness(0, 0, 0, 8);
         Root.Padding = mode switch
         {
             GadgetDisplayMode.FloatingBar => new Thickness(12, 6, 12, 6),
@@ -81,9 +90,11 @@ public partial class GadgetWindow : Window
         FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
         FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
         FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
-        FFps.Visibility = TFps.Visibility = V(s.ShowFpsGadget && _vm.FpsActive);
+        FFps.Visibility = TFps.Visibility = DFps.Visibility = V(s.ShowFpsGadget && _vm.FpsActive);
+        DCpu.Visibility = V(s.ShowCpuGadget); DGpu.Visibility = V(s.ShowGpuGadget); DRam.Visibility = V(s.ShowRamGadget);
+        DDisk.Visibility = V(s.ShowVramGadget); DNet.Visibility = V(s.ShowNetworkGadget);
 
-        if (taskbar) ReserveTaskbarWidths(s);
+        if (taskbar && !detailed) ReserveTaskbarWidths(s);
     }
 
     // Fixed slot per indicator (worst-case text) so the widget doesn't resize on every update.
@@ -110,6 +121,16 @@ public partial class GadgetWindow : Window
 
     private void Reposition()
     {
+        RepositionBase();
+        if (IsFixedPosition && _settings.Current.GadgetXOffset != 0)
+        {
+            var work = SystemParameters.WorkArea;
+            Left = Math.Clamp(Left + _settings.Current.GadgetXOffset, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
+        }
+    }
+
+    private void RepositionBase()
+    {
         var work = SystemParameters.WorkArea;
         const double gap = 12;
         switch (Mode)
@@ -129,6 +150,150 @@ public partial class GadgetWindow : Window
         Left = Math.Clamp(left, SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth - ActualWidth);
         Top = Math.Clamp(top, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight - ActualHeight);
     }
+    private const double FadedOpacity = 0.12;
+    // Fully transparent pixels of a layered window let clicks and hover pass through, so keep alpha at 1.
+    private static readonly Brush HitBrush = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0));
+
+    private void ApplyScale()
+    {
+        var s = Math.Clamp(_settings.Current.GadgetScale, 0.5, 3);
+        Body.LayoutTransform = new ScaleTransform(s, s);
+    }
+
+    private void ApplyLockAndFade()
+    {
+        var s = _settings.Current;
+        BtnLock.Content = s.GadgetLocked ? "🔒" : "🔓";
+        BtnLock.ToolTip = Loc.T(s.GadgetLocked ? "Gadget fixo: clique para liberar posição e tamanho" : "Fixar o gadget (bloqueia posição e tamanho)");
+        BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
+        // Only the information fades; the action buttons keep full opacity.
+        Body.Opacity = s.GadgetFaded ? FadedOpacity : 1;
+        if (s.GadgetFaded) { Root.Background = HitBrush; Root.BorderBrush = Brushes.Transparent; }
+        else { Root.ClearValue(System.Windows.Controls.Border.BackgroundProperty); Root.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardBorder"); }
+        BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
+        BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
+        MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)");
+        Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
+        UpdateTools(IsMouseOver);
+    }
+
+    private void UpdateTools(bool hover)
+    {
+        // The window lags behind the cursor while resizing/moving; keep the controls alive during a drag.
+        hover |= Grip.IsDragging || MoveX.IsDragging;
+        Tools.Visibility = BtnLock.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
+        Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void OnToggleLock(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.GadgetLocked = !_settings.Current.GadgetLocked;
+        _settings.Save();
+        ApplyLockAndFade();
+    }
+
+    private void OnToggleView(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.GadgetDetailed = !_settings.Current.GadgetDetailed;
+        _settings.Save();
+        ApplyLockAndFade();
+        ApplyMode();
+        Reposition();
+    }
+
+    private void OnToggleFade(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.GadgetFaded = !_settings.Current.GadgetFaded;
+        _settings.Save();
+        ApplyLockAndFade();
+    }
+
+    private double _gripStartX, _gripStartScale, _gripStartWidth;
+
+    private void OnGripStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+    {
+        _gripStartX = Grip.PointToScreen(Mouse.GetPosition(Grip)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
+        _gripStartScale = _settings.Current.GadgetScale;
+        _gripStartWidth = Math.Max(60, ActualWidth);
+        UpdateTools(true);
+    }
+
+    // Scale is derived from the absolute cursor position, not incremental deltas, so resizing the window cannot feed back into the drag.
+    private void OnGripDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked) return;
+        double x = Grip.PointToScreen(Mouse.GetPosition(Grip)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
+        var next = Math.Clamp(_gripStartScale * (1 + (x - _gripStartX) / _gripStartWidth), 0.5, 3);
+        if (Math.Abs(next - _settings.Current.GadgetScale) < 0.005) return;
+        _settings.Current.GadgetScale = next;
+        ApplyScale();
+    }
+
+    private void OnGripDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+    {
+        _settings.Save();
+        if (IsFixedPosition) Reposition();
+        UpdateTools(IsMouseOver);
+    }
+
+    private void OnGripReset(object sender, MouseButtonEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked) return;
+        _settings.Current.GadgetScale = 1;
+        _settings.Save();
+        ApplyScale();
+        e.Handled = true;
+    }
+
+    // Press and hold the ↔ button to slide the gadget horizontally.
+    private double _moveLastX;
+
+    private double CursorX() => MoveX.PointToScreen(Mouse.GetPosition(MoveX)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
+
+    // Uses absolute screen coordinates: the thumb moves with the window, so relative deltas would make it jitter.
+    private void OnMoveXDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        double x = CursorX();
+        double dx = x - _moveLastX;
+        _moveLastX = x;
+        if (dx == 0) return;
+        if (IsFixedPosition)
+        {
+            var work = SystemParameters.WorkArea;
+            var baseLeft = Left - _settings.Current.GadgetXOffset;
+            var target = Math.Clamp(Left + dx, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
+            _settings.Current.GadgetXOffset = target - baseLeft;
+            Left = target;
+        }
+        else
+        {
+            var min = SystemParameters.VirtualScreenLeft;
+            Left = Math.Clamp(Left + dx, min, min + SystemParameters.VirtualScreenWidth - ActualWidth);
+        }
+    }
+
+    private void OnMoveXStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+    {
+        _moveLastX = CursorX();
+        _vm.HoldReadings(true);
+    }
+
+    private void OnMoveXDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+    {
+        _vm.HoldReadings(false);
+        _settings.Save();
+        UpdateTools(IsMouseOver);
+    }
+
+    private void OnMoveXReset(object sender, MouseButtonEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked || !IsFixedPosition) return;
+        _settings.Current.GadgetXOffset = 0;
+        _settings.Save();
+        Reposition();
+        e.Handled = true;
+    }
+
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2)
@@ -136,7 +301,7 @@ public partial class GadgetWindow : Window
             RestoreRequested?.Invoke(this, EventArgs.Empty);
             return;
         }
-        if (IsFixedPosition) return;
+        if (IsFixedPosition || _settings.Current.GadgetLocked) return;
         try { DragMove(); } catch (InvalidOperationException) { }
     }
 

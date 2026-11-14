@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         xmlns:c="clr-namespace:StatsMonitor.Controls"
-        FontFamily="Segoe UI">
+        FontFamily="{DynamicResource AppFont}">
     <UserControl.Resources>
         <Style x:Key="CopyButton" TargetType="Button">
             <Setter Property="Content" Value="📋"/>
@@ -28,7 +28,36 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <DataTemplate x:Key="FullLine">
+        <Style x:Key="FilterTab" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" CornerRadius="14" Padding="14,5" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+                            <ContentPresenter VerticalAlignment="Center">
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource InputBg}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource OnAccent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>        <DataTemplate x:Key="FullLine">
             <Grid Margin="0,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="250"/>
@@ -54,7 +83,15 @@
         </StackPanel>
     </Border>
     <DockPanel x:Name="ContentPanel" Grid.Column="1" Margin="20">        <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
-            <TextBlock x:Name="PageTitle" Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock x:Name="PageTitle" Text="{h:Tr 'Sistema e periféricos'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </DockPanel>
+        <DockPanel x:Name="FilterBar" DockPanel.Dock="Top" Margin="6,0,6,10">
+            <TextBlock x:Name="CountText" DockPanel.Dock="Right" Style="{StaticResource Caption}" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton x:Name="FilterAll" Tag="all" IsChecked="True" GroupName="SysFilter" Style="{StaticResource FilterTab}" Content="{h:Tr 'Tudo'}" ToolTip="{h:Tr 'Mostra o sistema e os periféricos'}" Checked="OnFilter"/>
+                <RadioButton x:Name="FilterSystem" Tag="system" GroupName="SysFilter" Style="{StaticResource FilterTab}" Content="{h:Tr '🖥️  Sistema'}" ToolTip="{h:Tr 'Somente informações do computador e do Windows'}" Checked="OnFilter"/>
+                <RadioButton x:Name="FilterPeripherals" Tag="peripherals" GroupName="SysFilter" Style="{StaticResource FilterTab}" Content="{h:Tr '🖱️  Periféricos'}" ToolTip="{h:Tr 'Somente periféricos conectados: monitores, teclado, mouse, áudio, câmeras e mais'}" Checked="OnFilter"/>
+            </StackPanel>
         </DockPanel>
         <ItemsControl x:Name="Charts" DockPanel.Dock="Top" Visibility="Collapsed">
             <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
@@ -73,8 +110,21 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <TextBlock x:Name="EmptyHint" DockPanel.Dock="Top" Visibility="Collapsed" Text="{h:Tr 'Nada para exibir' }" Style="{StaticResource Caption}" Margin="6"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl x:Name="Groups">
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="4,8,0,6">
+                                    <TextBlock Text="{Binding Name, Converter={x:Static h:SectionTitle.Instance}}" FontSize="16" FontWeight="SemiBold"/>
+                                    <Border Height="2" Margin="0,4,0,0" CornerRadius="1" Background="{DynamicResource Accent}" HorizontalAlignment="Stretch" Opacity="0.6"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource Card}">

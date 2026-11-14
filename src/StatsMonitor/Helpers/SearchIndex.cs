@@ -99,7 +99,7 @@ public static class SearchIndex
             "Ler sensores de disco e placa-mãe com menos frequência", "Modo econômico ao minimizar", "Exibir tela de abertura (splash)",
             "Geral", "Gadget", "Alertas", "Registro de dados", "Personalização", "Perfis", "Seções", "Ações", "Restaurar cores do tema");
         Add(SearchPage.Settings, "Configurações › Gadget",
-            "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar",
+            "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar", "Visão do gadget", "Simplificada", "Detalhada (mais informações e mini gráficos)", "Posição do gadget",
             "Sobre a tela (flutuante, arrastável)", "Canto superior esquerdo", "Canto superior direito", "Canto inferior esquerdo", "Canto inferior direito", "Faixa fixa na parte inferior da tela",
             "Barra horizontal flutuante (arrastável)", "Faixa fixa no topo da tela", "Não fazer nada (sem gadget)",
             "Pré-visualização do gadget (valores de exemplo)");
@@ -116,7 +116,7 @@ public static class SearchIndex
         Add(SearchPage.Settings, "Configurações › Atalho global", "Atalho global", "Ativar atalho para mostrar/ocultar o gadget", "Atalho:");
 
         Add(SearchPage.Appearance, "Personalização › Presets", "Minhas personalizações", "Salvar como", "Carregar", "Excluir");
-        Add(SearchPage.Appearance, "Personalização › Tema", "Tema base", "Escuro", "Claro", "Restaurar padrões");
+        Add(SearchPage.Appearance, "Personalização › Tema", "Tema base", "Escuro", "Claro", "Restaurar padrões", "Temas visuais", "Tema", "Estilo", "Fonte", "Cor de fundo do menu de cores", "Windows XP (Oliva)", "Cyberpunk Neon", "Futurista (Gelo)", "Holograma", "Synthwave anos 80", "Vintage sépia", "Anos 90", "Vaporwave pastel", "Terminal verde", "Terminal âmbar", "Moderno claro", "Grafite", "Nórdico", "Branco puro", "Preto puro", "Sakura kawaii", "Neo Tóquio", "Matcha zen", "Pôr do sol", "Oceano profundo", "Art déco", "🎨  Temas visuais", "Escolha um estilo completo: cores, fonte e clima do aplicativo. Você ainda pode ajustar cada cor depois.", "Windows XP", "Windows 98", "Cyberpunk", "Futurismo", "Retrô", "Vintage", "Anos 80", "Anos 90", "Vaporwave", "Arcade", "8-bit", "CRT", "Terminal", "Minimalismo", "Anime", "Kawaii", "Japonês", "Game Boy", "Synthwave");
         Add(SearchPage.Appearance, "Personalização › Cores",
             "Cores dos alertas de temperatura", "Janela principal (maximizada)", "Fundo da janela", "Fundo dos painéis",
             "Borda dos painéis", "Texto principal", "Texto secundário", "Destaque (CPU, GPU, rede)", "Destaque (memória)",
@@ -132,12 +132,12 @@ public static class SearchIndex
             Add(SearchPage.Main, "Principal › Bateria", "Bateria", "Nível de carga", "Status da bateria", "Tempo restante", "Tempo para carga completa",
                 "Estado de conservação", "Fonte de alimentação", "Capacidade atual (carga máxima)", "Capacidade original (projeto)", "Ciclos de carga", "Economia de bateria");
         Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível");
-        Add(SearchPage.System, "Sistema", "Sistema");
+        Add(SearchPage.System, "Sistema", "Sistema", "Sistema e periféricos");
         Add(SearchPage.Processes, "Processos", [.. StatsMonitor.Views.ProcessesView.Keywords]);
         Add(SearchPage.Diagnostics, "Diagnóstico do computador", [.. StatsMonitor.Views.DiagnosticsView.Keywords]);
         Add(SearchPage.NetTools, "Testes de conexão", [.. StatsMonitor.Views.NetworkToolsView.Keywords]);
         Add(SearchPage.Help, "Ajuda", ["Ajuda e tutorial", .. StatsMonitor.Views.HelpView.SectionTitles]);
-        Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");
+        Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Sistema e periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");
         Add(SearchPage.Settings, "Configurações", "Configurações");
         Add(SearchPage.Appearance, "Personalização", "Personalização");
         return list;

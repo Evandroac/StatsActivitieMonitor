@@ -84,11 +84,46 @@ public sealed class ColorOption : ObservableObject
     public void Reset() => Hex = "";
 }
 
+/// <summary>A selectable visual theme card; selecting it applies the theme through the owning view model.</summary>
+public sealed class ThemeChoice : ObservableObject
+{
+    private readonly Action<ThemeChoice> _pick;
+    private readonly Func<string> _current;
+
+    public ThemeChoice(VisualTheme theme, Func<string> current, Action<ThemeChoice> pick)
+    {
+        Theme = theme; _current = current; _pick = pick;
+        Loc.LanguageChanged += () => Raise(nameof(Name));
+    }
+
+    public VisualTheme Theme { get; }
+    public string Name => Loc.T(Theme.Name);
+    public bool IsSelected
+    {
+        get => _current() == Theme.Id;
+        set { if (value) _pick(this); }
+    }
+    public void Refresh() => Raise(nameof(IsSelected));
+}
+
+public sealed class ThemeGroup : ObservableObject
+{
+    public ThemeGroup(string category, IReadOnlyList<ThemeChoice> items)
+    {
+        _category = category; Items = items;
+        Loc.LanguageChanged += () => Raise(nameof(Category));
+    }
+    private readonly string _category;
+    public string Category => Loc.T(_category);
+    public IReadOnlyList<ThemeChoice> Items { get; }
+}
+
 public sealed class AppearanceViewModel : ObservableObject
 {
     private readonly SettingsService _service;
     private readonly Action _onApplied;
     private bool _dark;
+    private string _themeId = "";
     private double _gadgetOpacity;
 
     public AppearanceViewModel(SettingsService service, Action onApplied)
@@ -97,10 +132,12 @@ public sealed class AppearanceViewModel : ObservableObject
         _onApplied = onApplied;
         var s = service.Current;
         _dark = s.DarkTheme;
+        _themeId = ThemeCatalog.Find(s.ThemeId) is { } known ? known.Id : "";
+        if (_themeId != "") _dark = ThemeCatalog.Find(_themeId)!.Dark;
         _gadgetOpacity = s.GadgetOpacity ?? 80;
 
         string Ov(string key) => s.ColorOverrides.TryGetValue(key, out var v) ? v : "";
-        ColorOption Themed(string key, string label) => new(key, label, Ov(key), () => ThemeHelper.ThemeDefault(key, _dark));
+        ColorOption Themed(string key, string label) => new(key, label, Ov(key), () => ThemeHelper.ThemeDefault(key, _dark, _themeId));
         ColorOption Fixed(string key, string label, string value, string def) =>
             new(key, label, value, () => (Color)ColorConverter.ConvertFromString(def));
 
@@ -131,34 +168,39 @@ public sealed class AppearanceViewModel : ObservableObject
             o.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(ColorOption.Hex)) AutoSave(); };
         _timer.Tick += (_, _) => Flush();
         ResetCommand = new RelayCommand(Reset);
+        ThemeGroups = ThemeCatalog.Groups.Select(g => new ThemeGroup(g.Key, g.Select(v => new ThemeChoice(v, () => _themeId, c => SetBase(c.Theme.Dark, c.Theme.Id))).ToList())).ToList();
         InitPresets();
     }
+
+    public IReadOnlyList<ThemeGroup> ThemeGroups { get; }
 
     public IReadOnlyList<ColorOption> MainOptions { get; }
     public IReadOnlyList<ColorOption> GadgetOptions { get; }
     public IReadOnlyList<ColorOption> AlertOptions { get; }
 
-    public bool DarkTheme
+    public bool DarkTheme { get => _dark && _themeId == ""; set { if (value) SetBase(true, ""); } }
+
+    public bool LightTheme { get => !_dark && _themeId == ""; set { if (value) SetBase(false, ""); } }
+
+    // Picks the base dark/light theme or a visual theme; a new pick also drops custom colors so the theme shows as designed.
+    private void SetBase(bool dark, string themeId, bool resetColors = true)
     {
-        get => _dark;
-        set
-        {
-            if (!Set(ref _dark, value)) return;
-            Raise(nameof(LightTheme));
-            foreach (var o in MainOptions.Concat(GadgetOptions)) o.Refresh();
-            _themePicked = true;
-            ThemePicked?.Invoke();
-            AutoSave();
-        }
+        if (_dark == dark && _themeId == themeId) return;
+        _dark = dark;
+        _themeId = themeId;
+        if (resetColors) foreach (var o in MainOptions.Concat(GadgetOptions)) o.Reset();
+        foreach (var o in MainOptions.Concat(GadgetOptions)) o.Refresh();
+        Raise(nameof(DarkTheme)); Raise(nameof(LightTheme));
+        foreach (var g in ThemeGroups) foreach (var c in g.Items) c.Refresh();
+        _themePicked = true;
+        ThemePicked?.Invoke();
+        AutoSave();
     }
 
     private bool _themePicked;
 
     /// <summary>Raised when the user picks a theme, which overrides "follow Windows theme".</summary>
     public event Action? ThemePicked;
-
-    public bool LightTheme { get => !_dark; set => DarkTheme = !value; }
-
     public double GadgetOpacity { get => _gadgetOpacity; set { if (Set(ref _gadgetOpacity, Math.Clamp(Math.Round(value), 10, 100))) AutoSave(); } }
 
     public ICommand ResetCommand { get; }
@@ -222,6 +264,7 @@ public sealed class AppearanceViewModel : ObservableObject
         {
             Name = name,
             DarkTheme = _dark,
+            ThemeId = _themeId,
             GadgetOpacity = (int)_gadgetOpacity,
             ColorOverrides = MainOptions.Concat(GadgetOptions)
                 .Where(o => ThemeHelper.TryParseColor(o.Hex, out _))
@@ -243,7 +286,7 @@ public sealed class AppearanceViewModel : ObservableObject
     private void LoadPreset()
     {
         if (FindByName() is not { } p) return;
-        DarkTheme = p.DarkTheme;
+        SetBase(p.DarkTheme, ThemeCatalog.Find(p.ThemeId) is { } pv ? pv.Id : "", false);
         foreach (var o in MainOptions.Concat(GadgetOptions))
             o.Hex = p.ColorOverrides.TryGetValue(o.Key, out var v) ? v : "";
         AlertOptions[0].Hex = p.NormalColor;
@@ -267,6 +310,7 @@ public sealed class AppearanceViewModel : ObservableObject
     {
         var s = _service.Current;
         s.DarkTheme = _dark;
+        s.ThemeId = _themeId;
         if (_themePicked) { s.FollowSystemTheme = false; _themePicked = false; }
         s.GadgetOpacity = (int)_gadgetOpacity;
         s.ColorOverrides = MainOptions.Concat(GadgetOptions)

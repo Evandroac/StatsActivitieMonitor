@@ -39,7 +39,11 @@ public sealed class ComponentViewModel : ObservableObject
     public bool ShowChart { get => _showChart; set => Set(ref _showChart, value); }
 
     public string Name { get => _name; private set => Set(ref _name, value); }
-    public double Load { get => _load; private set => Set(ref _load, value); }
+    public double Load { get => _load; private set { if (Set(ref _load, value)) Raise(nameof(LoadBrush)); } }
+    private static readonly Brush LoadOk = Frozen("#3FB950"), LoadMid = Frozen("#F5A623"), LoadHigh = Frozen("#FF5252");
+    private static Brush Frozen(string hex) { var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex)); b.Freeze(); return b; }
+    /// <summary>Usage indicator color: green below 60%, orange below 85%, red above.</summary>
+    public Brush LoadBrush => _load < 60 ? LoadOk : _load < 85 ? LoadMid : LoadHigh;
     public string LoadText { get => _loadText; private set => Set(ref _loadText, value); }
     public string TempText
     {

@@ -102,9 +102,33 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public string SensorNote { get => _sensorNote; private set => Set(ref _sensorNote, value); }
     public bool ShowTemperatures { get => _showTemperatures; private set => Set(ref _showTemperatures, value); }
 
+    private System.Windows.Threading.DispatcherTimer? _updateTimer;
+    private int? _pendingUpdates;
+    private bool _updateChecked;
+    public bool HasPendingUpdates => _pendingUpdates is > 0;
+    public string WindowsUpdateText => !_updateChecked ? Loc.T("Verificando…") : _pendingUpdates is null ? Loc.T("Indisponível")
+        : _pendingUpdates == 0 ? Loc.T("Windows atualizado") : string.Format(Loc.T("{0} atualização(ões) pendente(s)"), _pendingUpdates);
+    public Brush WindowsUpdateBrush => HasPendingUpdates ? FpsBad : _pendingUpdates == 0 ? FpsGood : FpsIdle;
+
+    private async Task RefreshWindowsUpdateAsync()
+    {
+        _pendingUpdates = await Services.WindowsUpdateChecker.CountPendingAsync();
+        _updateChecked = true;
+        Raise(nameof(HasPendingUpdates)); Raise(nameof(WindowsUpdateText)); Raise(nameof(WindowsUpdateBrush));
+    }
+
+    private void StartUpdateCheck()
+    {
+        _updateTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMinutes(30) };
+        _updateTimer.Tick += async (_, _) => await RefreshWindowsUpdateAsync();
+        _updateTimer.Start();
+        _ = RefreshWindowsUpdateAsync();
+    }
+
     public void Start()
     {
         _monitor.Start();
+        StartUpdateCheck();
         _network.SnapshotUpdated += OnNetwork;
         _network.Start();
         StartBattery();
@@ -137,6 +161,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void OnNetwork(object? sender, NetworkSnapshot s)
     {
+        if (_held) return;
         _lastNet = s;
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
@@ -145,7 +170,10 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         });
     }
 
-    public void SetPaused(bool paused) => _monitor.Paused = paused;
+    private bool _autoPaused, _held;
+    public void SetPaused(bool paused) { _autoPaused = paused; _monitor.Paused = _autoPaused || _held; }
+    /// <summary>Freezes all readings (hardware and network) while the user holds the gadget button.</summary>
+    public void HoldReadings(bool hold) { _held = hold; _monitor.Paused = _autoPaused || _held; }
 
     private bool _gadgetOnly;
 
@@ -309,6 +337,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _monitor.ErrorOccurred -= OnError;
         _network.SnapshotUpdated -= OnNetwork;
         _batteryTimer?.Stop();
+        _updateTimer?.Stop();
         _network.Dispose();
     }
 }

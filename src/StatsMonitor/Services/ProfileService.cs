@@ -13,7 +13,7 @@ public static class ProfileService
     [
         nameof(AppSettings.UpdateIntervalMs), nameof(AppSettings.CpuIntervalMs), nameof(AppSettings.GpuIntervalMs),
         nameof(AppSettings.RamIntervalMs), nameof(AppSettings.OtherIntervalMs), nameof(AppSettings.ShowTemperatures),
-        nameof(AppSettings.ShowGadget), nameof(AppSettings.AlwaysShowGadget), nameof(AppSettings.GadgetMode),
+        nameof(AppSettings.ShowGadget), nameof(AppSettings.AlwaysShowGadget), nameof(AppSettings.GadgetMode), nameof(AppSettings.GadgetDetailed),
         nameof(AppSettings.ShowCpuMain), nameof(AppSettings.ShowGpuMain), nameof(AppSettings.ShowRamMain),
         nameof(AppSettings.ShowVramMain), nameof(AppSettings.ShowNetworkMain), nameof(AppSettings.ShowSensorsMain), nameof(AppSettings.ShowBatteryMain),
         nameof(AppSettings.ShowCpuGadget), nameof(AppSettings.ShowGpuGadget), nameof(AppSettings.ShowRamGadget),
