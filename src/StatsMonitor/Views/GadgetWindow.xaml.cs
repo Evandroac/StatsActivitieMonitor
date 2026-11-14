@@ -146,6 +146,11 @@ public partial class GadgetWindow : Window
             var work = SystemParameters.WorkArea;
             Left = Math.Clamp(Left + _settings.Current.GadgetXOffset, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
         }
+        if (IsFixedPosition && _settings.Current.GadgetYOffset != 0)
+        {
+            var work = SystemParameters.WorkArea;
+            Top = Math.Clamp(Top + _settings.Current.GadgetYOffset, work.Top, Math.Max(work.Top, work.Bottom - ActualHeight));
+        }
     }
 
     private void RepositionBase()
@@ -192,6 +197,7 @@ public partial class GadgetWindow : Window
         BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
         BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
         MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)");
+        MoveY.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na vertical (funciona mesmo com o gadget fixo)");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
         UpdateTools(IsMouseOver);
     }
@@ -199,8 +205,8 @@ public partial class GadgetWindow : Window
     private void UpdateTools(bool hover)
     {
         // The window lags behind the cursor while resizing/moving; keep the controls alive during a drag.
-        hover |= Grip.IsDragging || MoveX.IsDragging;
-        Tools.Visibility = BtnLock.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
+        hover |= Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging;
+        Tools.Visibility = BtnLock.Visibility = hover ? Visibility.Visible : Visibility.Hidden;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
     }
 
@@ -308,6 +314,54 @@ public partial class GadgetWindow : Window
     {
         if (_settings.Current.GadgetLocked || !IsFixedPosition) return;
         _settings.Current.GadgetXOffset = 0;
+        _settings.Save();
+        Reposition();
+        e.Handled = true;
+    }
+
+    // Press and hold the ↕ button to slide the gadget vertically.
+    private double _moveLastY;
+
+    private double CursorY() => MoveY.PointToScreen(Mouse.GetPosition(MoveY)).Y / VisualTreeHelper.GetDpi(this).DpiScaleY;
+
+    private void OnMoveYDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        double y = CursorY();
+        double dy = y - _moveLastY;
+        _moveLastY = y;
+        if (dy == 0) return;
+        if (IsFixedPosition)
+        {
+            var work = SystemParameters.WorkArea;
+            var baseTop = Top - _settings.Current.GadgetYOffset;
+            var target = Math.Clamp(Top + dy, work.Top, Math.Max(work.Top, work.Bottom - ActualHeight));
+            _settings.Current.GadgetYOffset = target - baseTop;
+            Top = target;
+        }
+        else
+        {
+            var min = SystemParameters.VirtualScreenTop;
+            Top = Math.Clamp(Top + dy, min, min + SystemParameters.VirtualScreenHeight - ActualHeight);
+        }
+    }
+
+    private void OnMoveYStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+    {
+        _moveLastY = CursorY();
+        _vm.HoldReadings(true);
+    }
+
+    private void OnMoveYDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+    {
+        _vm.HoldReadings(false);
+        _settings.Save();
+        UpdateTools(IsMouseOver);
+    }
+
+    private void OnMoveYReset(object sender, MouseButtonEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked || !IsFixedPosition) return;
+        _settings.Current.GadgetYOffset = 0;
         _settings.Save();
         Reposition();
         e.Handled = true;

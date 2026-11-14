@@ -469,6 +469,7 @@ public static class LocData
         ["Temperatura da CPU indisponível: instale o driver PawnIO (winget install namazso.PawnIO) e reinicie o aplicativo."] = "CPU temperature unavailable: install the PawnIO driver (winget install namazso.PawnIO) and restart the app.",
         ["Gadget oculto pelo jogo"] = "Gadget hidden by the game",
         ["O jogo está em tela cheia exclusiva e o Windows não permite exibir o gadget sobre ele. Use o modo janela sem bordas (borderless) para ver o gadget."] = "The game is in exclusive fullscreen and Windows does not allow the gadget to be shown over it. Use borderless windowed mode to see the gadget.",
+        ["Segure para pausar as leituras; arraste para mover na vertical (funciona mesmo com o gadget fixo)"] = "Hold to pause readings; drag to move vertically (works even when the gadget is locked)",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",
