@@ -94,8 +94,7 @@ public sealed class NetworkToolsView : UserControl
         for (int i = 0; i < names.Length; i++)
         {
             int idx = i;
-            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("PillButton")!, Margin = new Thickness(0, 0, 0, 8), HorizontalContentAlignment = HorizontalAlignment.Left, Padding = new Thickness(12, 8, 12, 8) };
-            TintText(b);
+            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("TabButton")!, Margin = new Thickness(0, 0, 0, 8), Padding = new Thickness(12, 8, 12, 8) };
             b.Click += (_, _) => Select(idx);
             _tabButtons.Add(b);
             tabs.Children.Add(b);
@@ -127,9 +126,7 @@ public sealed class NetworkToolsView : UserControl
         _pageTitle.Text = _tabButtons[i].Content?.ToString() ?? "";
         for (int k = 0; k < _tabButtons.Count; k++)
         {
-            _tabButtons[k].FontWeight = k == i ? FontWeights.Bold : FontWeights.Normal;
-            _tabButtons[k].SetResourceReference(BackgroundProperty, k == i ? "Accent" : "InputBg");
-            _tabButtons[k].SetResourceReference(ForegroundProperty, k == i ? "OnAccent" : "TextPrimary");
+            _tabButtons[k].Tag = k == i ? "active" : null;
         }
     }
 
