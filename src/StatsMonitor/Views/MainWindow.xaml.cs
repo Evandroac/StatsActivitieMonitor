@@ -636,6 +636,7 @@ public partial class MainWindow : Window
         PageHost.Content = null;
         if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Collapsed;
+        PageHelpBtn.Visibility = Visibility.Collapsed;
         MainPage.Visibility = Visibility.Visible;
         SetActiveNav(NavMain);
         if (_panelRefitPending) { _panelRefitPending = false; ApplyPanelSettings(); }
@@ -650,6 +651,9 @@ public partial class MainWindow : Window
         PageHost.Visibility = Visibility.Visible;
         MainPage.Visibility = Visibility.Collapsed;
         SetActiveNav(nav);
+        bool onHelp = view is HelpView;
+        PageHelpBtn.Visibility = onHelp ? Visibility.Collapsed : Visibility.Visible;
+        PageCopyBtn.Margin = new Thickness(0, 18, onHelp ? 24 : 72, 0);
     }
 
     private void SetActiveNav(Button active)
@@ -673,6 +677,20 @@ public partial class MainWindow : Window
     private void OnOpenDiagnostics(object sender, RoutedEventArgs e) => ShowPage(new DiagnosticsView(_vm), NavDiagnostics);
 
     private void OnOpenHelp(object sender, RoutedEventArgs e) => ShowPage(new HelpView(), NavHelp);
+
+    // Opens Help focused on the topic that matches the screen currently shown.
+    private void OnHelpForPage(object sender, RoutedEventArgs e)
+    {
+        int topic = PageHost.Visibility != Visibility.Visible ? 0 : PageHost.Content switch
+        {
+            ProcessesView => 7,
+            NetworkToolsView => 8,
+            DiagnosticsView => 10,
+            SystemInfoView { Component: StatsMonitor.Services.ComponentKind.Battery } => 9,
+            _ => 1,
+        };
+        ShowPage(new HelpView(topic), NavHelp);
+    }
 
     private void OnOpenSettings(object sender, RoutedEventArgs e) => OpenSettings(null);
 

@@ -16,9 +16,25 @@ public partial class HelpView : UserControl
         "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)", "Diagnóstico do computador",
     ];
 
-    public HelpView()
+    private int? _initialTopic;
+    private readonly Dictionary<int, Action> _jumps = [];
+
+    public HelpView() : this(null) { }
+
+    /// <summary>Opens the help scrolled to (and highlighting) the given topic index in <see cref="SectionTitles"/>.</summary>
+    public HelpView(int? topic)
     {
         InitializeComponent();
+        _initialTopic = topic;
+        Loaded += (_, _) =>
+        {
+            if (_initialTopic is { } t && _jumps.TryGetValue(t, out var jump))
+            {
+                _initialTopic = null;
+                UpdateLayout();
+                jump();
+            }
+        };
         Build();
         Loc.LanguageChanged += Build;
         Unloaded += (_, _) => Loc.LanguageChanged -= Build;
@@ -31,6 +47,7 @@ public partial class HelpView : UserControl
         Host.Children.Clear();
         NavHost.Children.Clear();
         _navButtons.Clear();
+        _jumps.Clear();
         var navTitle = new TextBlock { Text = L("TÓPICOS", "TOPICS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) };
         navTitle.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         var navHint = new TextBlock { Text = L("Clique em um tópico para ir direto até ele.", "Click a topic to jump straight to it."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) };
@@ -52,8 +69,8 @@ public partial class HelpView : UserControl
         Card("🧭", 1, [
             L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes; com o menu aberto, arraste a borda direita para ajustar a largura (fica salvo). As páginas são: Principal, Sistema e periféricos (com filtro Tudo/Sistema/Periféricos), CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",
               "☰ Side menu: click ☰ to show or hide the names; with the menu open, drag its right edge to resize it (saved). Pages are: Main, System and peripherals (with an All/System/Peripherals filter), CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Processes, Connection tests, Computer diagnostic and Settings. The app version is shown below the Settings button."),
-            L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada.",
-              "🔍 Search: type a term to jump straight to the information or option you want."),
+            L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada. O botão ? no canto superior direito de cada tela abre esta Ajuda já no tópico daquela tela.",
+              "🔍 Search: type a term to jump straight to the information or option you want. The ? button at the top right of each screen opens this Help at the topic for that screen."),
             L("📋 Copiar: clique em qualquer valor ou rótulo para copiá-lo. Uma mensagem rápida confirma a cópia.",
               "📋 Copy: click any value or label to copy it. A short message confirms the copy."),
             L("📈 Páginas de componente: mostram gráficos, detalhes e sensores extras de cada peça.",
@@ -206,11 +223,13 @@ public partial class HelpView : UserControl
         Host.Children.Add(border);
 
         var btn = new Button { Content = icon + "  " + title, Style = (Style)Application.Current.FindResource("TabButton"), Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(10, 6, 10, 6) };
-        btn.Click += (_, _) =>
+        void Jump()
         {
             foreach (var b in _navButtons) b.Tag = b == btn ? "active" : null;
             Scroll.ScrollToVerticalOffset(Scroll.VerticalOffset + border.TranslatePoint(new Point(0, 0), Scroll).Y - 8);
-        };
+        }
+        btn.Click += (_, _) => Jump();
+        _jumps[titleIndex] = Jump;
         _navButtons.Add(btn);
         NavHost.Children.Add(btn);
     }
