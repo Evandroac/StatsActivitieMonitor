@@ -16,6 +16,7 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        StatsMonitor.Helpers.HoverHighlight.Install();
         Helpers.EmojiColors.Install();
 
         _singleInstance = new Mutex(true, "StatsMonitor.SingleInstance", out bool isNew);
