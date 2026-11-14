@@ -28,8 +28,7 @@ public static class NavIconAnimator
         icon.RenderTransform = group;
         icon.RenderTransformOrigin = new Point(0.5, 0.5);
 
-        button.MouseEnter += (_, _) => { if (enabled()) Start(st, kind); };
-        button.MouseLeave += (_, _) => Stop(st);
+        button.Click += (_, _) => { if (enabled()) Start(st, kind); };
     }
 
     private static TextBlock? FindIcon(Button b) =>
