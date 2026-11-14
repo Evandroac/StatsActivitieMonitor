@@ -38,12 +38,12 @@ public partial class App : Application
 
         var settings = new SettingsService();
         settings.Load();
-        if (settings.IsFirstRun) { settings.Current.Language = SettingsService.DetectLanguage(); settings.Save(); }
+        if (settings.IsFirstRun) { settings.Current.Language = SettingsService.DetectLanguage(); settings.Save(); StartupService.SetEnabled(settings.Current.RunAtStartup); }
         Loc.SetLanguage(settings.Current.Language);
 
         ThemeHelper.Apply(settings.Current);
         var splash = new SplashWindow();
-        if (settings.Current.ShowSplash) splash.Show();
+        splash.Show();
         async Task Step(string pt, string en, double pct)
         {
             splash.Log(SplashWindow.Text(pt, en), pct);
@@ -53,7 +53,6 @@ public partial class App : Application
 
         try
         {
-            bool showSplash = settings.Current.ShowSplash;
             await Step("Carregando configurações…", "Loading settings…", 5);
             Units.SetFahrenheit(settings.Current.TempUnit == "F");
             ThemeHelper.Apply(settings.Current);
@@ -100,7 +99,7 @@ public partial class App : Application
 
             MainWindow = main;
             main.Show();
-            if (showSplash) await splash.FadeOutAsync();
+            await splash.FadeOutAsync();
         }
         catch (OperationCanceledException) { Shutdown(); }
         finally { splash.Close(); }

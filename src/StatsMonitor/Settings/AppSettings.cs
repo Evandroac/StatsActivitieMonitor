@@ -40,7 +40,7 @@ public sealed class AppSettings
     public int GpuIntervalMs { get; set; }
     public int RamIntervalMs { get; set; }
     public int OtherIntervalMs { get; set; }
-    public bool RunAtStartup { get; set; }
+    public bool RunAtStartup { get; set; } = true;
     public bool StartMinimized { get; set; }
     public bool ShowTemperatures { get; set; } = true;
     public bool ShowGadget { get; set; } = true;
@@ -89,11 +89,11 @@ public sealed class AppSettings
     public bool SidebarPinned { get; set; }
     public double SidebarWidth { get; set; } = 220;
     public bool SimplifiedView { get; set; }
-    public bool PauseWhenHidden { get; set; }
+    public bool PauseWhenHidden { get; set; } = true;
     public bool EcoWhenMinimized { get; set; } = true;
     public bool LogEnabled { get; set; }
     public int LogIntervalSeconds { get; set; } = 5;
-    public bool SlowSensors { get; set; }
+    public bool SlowSensors { get; set; } = true;
     public string Language { get; set; } = "pt";
  public double FontScalePercent { get; set; } = 110;
     public string TempUnit { get; set; } = "C";
@@ -114,7 +114,6 @@ public sealed class AppSettings
 
     public bool ShowSensorsMain { get; set; } = true;
     public bool ShowBatteryMain { get; set; } = true;
-    public bool ShowSplash { get; set; } = true;
     public int BatteryLowPercent { get; set; } = 20;
     public int BatteryCriticalPercent { get; set; } = 10;
 

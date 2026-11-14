@@ -96,7 +96,7 @@ public static class SearchIndex
             "Idioma", "Unidade de temperatura", "Visualização simplificada", "Perfis", "Seguir o tema do Windows", "Atalho global",
             "Exportar configurações", "Importar configurações", "Restaurar padrões", "Notificações de alerta", "Tocar som de alerta", "Testar alerta",
             "Mostrar painel de Pets no menu", "Animações suaves ao abrir e trocar de tela", "Sensores (ventiladores, energia, tensões, bateria)", "Pausar a leitura quando oculto e sem gadget",
-            "Ler sensores de disco e placa-mãe com menos frequência", "Modo econômico ao minimizar", "Exibir tela de abertura (splash)",
+            "Ler sensores de disco e placa-mãe com menos frequência", "Modo econômico ao minimizar",
             "Geral", "Gadget", "Alertas", "Registro de dados", "Personalização", "Perfis", "Seções", "Ações", "Restaurar cores do tema");
         Add(SearchPage.Settings, "Configurações › Gadget",
             "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar", "Visão do gadget", "Simplificada", "Detalhada (mais informações e mini gráficos)", "Posição do gadget",
