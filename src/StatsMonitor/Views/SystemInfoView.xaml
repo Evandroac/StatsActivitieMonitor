@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="StatsMonitor.Views.SystemInfoView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:h="clr-namespace:StatsMonitor.Helpers"
+        xmlns:c="clr-namespace:StatsMonitor.Controls"
+        FontFamily="Segoe UI">
+    <UserControl.Resources>
+        <Style x:Key="CopyButton" TargetType="Button">
+            <Setter Property="Content" Value="📋"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="3,0"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="ToolTip" Value="{h:Tr 'Copiar para a área de transferência'}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource CardBorder}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="FullLine">
+            <Grid Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <DockPanel>
+                    
+                    <TextBlock Text="{Binding Label}" h:Copy.Text="{Binding CopyText}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}" VerticalAlignment="Center"/>
+                </DockPanel>
+                <TextBlock Grid.Column="1" Text="{Binding Value}" h:Copy.Text="{Binding CopyText}" ToolTip="{h:Tr 'Clique para copiar'}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="NameLine"><Border Background="{DynamicResource CardBorder}" CornerRadius="6" Padding="8,5" Margin="0,3"><DockPanel><Ellipse DockPanel.Dock="Left" Width="6" Height="6" Fill="{DynamicResource Accent}" Margin="0,0,8,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Label}" h:Copy.Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip="{Binding Label}"/></DockPanel></Border></DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border x:Name="ActionsPanel" Grid.Column="0" Margin="16,20,0,20" Padding="14" VerticalAlignment="Top" CornerRadius="12" Width="240" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <StackPanel>
+            <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
+            <TextBlock Text="{h:Tr 'Lê novamente as informações do computador'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
+            <Button x:Name="ExportButton" Visibility="Collapsed" Content="{h:Tr '📷  Exportar gráficos'}" ToolTip="{h:Tr 'Salva os gráficos desta tela como imagem PNG'}" AutomationProperties.Name="{h:Tr 'Exportar gráficos'}" Style="{StaticResource PillButton}" Margin="0,0,0,8" Click="OnExport"/>
+            <Button x:Name="RescanPanelButton" Content="{h:Tr '🔄  Verificar novamente'}" ToolTip="{h:Tr 'Lê novamente as informações do computador'}" AutomationProperties.Name="{h:Tr 'Verificar novamente'}" Style="{StaticResource PillButton}" Click="OnRescan"/>
+        </StackPanel>
+    </Border>
+    <DockPanel x:Name="ContentPanel" Grid.Column="1" Margin="20">        <DockPanel DockPanel.Dock="Top" Margin="6,0,6,8">
+            <TextBlock x:Name="PageTitle" Text="{h:Tr 'Sistema'}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </DockPanel>
+        <ItemsControl x:Name="Charts" DockPanel.Dock="Top" Visibility="Collapsed">
+            <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding Current}" FontSize="15" FontWeight="SemiBold" Foreground="{Binding Stroke}"/>
+                                <TextBlock Text="{Binding Title}" Style="{StaticResource Caption}" VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Text="{Binding Stats}" Style="{StaticResource Caption}" FontSize="11" Margin="0,6,0,0" TextTrimming="CharacterEllipsis" ToolTip="{Binding Stats}"/>
+                            <c:Sparkline AutomationProperties.Name="{Binding Title}" AutomationProperties.HelpText="{Binding Stats}" Height="70" Margin="0,8,0,0" Values="{Binding Values}" Stroke="{Binding Stroke}" Maximum="{Binding Maximum}" Unit="{Binding Unit}"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl x:Name="Groups">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><TextBlock Text="{Binding Lines.Count, StringFormat=({0})}" Style="{StaticResource Caption}" Margin="6,0,0,0" VerticalAlignment="Center"/></StackPanel>
+                                <ItemsControl ItemsSource="{Binding Lines}"><ItemsControl.ItemTemplate><DataTemplate><ContentControl Content="{Binding}" ContentTemplate="{StaticResource FullLine}"><ContentControl.Style><Style TargetType="ContentControl"><Style.Triggers><DataTrigger Binding="{Binding Value}" Value=""><Setter Property="ContentTemplate" Value="{StaticResource NameLine}"/></DataTrigger></Style.Triggers></Style></ContentControl.Style></ContentControl></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+    </Grid>
+</UserControl>

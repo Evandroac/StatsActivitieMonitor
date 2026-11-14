@@ -1,0 +1,325 @@
+﻿<UserControl x:Class="StatsMonitor.Views.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:h="clr-namespace:StatsMonitor.Helpers"
+        xmlns:local="clr-namespace:StatsMonitor.Views"
+        FontFamily="Segoe UI">
+    <UserControl.Resources>
+        <h:TempUnitConverter x:Key="TempConv"/>
+        <Style x:Key="WarnText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#E0A030"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="AutomationProperties.LiveSetting" Value="Polite"/>
+            <Style.Triggers><DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value=""><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+        </Style>
+        <Style x:Key="SecCard" TargetType="Border">
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="18,14"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+            <Setter Property="Background" Value="{DynamicResource CardBg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style x:Key="SectionTab" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" CornerRadius="8" Padding="10,7" Margin="0,1" Background="Transparent">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource InputBg}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="Field" TargetType="TextBox">
+            <Setter Property="Width" Value="90"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+    <StackPanel Margin="16,20,0,20" VerticalAlignment="Top" Width="240">
+    <Border Padding="10" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <StackPanel>
+            <TextBlock Text="{h:Tr 'SEÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="6,2,0,6"/>
+            <RadioButton x:Name="TabGeneral" Tag="general" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '⚙️  Geral'}" Checked="OnSection"/>
+            <RadioButton Tag="gadget" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🖼️  Gadget'}" Checked="OnSection"/>
+            <RadioButton Tag="panels" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🧩  Painéis exibidos'}" Checked="OnSection"/>
+            <RadioButton Tag="alerts" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🔔  Alertas'}" Checked="OnSection"/>
+            <RadioButton Tag="logging" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '📝  Registro de dados'}" Checked="OnSection"/>
+            <RadioButton Tag="appearance" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🎨  Personalização'}" Checked="OnSection"/>
+            <RadioButton Tag="profiles" GroupName="Sec" Style="{StaticResource SectionTab}" Content="{h:Tr '🎛️  Perfis'}" Checked="OnSection"/>
+        </StackPanel>
+    </Border>
+    <Border Margin="0,12,0,0" Padding="14" CornerRadius="12" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <StackPanel>
+            <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
+            <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
+            <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" AutomationProperties.Name="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
+            <Button Content="{h:Tr '⤓  Exportar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
+            <Button Content="{h:Tr '⤒  Importar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
+                        <Button x:Name="BtnResetColors" Content="{h:Tr '↺  Restaurar cores do tema'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" AutomationProperties.Name="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnResetColors"/>
+        </StackPanel>
+    </Border>
+                </StackPanel>
+                </ScrollViewer>
+                <ScrollViewer x:Name="SettingsScroll" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel x:Name="SectionsStack" Margin="20,20,20,20">
+        <Border x:Name="SecGeneral" Style="{StaticResource SecCard}"><StackPanel>
+        <TextBlock Text="{h:Tr '⚙️  Geral'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Intervalo de atualização (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="{h:Tr 'Segundos entre atualizações (mínimo 0,25; máximo 60)'}" Value="{Binding IntervalSeconds}"/>
+        </StackPanel>
+        <TextBlock Style="{StaticResource WarnText}" Text="{Binding IntervalWarning}"/>
+        <TextBlock Text="{h:Tr 'Intervalo por componente (0 = igual ao geral)'}" Style="{StaticResource Caption}" Margin="0,6,0,0"/>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'CPU (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding CpuIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'GPU e VRAM (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding GpuIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'Memória RAM (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding RamIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'Discos e sensores (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding OtherIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr '🔠  Tamanho da fonte:'}" VerticalAlignment="Center" Width="200"/>
+            <Slider Width="160" Minimum="90" Maximum="130" TickFrequency="5" SmallChange="5" LargeChange="10" IsSnapToTickEnabled="True" TickPlacement="BottomRight" VerticalAlignment="Center" ToolTip="{h:Tr 'Tamanho dos textos de todo o programa (90% a 130%)'}" AutomationProperties.Name="{h:Tr 'Tamanho da fonte'}" Value="{Binding FontScalePercent}"/>
+            <TextBlock Text="{Binding FontScaleText}" VerticalAlignment="Center" Margin="8,0,0,0" MinWidth="40"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
+            <ComboBox Width="160" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" SelectedValuePath="Tag" SelectedValue="{Binding Language, Mode=TwoWay}">
+                <ComboBoxItem Content="Português" Tag="pt"/>
+                <ComboBoxItem Content="English" Tag="en"/>
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr '🌡️  Unidade de temperatura:'}" VerticalAlignment="Center" Width="200"/>
+            <RadioButton GroupName="Unit" Content="°C (Celsius)" ToolTip="{h:Tr 'Unidade de exibição das temperaturas'}" IsChecked="{Binding UnitC}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"/>
+            <RadioButton GroupName="Unit" Content="°F (Fahrenheit)" ToolTip="{h:Tr 'Unidade de exibição das temperaturas'}" IsChecked="{Binding UnitF}" Foreground="{DynamicResource TextPrimary}"/>
+        </StackPanel>
+        <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
+        <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 10 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
+                    <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>
+        <CheckBox Content="{h:Tr 'Ler sensores de disco e placa-mãe com menos frequência'}" ToolTip="{h:Tr 'Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais'}" IsChecked="{Binding SlowSensors}"/>
+        <CheckBox Content="{h:Tr 'Exibir tela de abertura (splash)'}" ToolTip="{h:Tr 'Mostra a tela de carregamento ao iniciar o aplicativo'}" IsChecked="{Binding ShowSplash}"/>
+        <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
+        <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
+        </StackPanel></Border>
+        <Border x:Name="SecGadget" Style="{StaticResource SecCard}"><StackPanel>
+        <TextBlock Text="{h:Tr '🖼️  Gadget'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <CheckBox ToolTip="{h:Tr 'Mostra o gadget quando o app é minimizado'}" Content="{h:Tr 'Exibir gadget'}" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
+        <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
+        <CheckBox ToolTip="{h:Tr 'Mantém o gadget na tela mesmo com a janela principal aberta'}" Content="{h:Tr 'Manter gadget sempre visível'}" IsChecked="{Binding AlwaysShowGadget}"/>
+        <TextBlock Text="{h:Tr 'Exibição do gadget ao minimizar'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget compacto ao lado da área de notificação'}" Content="{h:Tr 'Na barra de tarefas, canto direito (widget)'}" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="{h:Tr 'Mostra como o gadget ficará no modo escolhido, com os indicadores marcados'}">
+            <StackPanel>
+                <DockPanel>
+                    <Border DockPanel.Dock="Right" CornerRadius="10" Padding="10,2" Background="{DynamicResource Accent}" VerticalAlignment="Center">
+                        <TextBlock x:Name="ModeBadge" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                    </Border>
+                    <TextBlock Text="{h:Tr '👁  Pré-visualização'}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </DockPanel>
+                <Viewbox MaxWidth="480" Margin="0,12,0,0" Stretch="Uniform">
+                    <StackPanel Width="520">
+                        <Border Background="#1A1A1F" BorderBrush="#3A3A44" BorderThickness="1" CornerRadius="12" Padding="8">
+                            <Border CornerRadius="5" ClipToBounds="True" Height="270">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#1E3A5F" Offset="0"/>
+                                        <GradientStop Color="#5B3E8C" Offset="0.6"/>
+                                        <GradientStop Color="#C0508A" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Grid>
+                                    <Border VerticalAlignment="Bottom" Height="32" Background="#E61B1B20">
+                                        <Grid>
+                                            <TextBlock Text="⊞" Foreground="#9CC4FF" FontSize="16" VerticalAlignment="Center" Margin="12,0,0,0" HorizontalAlignment="Left"/>
+                                            <TextBlock Text="🔊  12:30" Foreground="#CCCCD4" FontSize="11" VerticalAlignment="Center" Margin="0,0,10,0" HorizontalAlignment="Right"/>
+                                            <Border x:Name="TaskbarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="6" Padding="8,2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,76,0">
+                                                <WrapPanel x:Name="TaskbarPanel" MaxWidth="300"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    <Border x:Name="FloatingBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="10" Padding="12,8" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,24,24,0">
+                                        <StackPanel x:Name="FloatingPanel"/>
+                                    </Border>
+                                    <Border x:Name="BarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="8" Padding="12,6" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,70,0,0">
+                                        <WrapPanel x:Name="BarPanel" MaxWidth="440"/>
+                                    </Border>
+                                    <Border x:Name="TopBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1,0,1,1" CornerRadius="0,0,10,10" Padding="14,5" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                        <WrapPanel x:Name="TopPanel" MaxWidth="440"/>
+                                    </Border>
+                                    <Border x:Name="OffBox" Background="#99000000" CornerRadius="8" Padding="12,6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock x:Name="OffText" Text="{h:Tr 'Sem gadget neste modo'}" Foreground="White"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Border>
+                        <Border Width="70" Height="22" HorizontalAlignment="Center" Background="#2A2A32" CornerRadius="0,0,4,4"/>
+                        <Border Width="170" Height="8" HorizontalAlignment="Center" Background="#34343E" CornerRadius="4"/>
+                    </StackPanel>
+                </Viewbox>
+            </StackPanel>
+        </Border>
+        </StackPanel>
+        <TextBlock Text="{h:Tr '⌨️  Atalho global'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <CheckBox Content="{h:Tr 'Ativar atalho para mostrar/ocultar o gadget'}" IsChecked="{Binding HotkeyEnabled}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Atalho:'}" VerticalAlignment="Center" Width="200"/>
+            <ComboBox Width="160" ItemsSource="{Binding HotkeyOptions}" SelectedItem="{Binding GadgetHotkey, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Atalho:'}"/>
+        </StackPanel>
+        </StackPanel></Border>
+        <Border x:Name="SecPanels" Style="{StaticResource SecCard}"><StackPanel>
+        <TextBlock Text="{h:Tr '🧩  Painéis exibidos'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{h:Tr 'Janela principal'}" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
+                <CheckBox Content="{h:Tr 'CPU'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowCpuMain}"/>
+                <CheckBox Content="{h:Tr 'GPU'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowGpuMain}"/>
+                <CheckBox Content="{h:Tr 'Memória RAM'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowRamMain}"/>
+                <CheckBox Content="{h:Tr 'Discos'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowVramMain}"/>
+                <CheckBox Content="{h:Tr 'Rede / Internet'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowNetworkMain}"/>
+        <CheckBox Content="{h:Tr 'Bateria (notebooks)'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowBatteryMain}" Visibility="{Binding HasBattery, Converter={StaticResource BoolToVis}}"/>
+        <CheckBox Content="{h:Tr 'Sensores (ventiladores, energia, tensões, bateria)'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowSensorsMain}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="{h:Tr 'Gadget (minimizado)'}" Style="{StaticResource Caption}" Margin="0,0,0,2"/>
+                <CheckBox Content="{h:Tr 'CPU'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowCpuGadget}"/>
+                <CheckBox Content="{h:Tr 'GPU'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowGpuGadget}"/>
+                <CheckBox Content="{h:Tr 'Memória RAM'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowRamGadget}"/>
+                <CheckBox Content="{h:Tr 'Discos'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowVramGadget}"/>
+                <CheckBox Content="{h:Tr 'Rede / Internet'}" ToolTip="{h:Tr 'Exibir no gadget (minimizado)'}" IsChecked="{Binding ShowNetworkGadget}"/>
+                <CheckBox Content="{h:Tr 'FPS (em jogos)'}" ToolTip="{h:Tr 'Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador.'}" IsChecked="{Binding ShowFpsGadget}"/>
+            </StackPanel>
+        </Grid>
+
+        </StackPanel></Border>
+        <Border x:Name="SecAlerts" Style="{StaticResource SecCard}"><StackPanel>
+        <TextBlock x:Name="TxtTempAlerts" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/><ColumnDefinition Width="110"/><ColumnDefinition Width="110"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/><RowDefinition/><RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="1" Text="{h:Tr 'Atenção'}" Style="{StaticResource Caption}"/>
+            <TextBlock Grid.Column="2" Text="{h:Tr 'Crítica'}" Style="{StaticResource Caption}"/>
+            <TextBlock Grid.Row="1" Text="{h:Tr 'CPU'}" VerticalAlignment="Center"/>
+            <local:NumericBox Grid.Row="1" Grid.Column="1"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica em atenção'}" Value="{Binding CpuWarnTemp, Converter={StaticResource TempConv}}"/>
+            <local:NumericBox Grid.Row="1" Grid.Column="2"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica crítico'}" Value="{Binding CpuCritTemp, Converter={StaticResource TempConv}}"/>
+            <TextBlock Grid.Row="2" Text="{h:Tr 'GPU'}" VerticalAlignment="Center"/>
+            <local:NumericBox Grid.Row="2" Grid.Column="1"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica em atenção'}" Value="{Binding GpuWarnTemp, Converter={StaticResource TempConv}}"/>
+            <local:NumericBox Grid.Row="2" Grid.Column="2"  Margin="0,3" Minimum="{Binding TempMin}" Maximum="{Binding TempMax}" Step="1" ToolTip="{h:Tr 'Temperatura a partir da qual o valor fica crítico'}" Value="{Binding GpuCritTemp, Converter={StaticResource TempConv}}"/>
+        </Grid>
+        <TextBlock Style="{StaticResource WarnText}" Margin="0,4,0,0" Text="{Binding CpuTempWarning}"/>
+        <TextBlock Style="{StaticResource WarnText}" Text="{Binding GpuTempWarning}"/>
+
+        <TextBlock Text="{h:Tr '🔔  Notificações de alerta'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,2,0,6">
+            <TextBlock Text="{h:Tr 'Níveis de alerta:'}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <ComboBox Width="200" ToolTip="{h:Tr 'Atenção avisa antes de chegar ao limite crítico'}" SelectedValuePath="Tag" SelectedValue="{Binding AlertLevel, Mode=TwoWay}">
+                <ComboBoxItem Content="{h:Tr 'Atenção e críticos'}" Tag="both"/>
+                <ComboBoxItem Content="{h:Tr 'Somente atenção'}" Tag="attention"/>
+                <ComboBoxItem Content="{h:Tr 'Somente críticos'}" Tag="critical"/>
+            </ComboBox>
+        </StackPanel>
+        <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
+        <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
+                    <CheckBox Content="{h:Tr 'Saudações (bom dia, boa tarde, boa noite)'}" IsChecked="{Binding NotifyGreetings}"/>
+                    <CheckBox Content="{h:Tr 'Alertas inteligentes de rede (sem conexão, sem internet, latência alta)'}" IsChecked="{Binding NotifyNetworkAlerts}"/>
+        <Button Content="{h:Tr '🔔  Testar alerta'}" ToolTip="{h:Tr 'Exibe uma notificação de alerta de teste'}" AutomationProperties.Name="{h:Tr 'Testar alerta'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,6,0,0" Click="OnTestAlert"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="50" Maximum="100" Step="1" ToolTip="{h:Tr 'Uso (%) de CPU, GPU ou RAM a partir do qual o alerta é emitido'}" Value="{Binding AlertLoadPercent}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Tempo acima do limite (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="600" Step="1" ToolTip="{h:Tr 'O valor precisa ficar acima do limite por este tempo antes de alertar'}" Value="{Binding AlertSustainSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBlock Text="{h:Tr 'Intervalo mínimo entre avisos (min):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="240" Step="1" ToolTip="{h:Tr 'Tempo mínimo entre dois avisos do mesmo tipo'}" Value="{Binding AlertCooldownMinutes}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4" Visibility="{Binding HasBattery, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{h:Tr 'Bateria fraca - atenção (%):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="2" Maximum="90" Step="1" ToolTip="{h:Tr 'Avisa quando a bateria em uso chegar a este nível'}" Value="{Binding BatteryLowPercent}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4" Visibility="{Binding HasBattery, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{h:Tr 'Bateria crítica (%):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="1" Maximum="89" Step="1" ToolTip="{h:Tr 'Avisa quando a bateria em uso chegar a este nível crítico'}" Value="{Binding BatteryCriticalPercent}"/>
+        </StackPanel>
+        <TextBlock Style="{StaticResource WarnText}" Text="{Binding AlertWarning}"/>
+        <DockPanel Margin="0,14,0,6">
+            <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
+            <TextBlock Text="{h:Tr '🕘  Histórico de alertas'}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
+        </DockPanel>
+        <TextBlock x:Name="AlertHistoryEmpty" Text="{h:Tr 'Nenhum alerta registrado'}" Style="{StaticResource Caption}"/>
+        <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto" Focusable="False">
+            <ItemsControl x:Name="AlertHistoryList" AutomationProperties.Name="{h:Tr 'Histórico de alertas'}">
+                <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Display}" TextWrapping="Wrap" Margin="0,2" FontSize="12"/></DataTemplate></ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        </StackPanel></Border>
+        <Border x:Name="SecLogging" Style="{StaticResource SecCard}"><StackPanel>
+            <TextBlock Text="{h:Tr '📝  Registro de dados'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+            <CheckBox Content="{h:Tr 'Gravar leituras em arquivo CSV'}" ToolTip="{h:Tr 'Salva CPU, memória, GPU e disco em um arquivo por dia, para análise e validação. Mantém a leitura ativa mesmo com o app oculto'}" IsChecked="{Binding LogEnabled}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <TextBlock Text="{h:Tr 'Intervalo entre registros (s):'}" VerticalAlignment="Center" Width="200"/>
+                <local:NumericBox Minimum="1" Maximum="300" Step="1" ToolTip="{h:Tr 'Intervalos maiores geram arquivos menores'}" Value="{Binding LogIntervalSeconds}"/>
+            </StackPanel>
+            <TextBlock Text="{Binding LogFolder}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+            <TextBlock Text="{h:Tr 'Arquivos com mais de 14 dias são apagados e cada arquivo diário é limitado a 25 MB.'}" Style="{StaticResource Caption}" TextWrapping="Wrap"/>
+            <Button Content="{h:Tr '📂  Abrir pasta de registros'}" AutomationProperties.Name="{h:Tr 'Abrir pasta de registros'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,8,0,0" Click="OnOpenLogFolder"/>
+        </StackPanel></Border>
+        <Border x:Name="SecAppearance" Style="{StaticResource SecCard}"><StackPanel><TextBlock x:Name="AppearanceTitle" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/><ContentControl x:Name="AppearanceHost" IsTabStop="False" Margin="-20,0,-20,-20"/></StackPanel></Border>
+        <Border x:Name="SecProfiles" Style="{StaticResource SecCard}"><StackPanel>
+        <TextBlock Text="{h:Tr '🎛️  Perfis'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <ComboBox Width="200" ItemsSource="{Binding ProfileNames}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Perfis'}"/>
+            <Button Content="{h:Tr 'Aplicar'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnApplyProfile"/>
+            <Button Content="{h:Tr 'Excluir'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnDeleteProfile"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <TextBox Width="200" Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{h:Tr 'Nome do perfil (vazio = perfil selecionado)'}" AutomationProperties.Name="{h:Tr 'Nome do perfil'}"/>
+            <Button Content="{h:Tr 'Salvar atual no perfil'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnSaveProfile"/>
+        </StackPanel>
+                    </StackPanel></Border>
+    </StackPanel>
+    </ScrollViewer>
+            
+    </Grid>
+</UserControl>

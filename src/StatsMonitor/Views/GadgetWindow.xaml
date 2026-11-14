@@ -1,0 +1,70 @@
+﻿<Window xmlns:h="clr-namespace:StatsMonitor.Helpers" x:Class="StatsMonitor.Views.GadgetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" ShowActivated="False"
+        SizeToContent="WidthAndHeight" FontFamily="Consolas"
+        ToolTip="{h:Tr 'Duplo clique para abrir'}">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
+        </Style>
+    </Window.Resources>
+    <Border x:Name="Root" CornerRadius="10" Padding="12,8"
+            BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource GadgetBg}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource GadgetHoverBg}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid>
+            <StackPanel x:Name="FloatingPanel">
+                <TextBlock x:Name="FCpu" FontSize="13">
+                    <Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="FRam" FontSize="13">
+                    <Run Text="{h:Tr 'RAM: '}"/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Ram.UsedText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="FGpu" FontSize="13">
+                    <Run Text="{h:Tr 'GPU: '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="FVram" FontSize="13">
+                    <Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="FFps" FontSize="13">
+                    <Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/>
+                </TextBlock>
+                <TextBlock x:Name="FNet" FontSize="13">
+                    <Run Text="{h:Tr 'NET: ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" Margin="-12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
+                <TextBlock x:Name="TCpu" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="{h:Tr 'CPU '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="TRam" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="{h:Tr 'RAM '}"/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="TGpu" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="{h:Tr 'GPU '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="TVram" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="{h:Tr 'Disco '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
+                </TextBlock>
+                <TextBlock x:Name="TFps" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="{h:Tr 'FPS '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/>
+                </TextBlock>
+                <TextBlock x:Name="TNet" FontSize="12" Margin="12,0,0,0">
+                    <Run Text="{h:Tr 'NET ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

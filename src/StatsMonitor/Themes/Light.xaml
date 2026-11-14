@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="WindowBg" Color="#EEF1F6"/>
+    <SolidColorBrush x:Key="CardBg" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="CardBorder" Color="#D8DDE6"/>
+    <SolidColorBrush x:Key="TextPrimary" Color="#1B1F2A"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#5F6881"/>
+    <SolidColorBrush x:Key="TrackBrush" Color="#E1E5EE"/>
+    <SolidColorBrush x:Key="InputBg" Color="#F4F6FA"/>
+    <SolidColorBrush x:Key="Accent" Color="#1F7AE0"/>
+    <SolidColorBrush x:Key="Accent2" Color="#7C4DFF"/>
+    <SolidColorBrush x:Key="ControlBorder" Color="#9AA6BC"/>
+    <SolidColorBrush x:Key="ControlBorderHover" Color="#6B7A96"/>
+    <SolidColorBrush x:Key="ScrollThumb" Color="#B0BACC"/>
+    <SolidColorBrush x:Key="ScrollThumbHover" Color="#8593AD"/>
+    <SolidColorBrush x:Key="GadgetHoverBg" Color="#FFD6E6FF"/>
+  <SolidColorBrush x:Key="GadgetBg" Color="#E6FFFFFF"/>
+    <SolidColorBrush x:Key="GadgetText" Color="#1B1F2A"/>
+</ResourceDictionary>

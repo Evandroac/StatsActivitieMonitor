@@ -1,0 +1,59 @@
+﻿namespace StatsMonitor.Models;
+
+/// <summary>One reading of all monitored hardware. Null values mean the sensor is unavailable (shown as "N/D").</summary>
+public sealed class HardwareSnapshot
+{
+    public DateTime Timestamp { get; init; } = DateTime.Now;
+    public TimeSpan Uptime { get; init; }
+
+    public string CpuName { get; init; } = "CPU";
+    public double? CpuLoad { get; init; }
+    public double? CpuClockMhz { get; init; }
+    public double? CpuTemp { get; init; }
+    public double? CpuPowerW { get; init; }
+    public double? CpuVoltage { get; init; }
+    public double? CpuHottestCoreTemp { get; init; }
+    public IReadOnlyList<double> CpuCoreLoads { get; init; } = [];
+
+    public double? RamTotalGb { get; init; }
+    public double? RamUsedGb { get; init; }
+    public double? RamAvailableGb { get; init; }
+    public double? RamLoad { get; init; }
+
+    public string? GpuName { get; init; }
+    public double? GpuLoad { get; init; }
+    public double? GpuClockMhz { get; init; }
+    public double? GpuTemp { get; init; }
+    public double? GpuMemClockMhz { get; init; }
+    public double? GpuPowerW { get; init; }
+    public double? GpuFanRpm { get; init; }
+    public double? GpuHotSpotTemp { get; init; }
+    public double? GpuVoltage { get; init; }
+    public double? GpuMemControllerLoad { get; init; }
+    public double? GpuVideoEngineLoad { get; init; }
+
+    public double? VramTotalGb { get; init; }
+    public double? VramUsedGb { get; init; }
+    public double? VramAvailableGb { get; init; }
+    public double? VramLoad { get; init; }
+    public double? VramTemp { get; init; }
+
+    public IReadOnlyList<DiskSnapshot> Disks { get; init; } = [];
+    public IReadOnlyList<VolumeSnapshot> Volumes { get; init; } = [];
+    public IReadOnlyList<SensorReading> Sensors { get; init; } = [];
+
+    /// <summary>True when the process runs elevated (needed by some temperature sensors).</summary>
+    public bool IsElevated { get; init; }
+}
+
+/// <summary>Physical drive (HD/SSD/NVMe) readings.</summary>
+public sealed record DiskSnapshot(string Name, double? Temp, double? ReadBps, double? WriteBps, double? Activity, double? LifePercent, string? Health,
+    double? TotalReadGb = null, double? TotalWrittenGb = null, double? PowerOnHours = null);
+
+/// <summary>Logical volume (drive letter) capacity.</summary>
+public sealed record VolumeSnapshot(string Name, double TotalGb, double FreeGb);
+
+public enum SensorCategory { Fan, Power, Voltage, Battery }
+
+/// <summary>Extra motherboard/CPU/battery sensor reading.</summary>
+public sealed record SensorReading(SensorCategory Category, string Name, double Value, string Unit);
