@@ -564,21 +564,21 @@ public partial class MainWindow : Window
         Func<bool> on = () => _settings.Current.AnimationsEnabled;
         void A(Button b, NavIconAnimator.Kind k) => NavIconAnimator.Attach(b, k, on);
         A(NavSettings, NavIconAnimator.Kind.Spin);
-        A(NavProcesses, NavIconAnimator.Kind.Spin);
-        A(NavMenu, NavIconAnimator.Kind.Turn);
-        A(NavDisk, NavIconAnimator.Kind.Turn);
-        A(NavNetTools, NavIconAnimator.Kind.Turn);
-        A(NavNet, NavIconAnimator.Kind.Turn);
-        A(SearchIcon, NavIconAnimator.Kind.Wiggle);
-        A(NavHelp, NavIconAnimator.Kind.Wiggle);
-        A(NavGpu, NavIconAnimator.Kind.Wiggle);
+        A(NavProcesses, NavIconAnimator.Kind.Bounce);
+        A(NavMenu, NavIconAnimator.Kind.Bounce);
+        A(NavDisk, NavIconAnimator.Kind.Bounce);
+        A(NavNetTools, NavIconAnimator.Kind.Bounce);
+        A(NavNet, NavIconAnimator.Kind.Bounce);
+        A(SearchIcon, NavIconAnimator.Kind.Bounce);
+        A(NavHelp, NavIconAnimator.Kind.Bounce);
+        A(NavGpu, NavIconAnimator.Kind.Bounce);
         A(NavMain, NavIconAnimator.Kind.Bounce);
         A(NavRam, NavIconAnimator.Kind.Bounce);
         A(NavSystem, NavIconAnimator.Kind.Bounce);
-        A(NavCpu, NavIconAnimator.Kind.Pulse);
-        A(NavSensors, NavIconAnimator.Kind.Pulse);
-        A(NavBattery, NavIconAnimator.Kind.Pulse);
-        A(NavDiagnostics, NavIconAnimator.Kind.Pulse);
+        A(NavCpu, NavIconAnimator.Kind.Bounce);
+        A(NavSensors, NavIconAnimator.Kind.Bounce);
+        A(NavBattery, NavIconAnimator.Kind.Bounce);
+        A(NavDiagnostics, NavIconAnimator.Kind.Bounce);
     }
 
     private void OnShortcut(object sender, RoutedEventArgs e)
