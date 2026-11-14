@@ -307,7 +307,7 @@
                             <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8"
                                     BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1"
                                     Padding="{TemplateBinding Padding}" Cursor="Hand">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.TextAlignment="Center"/>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" TextBlock.TextAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">

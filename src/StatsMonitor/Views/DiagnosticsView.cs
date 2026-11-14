@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -205,7 +205,7 @@ public sealed class DiagnosticsView : UserControl
 
     private Button Pill(string text, RoutedEventHandler click)
     {
-        var b = new Button { Content = text, Style = (Style?)Res("PillButton"), Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(14, 7, 14, 7) };
+        var b = new Button { Content = text, HorizontalContentAlignment = HorizontalAlignment.Left, Style = (Style?)Res("PillButton"), Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(14, 7, 14, 7) };
         b.Click += click;
         return b;
     }
