@@ -10,6 +10,25 @@ public static class PowerSaver
     [DllImport("kernel32.dll")] private static extern bool SetProcessWorkingSetSize(IntPtr process, IntPtr min, IntPtr max);
 
     private static bool _eco;
+    private static int _trimPending;
+
+    /// <summary>Compacts the managed heap shortly after a heavy page is closed so its memory is returned to Windows. Debounced.</summary>
+    public static void TrimSoon()
+    {
+        if (Interlocked.Exchange(ref _trimPending, 1) == 1) return;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(1500);
+                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect(2, GCCollectionMode.Forced, true, true);
+                GC.WaitForPendingFinalizers();
+            }
+            catch { /* best effort */ }
+            finally { Interlocked.Exchange(ref _trimPending, 0); }
+        });
+    }
 
     public static void Apply(bool eco)
     {

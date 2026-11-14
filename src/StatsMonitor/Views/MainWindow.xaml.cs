@@ -619,7 +619,9 @@ public partial class MainWindow : Window
         {
             case SettingsView s: s.Discard(); break;
         }
+        bool hadPage = PageHost.Content != null;
         PageHost.Content = null;
+        if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Collapsed;
         MainPage.Visibility = Visibility.Visible;
         SetActiveNav(NavMain);
@@ -629,7 +631,9 @@ public partial class MainWindow : Window
     private void ShowPage(FrameworkElement view, Button nav)
     {
         if (PageHost.Content is SettingsView s) s.Discard();
+        bool hadPage = PageHost.Content != null;
         PageHost.Content = view;
+        if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Visible;
         MainPage.Visibility = Visibility.Collapsed;
         SetActiveNav(nav);

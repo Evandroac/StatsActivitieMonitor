@@ -389,7 +389,7 @@ public sealed class DiagnosticsView : UserControl
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { Log("✖ " + ex.Message); Store.Audit("diagnostic error: " + ex.Message); }
-        finally { _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); }
+        finally { _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); PowerSaver.TrimSoon(); }
     }
 
     // ---------- component pages ----------
