@@ -165,6 +165,8 @@ public partial class GadgetWindow : Window
         BtnLock.ToolTip = Loc.T(s.GadgetLocked ? "Gadget fixo: clique para liberar posição e tamanho" : "Fixar o gadget (bloqueia posição e tamanho)");
         BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
         Opacity = s.GadgetFaded ? FadedOpacity : 1;
+        BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
+        BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
         MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
         UpdateTools(IsMouseOver);
@@ -172,9 +174,8 @@ public partial class GadgetWindow : Window
 
     private void UpdateTools(bool hover)
     {
-        Tools.Visibility = hover ? Visibility.Visible : Visibility.Collapsed;
+        Tools.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
-        MoveX.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void OnToggleLock(object sender, RoutedEventArgs e)
@@ -182,6 +183,15 @@ public partial class GadgetWindow : Window
         _settings.Current.GadgetLocked = !_settings.Current.GadgetLocked;
         _settings.Save();
         ApplyLockAndFade();
+    }
+
+    private void OnToggleView(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.GadgetDetailed = !_settings.Current.GadgetDetailed;
+        _settings.Save();
+        ApplyLockAndFade();
+        ApplyMode();
+        Reposition();
     }
 
     private void OnToggleFade(object sender, RoutedEventArgs e)

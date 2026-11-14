@@ -464,6 +464,8 @@ public static class LocData
         ["Deixar o gadget com a opacidade mínima"] = "Set the gadget to minimum opacity",
         ["Arraste para redimensionar · duplo clique para o tamanho padrão"] = "Drag to resize · double-click for the default size",
         ["Segure para pausar as leituras; arraste para mover na horizontal"] = "Hold to pause readings; drag to move horizontally",
+        ["Mudar para a visão simplificada"] = "Switch to the simplified view",
+        ["Mudar para a visão detalhada"] = "Switch to the detailed view",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",
