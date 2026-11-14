@@ -8,6 +8,7 @@
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
+            <Setter Property="TextAlignment" Value="Center"/>
         </Style>
     </Window.Resources>
     <Border x:Name="Root" CornerRadius="10" Padding="12,8"
@@ -24,18 +25,18 @@
             </Style>
         </Border.Style>
         <Grid>
-            <StackPanel x:Name="FloatingPanel">
+            <StackPanel x:Name="FloatingPanel" HorizontalAlignment="Center">
                 <TextBlock x:Name="FCpu" FontSize="13">
-                    <Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FRam" FontSize="13">
-                    <Run Text="{h:Tr 'RAM: '}"/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/><Run Text=" | "/><Run Text="{Binding Ram.UsedText, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'RAM: '}"/><Run Text="{Binding Ram.LoadText, Mode=OneWay}" Foreground="{Binding Ram.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text=" | "/><Run Text="{Binding Ram.UsedText, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FGpu" FontSize="13">
-                    <Run Text="{h:Tr 'GPU: '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'GPU: '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}" Foreground="{Binding Gpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FVram" FontSize="13">
-                    <Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" Foreground="{Binding Disk.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="FFps" FontSize="13">
                     <Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{h:Tr '  Média: '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}" FontWeight="SemiBold"/>
@@ -47,16 +48,16 @@
 
             <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" Margin="-12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock x:Name="TCpu" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="{h:Tr 'CPU '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'CPU '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TRam" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="{h:Tr 'RAM '}"/><Run Text="{Binding Ram.LoadText, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'RAM '}"/><Run Text="{Binding Ram.LoadText, Mode=OneWay}" Foreground="{Binding Ram.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="TGpu" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="{h:Tr 'GPU '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'GPU '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}" Foreground="{Binding Gpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TVram" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="{h:Tr 'Disco '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
+                    <Run Text="{h:Tr 'Disco '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" Foreground="{Binding Disk.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="TFps" FontSize="12" Margin="12,0,0,0">
                     <Run Text="{h:Tr 'FPS '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{h:Tr ' · méd '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}" FontWeight="SemiBold"/>
