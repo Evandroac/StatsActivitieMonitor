@@ -16,6 +16,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        Helpers.EmojiColors.Install();
 
         _singleInstance = new Mutex(true, "StatsMonitor.SingleInstance", out bool isNew);
         if (!isNew)
