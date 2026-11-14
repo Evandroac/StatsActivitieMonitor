@@ -86,6 +86,23 @@
             <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="{h:Tr 'Segundos entre atualizações (mínimo 0,25; máximo 60)'}" Value="{Binding IntervalSeconds}"/>
         </StackPanel>
         <TextBlock Style="{StaticResource WarnText}" Text="{Binding IntervalWarning}"/>
+        <TextBlock Text="{h:Tr 'Intervalo por componente (0 = igual ao geral)'}" Style="{StaticResource Caption}" Margin="0,6,0,0"/>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'CPU (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding CpuIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'GPU e VRAM (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding GpuIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'Memória RAM (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding RamIntervalSeconds}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,2">
+            <TextBlock Text="{h:Tr 'Discos e sensores (s):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding OtherIntervalSeconds}"/>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🔠  Tamanho da fonte:'}" VerticalAlignment="Center" Width="200"/>
             <Slider Width="160" Minimum="90" Maximum="130" TickFrequency="5" SmallChange="5" LargeChange="10" IsSnapToTickEnabled="True" TickPlacement="BottomRight" VerticalAlignment="Center" ToolTip="{h:Tr 'Tamanho dos textos de todo o programa (90% a 130%)'}" AutomationProperties.Name="{h:Tr 'Tamanho da fonte'}" Value="{Binding FontScalePercent}"/>

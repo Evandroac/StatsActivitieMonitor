@@ -138,10 +138,17 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void UpdateInterval()
     {
-        int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
-        if (S.SimplifiedView) ms = Math.Max(ms, 2000);
-        if (_eco) ms = Math.Max(ms, 10000);
-        _monitor.Interval = TimeSpan.FromMilliseconds(ms);
+        int Eff(int own)
+        {
+            int ms = own > 0 ? Math.Clamp(own, 250, 60000) : Math.Clamp(S.UpdateIntervalMs, 250, 60000);
+            if (S.SimplifiedView) ms = Math.Max(ms, 2000);
+            if (_eco) ms = Math.Max(ms, 10000);
+            return ms;
+        }
+        int cpu = Eff(S.CpuIntervalMs), gpu = Eff(S.GpuIntervalMs), ram = Eff(S.RamIntervalMs), other = Eff(S.OtherIntervalMs);
+        _monitor.Interval = TimeSpan.FromMilliseconds(new[] { cpu, gpu, ram, other }.Min());
+        _monitor.Components = new Services.ComponentIntervals(TimeSpan.FromMilliseconds(cpu), TimeSpan.FromMilliseconds(gpu),
+            TimeSpan.FromMilliseconds(ram), TimeSpan.FromMilliseconds(other));
     }
 
     /// <summary>Background mode: window minimized and gadget hidden. Samples less often and trims the process footprint.</summary>

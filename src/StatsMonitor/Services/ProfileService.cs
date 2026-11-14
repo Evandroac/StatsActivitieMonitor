@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using StatsMonitor.Settings;
 
 namespace StatsMonitor.Services;
@@ -11,7 +11,8 @@ public static class ProfileService
     /// <summary>Settings captured by a profile; theme, colors, language and window geometry are deliberately excluded.</summary>
     public static readonly string[] ProfileKeys =
     [
-        nameof(AppSettings.UpdateIntervalMs), nameof(AppSettings.ShowTemperatures),
+        nameof(AppSettings.UpdateIntervalMs), nameof(AppSettings.CpuIntervalMs), nameof(AppSettings.GpuIntervalMs),
+        nameof(AppSettings.RamIntervalMs), nameof(AppSettings.OtherIntervalMs), nameof(AppSettings.ShowTemperatures),
         nameof(AppSettings.ShowGadget), nameof(AppSettings.AlwaysShowGadget), nameof(AppSettings.GadgetMode),
         nameof(AppSettings.ShowCpuMain), nameof(AppSettings.ShowGpuMain), nameof(AppSettings.ShowRamMain),
         nameof(AppSettings.ShowVramMain), nameof(AppSettings.ShowNetworkMain), nameof(AppSettings.ShowSensorsMain),
@@ -27,6 +28,7 @@ public static class ProfileService
         s.Profiles.Add(Make(Game, new()
         {
             [nameof(AppSettings.UpdateIntervalMs)] = 1000,
+            [nameof(AppSettings.CpuIntervalMs)] = 0, [nameof(AppSettings.GpuIntervalMs)] = 0, [nameof(AppSettings.RamIntervalMs)] = 0, [nameof(AppSettings.OtherIntervalMs)] = 0,
             [nameof(AppSettings.ShowGadget)] = true,
             [nameof(AppSettings.AlwaysShowGadget)] = true,
             [nameof(AppSettings.GadgetMode)] = GadgetDisplayMode.FloatingBar,
@@ -43,6 +45,7 @@ public static class ProfileService
         s.Profiles.Add(Make(Work, new()
         {
             [nameof(AppSettings.UpdateIntervalMs)] = 2000,
+            [nameof(AppSettings.CpuIntervalMs)] = 0, [nameof(AppSettings.GpuIntervalMs)] = 0, [nameof(AppSettings.RamIntervalMs)] = 0, [nameof(AppSettings.OtherIntervalMs)] = 0,
             [nameof(AppSettings.ShowGadget)] = true,
             [nameof(AppSettings.AlwaysShowGadget)] = false,
             [nameof(AppSettings.GadgetMode)] = GadgetDisplayMode.Taskbar,
@@ -59,6 +62,7 @@ public static class ProfileService
         s.Profiles.Add(Make(Quiet, new()
         {
             [nameof(AppSettings.UpdateIntervalMs)] = 5000,
+            [nameof(AppSettings.CpuIntervalMs)] = 0, [nameof(AppSettings.GpuIntervalMs)] = 0, [nameof(AppSettings.RamIntervalMs)] = 0, [nameof(AppSettings.OtherIntervalMs)] = 0,
             [nameof(AppSettings.ShowGadget)] = false,
             [nameof(AppSettings.AlwaysShowGadget)] = false,
             [nameof(AppSettings.GadgetMode)] = GadgetDisplayMode.None,

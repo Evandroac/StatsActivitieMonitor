@@ -29,6 +29,11 @@ public sealed class AppSettings
 
     public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
     public int UpdateIntervalMs { get; set; } = 1000;
+    /// <summary>Per-component update interval in ms; 0 follows the general interval.</summary>
+    public int CpuIntervalMs { get; set; }
+    public int GpuIntervalMs { get; set; }
+    public int RamIntervalMs { get; set; }
+    public int OtherIntervalMs { get; set; }
     public bool RunAtStartup { get; set; }
     public bool StartMinimized { get; set; }
     public bool ShowTemperatures { get; set; } = true;

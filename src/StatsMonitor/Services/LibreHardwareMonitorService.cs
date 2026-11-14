@@ -22,6 +22,10 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
     private volatile bool _paused;
     private volatile int _scope = (int)HardwareScope.All;
     public HardwareScope Scope { get => (HardwareScope)_scope; set => _scope = (int)value; }
+    private volatile ComponentIntervals? _components;
+    public ComponentIntervals? Components { get => _components; set => _components = value; }
+    private readonly Dictionary<HardwareScope, DateTime> _groupAt = new();
+    private HardwareScope _due = HardwareScope.All;
     public bool Paused { get => _paused; set => _paused = value; }
     private volatile bool _slowSensors;
     public bool SlowSensors { get => _slowSensors; set { _slowSensors = value; DiskPerfService.CacheSeconds = value ? SlowSeconds : 2; } }
@@ -98,6 +102,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
         var all = new List<IHardware>();
         _slowDue = !_slowSensors || DateTime.Now - _slowAt >= TimeSpan.FromSeconds(SlowSeconds);
         if (_slowDue) _slowAt = DateTime.Now;
+        _due = DueGroups();
         if (_computer != null)
         {
             foreach (var hw in _computer.Hardware)
@@ -285,6 +290,21 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
         return list;
     }
 
+    private HardwareScope DueGroups()
+    {
+        var iv = _components;
+        if (iv == null) return HardwareScope.All;
+        var now = DateTime.Now;
+        var due = HardwareScope.None;
+        foreach (var g in new[] { HardwareScope.Cpu, HardwareScope.Gpu, HardwareScope.Memory, HardwareScope.Other })
+        {
+            if (_groupAt.TryGetValue(g, out var last) && now - last < iv.For(g) - TimeSpan.FromMilliseconds(60)) continue;
+            _groupAt[g] = now;
+            due |= g;
+        }
+        return due;
+    }
+
     private void Collect(IHardware hw, List<IHardware> list)
     {
         var group = hw.HardwareType switch
@@ -297,7 +317,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
         if (!Scope.HasFlag(group)) return;
         bool slow = hw.HardwareType is HardwareType.Storage or HardwareType.Motherboard or HardwareType.SuperIO
             or HardwareType.EmbeddedController or HardwareType.Battery;
-        if (!slow || _slowDue) hw.Update();
+        if (_due.HasFlag(group) && (!slow || _slowDue)) hw.Update();
         list.Add(hw);
         foreach (var sub in hw.SubHardware) Collect(sub, list);
     }

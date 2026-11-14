@@ -26,6 +26,10 @@ public sealed class SettingsViewModel : ObservableObject
     private void Load(AppSettings s)
     {
         IntervalSeconds = s.UpdateIntervalMs / 1000.0;
+        CpuIntervalSeconds = s.CpuIntervalMs / 1000.0;
+        GpuIntervalSeconds = s.GpuIntervalMs / 1000.0;
+        RamIntervalSeconds = s.RamIntervalMs / 1000.0;
+        OtherIntervalSeconds = s.OtherIntervalMs / 1000.0;
         RunAtStartup = s.RunAtStartup;
         StartMinimized = s.StartMinimized;
         ShowTemperatures = s.ShowTemperatures;
@@ -126,6 +130,12 @@ public sealed class SettingsViewModel : ObservableObject
         Persist();
     }
 
+    private double _cpuIntervalSeconds; public double CpuIntervalSeconds { get => _cpuIntervalSeconds; set { if (_cpuIntervalSeconds != value) { _cpuIntervalSeconds = value; AutoSave(); } } }
+    private double _gpuIntervalSeconds; public double GpuIntervalSeconds { get => _gpuIntervalSeconds; set { if (_gpuIntervalSeconds != value) { _gpuIntervalSeconds = value; AutoSave(); } } }
+    private double _ramIntervalSeconds; public double RamIntervalSeconds { get => _ramIntervalSeconds; set { if (_ramIntervalSeconds != value) { _ramIntervalSeconds = value; AutoSave(); } } }
+    private double _otherIntervalSeconds; public double OtherIntervalSeconds { get => _otherIntervalSeconds; set { if (_otherIntervalSeconds != value) { _otherIntervalSeconds = value; AutoSave(); } } }
+    // 0 means "same as the general interval"; anything else is clamped to the supported range.
+    private static int PerComponentMs(double seconds) => seconds < 0.25 ? 0 : (int)Math.Clamp(seconds * 1000, 250, 60000);
     private double _intervalSeconds; public double IntervalSeconds { get => _intervalSeconds; set { if (_intervalSeconds != value) { _intervalSeconds = value; AutoSave(); } } }
     private bool _runAtStartup; public bool RunAtStartup { get => _runAtStartup; set { if (_runAtStartup != value) { _runAtStartup = value; AutoSave(); } } }
     private bool _startMinimized; public bool StartMinimized { get => _startMinimized; set { if (_startMinimized != value) { _startMinimized = value; AutoSave(); } } }
@@ -252,6 +262,10 @@ public sealed class SettingsViewModel : ObservableObject
     {
         var s = _service.Current;
         s.UpdateIntervalMs = (int)Math.Clamp(IntervalSeconds * 1000, 250, 60000);
+        s.CpuIntervalMs = PerComponentMs(CpuIntervalSeconds);
+        s.GpuIntervalMs = PerComponentMs(GpuIntervalSeconds);
+        s.RamIntervalMs = PerComponentMs(RamIntervalSeconds);
+        s.OtherIntervalMs = PerComponentMs(OtherIntervalSeconds);
         s.RunAtStartup = RunAtStartup;
         s.StartMinimized = StartMinimized;
         s.ShowTemperatures = ShowTemperatures;
