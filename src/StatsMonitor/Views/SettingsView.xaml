@@ -37,7 +37,7 @@
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Accent}"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Foreground" Value="{DynamicResource OnAccent}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -148,7 +148,7 @@
             <StackPanel>
                 <DockPanel>
                     <Border DockPanel.Dock="Right" CornerRadius="10" Padding="10,2" Background="{DynamicResource Accent}" VerticalAlignment="Center">
-                        <TextBlock x:Name="ModeBadge" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="ModeBadge" Foreground="{DynamicResource OnAccent}" FontSize="11" FontWeight="SemiBold"/>
                     </Border>
                     <TextBlock Text="{h:Tr '👁  Pré-visualização'}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </DockPanel>

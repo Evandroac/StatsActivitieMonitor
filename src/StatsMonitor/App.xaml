@@ -52,7 +52,7 @@
                             <StackPanel Orientation="Horizontal" Background="Transparent">
                                 <Border x:Name="Box" Width="18" Height="18" CornerRadius="5" BorderThickness="1.5"
                                         Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource ControlBorder}" VerticalAlignment="Center">
-                                    <Path x:Name="Tick" Data="M3.5,9 L7.5,13 L14.5,5" Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round"
+                                    <Path x:Name="Tick" Data="M3.5,9 L7.5,13 L14.5,5" Stroke="{DynamicResource OnAccent}" StrokeThickness="2" StrokeStartLineCap="Round"
                                           StrokeEndLineCap="Round" StrokeLineJoin="Round" Visibility="Collapsed" Stretch="Uniform" Margin="3"/>
                                 </Border>
                                 <ContentPresenter Margin="9,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True"/>

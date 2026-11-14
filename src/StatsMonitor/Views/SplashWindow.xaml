@@ -1,10 +1,10 @@
-<Window x:Class="StatsMonitor.Views.SplashWindow"
+﻿<Window x:Class="StatsMonitor.Views.SplashWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Stats Monitor" Width="520" Height="340" WindowStartupLocation="CenterScreen"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        FontFamily="{DynamicResource AppFont}" WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
         ShowInTaskbar="False" Topmost="True">
-    <Border CornerRadius="16" Margin="14" Background="#0F141C" BorderBrush="#243044" BorderThickness="1">
+    <Border CornerRadius="16" Margin="14" Background="{DynamicResource WindowBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
         <Border.Effect>
             <DropShadowEffect BlurRadius="24" ShadowDepth="0" Opacity="0.6" Color="Black"/>
         </Border.Effect>
@@ -18,35 +18,35 @@
                 <Border Width="44" Height="44" CornerRadius="12">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#22D3EE" Offset="0"/>
-                            <GradientStop Color="#6366F1" Offset="1"/>
+                            <GradientStop Color="{DynamicResource AccentColor}" Offset="0"/>
+                            <GradientStop Color="{DynamicResource Accent2Color}" Offset="1"/>
                         </LinearGradientBrush>
                     </Border.Background>
                     <TextBlock Text="📊" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
                 <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="Stats Monitor" Foreground="#F3F6FB" FontSize="22" FontWeight="SemiBold"/>
-                    <TextBlock x:Name="SubtitleText" Foreground="#8A97AB" FontSize="12"/>
+                    <TextBlock Text="Stats Monitor" Foreground="{DynamicResource TextPrimary}" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="SubtitleText" Foreground="{DynamicResource TextSecondary}" FontSize="12"/>
                 </StackPanel>
             </StackPanel>
 
-            <Border Grid.Row="1" Margin="0,18,0,14" CornerRadius="8" Background="#0A0E14" BorderBrush="#1B2536" BorderThickness="1">
+            <Border Grid.Row="1" Margin="0,18,0,14" CornerRadius="8" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
                 <ScrollViewer x:Name="LogScroll" VerticalScrollBarVisibility="Hidden" Padding="12,8">
-                    <TextBlock x:Name="LogText" Foreground="#9FB0C8" FontFamily="Consolas" FontSize="11.5" TextWrapping="Wrap" LineHeight="17"/>
+                    <TextBlock x:Name="LogText" Foreground="{DynamicResource TextSecondary}" FontFamily="Consolas" FontSize="11.5" TextWrapping="Wrap" LineHeight="17"/>
                 </ScrollViewer>
             </Border>
 
             <StackPanel Grid.Row="2">
                 <Grid Margin="0,0,0,6">
-                    <TextBlock x:Name="StatusText" Foreground="#D5DEEB" FontSize="12"/>
-                    <TextBlock x:Name="PercentText" Foreground="#22D3EE" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                    <TextBlock x:Name="StatusText" Foreground="{DynamicResource TextPrimary}" FontSize="12"/>
+                    <TextBlock x:Name="PercentText" Foreground="{DynamicResource Accent}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                 </Grid>
-                <Border Height="6" CornerRadius="3" Background="#1B2536" ClipToBounds="True">
+                <Border Height="6" CornerRadius="3" Background="{DynamicResource TrackBrush}" ClipToBounds="True">
                     <Border x:Name="Fill" HorizontalAlignment="Left" Width="0" CornerRadius="3">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="#22D3EE" Offset="0"/>
-                                <GradientStop Color="#6366F1" Offset="1"/>
+                                <GradientStop Color="{DynamicResource AccentColor}" Offset="0"/>
+                                <GradientStop Color="{DynamicResource Accent2Color}" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.Background>
                     </Border>

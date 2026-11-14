@@ -35,6 +35,13 @@ public static class ThemeHelper
         var cardNow = Application.Current.Resources["CardBg"] is SolidColorBrush cb ? cb.Color : Colors.Gray;
         cardNow.A = 255;
         Application.Current.Resources["PopupBg"] = Frozen(cardNow);
+
+        // Text/icons drawn on top of the accent color must contrast with it, whatever the theme or override.
+        var accentNow = Application.Current.Resources["Accent"] is SolidColorBrush ab ? ab.Color : Colors.DodgerBlue;
+        var accent2Now = Application.Current.Resources["Accent2"] is SolidColorBrush ab2 ? ab2.Color : Colors.MediumPurple;
+        Application.Current.Resources["OnAccent"] = Frozen(ContrastText(accentNow));
+        Application.Current.Resources["AccentColor"] = accentNow;
+        Application.Current.Resources["Accent2Color"] = accent2Now;
         Application.Current.Resources.Remove("GadgetBg");
         if (hc) return;
         var baseColor = s.ColorOverrides.TryGetValue("GadgetBg", out var gh) && TryParseColor(gh, out var gc)
@@ -73,6 +80,23 @@ public static class ThemeHelper
         res["CardEdge"] = edge;
         res["CardEffect"] = shadow;
     }
+
+    public static double Luminance(Color c)
+    {
+        static double L(byte v) { var x = v / 255.0; return x <= 0.03928 ? x / 12.92 : Math.Pow((x + 0.055) / 1.055, 2.4); }
+        return 0.2126 * L(c.R) + 0.7152 * L(c.G) + 0.0722 * L(c.B);
+    }
+
+    public static double ContrastRatio(Color a, Color b)
+    {
+        double l1 = Luminance(a), l2 = Luminance(b);
+        return (Math.Max(l1, l2) + 0.05) / (Math.Min(l1, l2) + 0.05);
+    }
+
+    /// <summary>Near-black or white, whichever reads better over <paramref name="background"/>.</summary>
+    public static Color ContrastText(Color background) =>
+        ContrastRatio(background, Colors.White) >= ContrastRatio(background, Color.FromRgb(0x11, 0x11, 0x11))
+            ? Colors.White : Color.FromRgb(0x11, 0x11, 0x11);
 
     public static readonly string[] ColorKeys =
         ["WindowBg", "CardBg", "CardBorder", "TextPrimary", "TextSecondary", "TrackBrush", "Accent", "Accent2", "GadgetText"];

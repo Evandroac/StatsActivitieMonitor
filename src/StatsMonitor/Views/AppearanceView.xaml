@@ -14,7 +14,7 @@
                                 <ContentPresenter/>
                             </Border>
                             <Border x:Name="Badge" Visibility="Collapsed" Width="20" Height="20" CornerRadius="10" Background="{DynamicResource Accent}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,6,6,0">
-                                <TextBlock Text="✓" Foreground="White" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="✓" Foreground="{DynamicResource OnAccent}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>

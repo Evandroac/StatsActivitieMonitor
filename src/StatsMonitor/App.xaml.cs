@@ -39,6 +39,7 @@ public partial class App : Application
         if (settings.IsFirstRun) { settings.Current.Language = SettingsService.DetectLanguage(); settings.Save(); }
         Loc.SetLanguage(settings.Current.Language);
 
+        ThemeHelper.Apply(settings.Current);
         var splash = new SplashWindow();
         if (settings.Current.ShowSplash) splash.Show();
         async Task Step(string pt, string en, double pct)
