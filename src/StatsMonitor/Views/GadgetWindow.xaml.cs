@@ -39,6 +39,9 @@ public partial class GadgetWindow : Window
         keepTop.Tick += (_, _) =>
         {
             if (!IsVisible) return;
+            bool exclusive = SHQueryUserNotificationState(out int qs) == 0 && qs == 3;
+            if (exclusive && !_exclusiveWarned) ExclusiveFullscreenDetected?.Invoke(this, EventArgs.Empty);
+            _exclusiveWarned = exclusive;
             var h = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             if (h != IntPtr.Zero) SetWindowPos(h, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010 | 0x0040);
         };
@@ -52,6 +55,13 @@ public partial class GadgetWindow : Window
     private bool IsCorner => Mode is GadgetDisplayMode.TopLeft or GadgetDisplayMode.TopRight or GadgetDisplayMode.BottomLeft or GadgetDisplayMode.BottomRight;
     private bool IsHorizontalRow => Mode == GadgetDisplayMode.FloatingBar || IsEdge;
     private bool IsFixedPosition => IsEdge || IsCorner;
+
+    private bool _exclusiveWarned;
+    /// <summary>Raised once per episode when a game runs in exclusive fullscreen, where no window can be drawn above it.</summary>
+    public event EventHandler? ExclusiveFullscreenDetected;
+
+    [DllImport("shell32.dll")]
+    private static extern int SHQueryUserNotificationState(out int state);
 
     public void ShowGadget()
     {

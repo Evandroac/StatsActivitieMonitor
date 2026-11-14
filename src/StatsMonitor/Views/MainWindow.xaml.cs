@@ -264,6 +264,13 @@ public partial class MainWindow : Window
     {
         _gadget = gadget;
         gadget.RestoreRequested += (_, _) => RestoreFromGadget();
+        gadget.ExclusiveFullscreenDetected += (_, _) =>
+        {
+            if (!_settings.Current.NotifyAlerts) return;
+            _tray?.ShowBalloonTip(10000, Loc.T("Gadget oculto pelo jogo"),
+                Loc.T("O jogo está em tela cheia exclusiva e o Windows não permite exibir o gadget sobre ele. Use o modo janela sem bordas (borderless) para ver o gadget."),
+                System.Windows.Forms.ToolTipIcon.Warning);
+        };
     }
 
     /// <summary>Shows the gadget while minimized (or always, if configured) and when enabled in settings.</summary>
