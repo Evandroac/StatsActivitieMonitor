@@ -208,7 +208,7 @@ public sealed class DiagnosticsView : UserControl
 
     private Button Pill(string text, RoutedEventHandler click)
     {
-        var b = new Button { Content = text, HorizontalContentAlignment = HorizontalAlignment.Left, Style = (Style?)Res("PillButton"), Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(14, 7, 14, 7) };
+        var b = new Button { Content = text, HorizontalContentAlignment = HorizontalAlignment.Left, Style = (Style?)Res("PillButton"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(14, 7, 14, 7) };
         b.Click += click;
         return b;
     }
@@ -231,7 +231,8 @@ public sealed class DiagnosticsView : UserControl
             g.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             var l = new TextBlock { Text = f.Label, Opacity = 0.7, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 8, 2) };
             bool na = f.Value.StartsWith("Indispon", StringComparison.OrdinalIgnoreCase) || f.Value.StartsWith("Unavail", StringComparison.OrdinalIgnoreCase);
-            var v = new TextBlock { Text = f.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2), Foreground = na ? Warn : null, IsHitTestVisible = true };
+            var v = new TextBlock { Text = f.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2), IsHitTestVisible = true };
+            if (na) v.Foreground = Warn;
             if (na) v.ToolTip = L("Dado indisponível: não é tratado como saudável.", "Unavailable data: not treated as healthy.");
             Grid.SetRow(l, r); Grid.SetRow(v, r); Grid.SetColumn(v, 1);
             g.Children.Add(l); g.Children.Add(v); r++;
