@@ -80,9 +80,9 @@
                     <TextBlock FontSize="10.5" Opacity="0.7" Text="{Binding Gpu.ClockText, Mode=OneWay}"/>
                     <c:Sparkline Height="26" Margin="0,3,0,0" Values="{Binding Gpu.History}" Stroke="{DynamicResource Accent2}"/>
                 </StackPanel>
-                <StackPanel x:Name="DDisk" Width="176">
+                <StackPanel x:Name="DDisk" Width="240">
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
-                    <TextBlock FontSize="10.5" Opacity="0.7" TextWrapping="Wrap" LineHeight="14" Text="{Binding Disk.IoText, Mode=OneWay}"/>
+                    <TextBlock FontSize="10.5" Opacity="0.7" Text="{Binding Disk.IoText, Mode=OneWay}"/>
                     <c:Sparkline Height="26" Margin="0,3,0,0" Values="{Binding Disk.History}" Stroke="{DynamicResource Accent}"/>
                 </StackPanel>
                 <StackPanel x:Name="DNet" Width="176">

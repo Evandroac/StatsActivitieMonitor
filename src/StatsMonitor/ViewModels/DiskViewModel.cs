@@ -48,7 +48,7 @@ public sealed class DiskViewModel : ObservableObject
         }
         double? top = s.Disks.Select(d => d.Activity).Where(a => a.HasValue).DefaultIfEmpty(null).Max();
         History.RemoveAt(0); History.Add(top ?? 0);
-        IoText = s.Disks.Count == 0 ? NA : $"{Loc.T("Leitura")} {Speed(s.Disks.Sum(d => d.ReadBps ?? 0))}\n{Loc.T("Escrita")} {Speed(s.Disks.Sum(d => d.WriteBps ?? 0))}";
+        IoText = s.Disks.Count == 0 ? NA : $"{Loc.T("Leitura")} {Speed(s.Disks.Sum(d => d.ReadBps ?? 0))} · {Loc.T("Escrita")} {Speed(s.Disks.Sum(d => d.WriteBps ?? 0))}";
         LoadText = s.Disks.Select(d => d.Activity).Where(a => a.HasValue).DefaultIfEmpty(null).Max() is { } m ? $"{m:0}%" : NA;
     }
 
