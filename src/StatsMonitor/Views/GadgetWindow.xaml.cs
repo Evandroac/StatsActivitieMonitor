@@ -177,7 +177,7 @@ public partial class GadgetWindow : Window
 
     private void UpdateTools(bool hover)
     {
-        Tools.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
+        Tools.Visibility = BtnLock.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
     }
 
