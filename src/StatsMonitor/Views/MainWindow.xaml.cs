@@ -481,7 +481,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
@@ -581,6 +581,7 @@ public partial class MainWindow : Window
             case SearchPage.Main: ShowMain(); break;
             case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false, Component: null }) OnOpenSystem(this, new RoutedEventArgs()); break;
             case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
+            case SearchPage.Help: if (PageHost.Content is not HelpView) OnOpenHelp(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Appearance: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Component when r.Kind is { } kind:
@@ -619,7 +620,7 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavPeripherals, NavSettings }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavPeripherals, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenComponent(object sender, RoutedEventArgs e)
@@ -631,6 +632,8 @@ public partial class MainWindow : Window
     private void OnOpenSystem(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(), NavSystem);
 
     private void OnOpenPeripherals(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(peripherals: true), NavPeripherals);
+
+    private void OnOpenHelp(object sender, RoutedEventArgs e) => ShowPage(new HelpView(), NavHelp);
 
     private void OnOpenSettings(object sender, RoutedEventArgs e) => OpenSettings(null);
 
