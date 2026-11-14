@@ -6,6 +6,24 @@
         SizeToContent="WidthAndHeight" FontFamily="Consolas"
         ToolTip="{h:Tr 'Duplo clique para abrir'}">
     <Window.Resources>
+        <Style x:Key="GadgetToolButton" TargetType="Button">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="B" CornerRadius="5" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+                            <TextBlock Text="{TemplateBinding Content}" FontFamily="Segoe UI Emoji,Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource Accent}"/></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
             <Setter Property="TextAlignment" Value="Center"/>
@@ -25,6 +43,7 @@
             </Style>
         </Border.Style>
         <Grid>
+          <Grid x:Name="Body">
             <StackPanel x:Name="FloatingPanel" HorizontalAlignment="Center">
                 <TextBlock x:Name="FCpu" FontSize="13">
                     <Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
@@ -95,6 +114,17 @@
                     <Run Text="{h:Tr 'NET ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
             </StackPanel>
+          </Grid>
+          <StackPanel x:Name="Tools" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-6,-10,0" Visibility="Collapsed">
+              <Button x:Name="BtnLock" Style="{StaticResource GadgetToolButton}" Content="🔓" Click="OnToggleLock"/>
+              <Button x:Name="BtnFade" Style="{StaticResource GadgetToolButton}" Content="👁" Margin="0,2,0,0" Click="OnToggleFade"/>
+          </StackPanel>
+          <Thumb x:Name="Grip" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="14" Height="14" Margin="0,0,-10,-6" Cursor="SizeNWSE" Visibility="Collapsed"
+                 DragDelta="OnGripDelta" DragCompleted="OnGripDone" MouseDoubleClick="OnGripReset">
+              <Thumb.Template>
+                  <ControlTemplate TargetType="Thumb"><Border Background="Transparent"><TextBlock Text="◢" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Opacity="0.7"/></Border></ControlTemplate>
+              </Thumb.Template>
+          </Thumb>
         </Grid>
     </Border>
 </Window>

@@ -27,8 +27,12 @@ public partial class GadgetWindow : Window
         UiScale.Changed += () => { UiScale.Apply(Root); if (IsVisible) Reposition(); };
         vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.FpsActive) && IsVisible) { ApplyMode(); Reposition(); } };
 
-        Loc.LanguageChanged += () => { if (IsVisible) { ApplyMode(); Reposition(); } };
+        Loc.LanguageChanged += () => { ApplyLockAndFade(); if (IsVisible) { ApplyMode(); Reposition(); } };
         MouseLeftButtonDown += OnMouseDown;
+        MouseEnter += (_, _) => UpdateTools(true);
+        MouseLeave += (_, _) => UpdateTools(false);
+        ApplyScale();
+        ApplyLockAndFade();
         LocationChanged += (_, _) => SavePosition();
         SizeChanged += (_, _) => { if (IsVisible && IsFixedPosition) Reposition(); };
 
@@ -136,6 +140,69 @@ public partial class GadgetWindow : Window
         Left = Math.Clamp(left, SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth - ActualWidth);
         Top = Math.Clamp(top, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight - ActualHeight);
     }
+    private const double FadedOpacity = 0.12;
+
+    private void ApplyScale()
+    {
+        var s = Math.Clamp(_settings.Current.GadgetScale, 0.5, 3);
+        Body.LayoutTransform = new ScaleTransform(s, s);
+    }
+
+    private void ApplyLockAndFade()
+    {
+        var s = _settings.Current;
+        BtnLock.Content = s.GadgetLocked ? "🔒" : "🔓";
+        BtnLock.ToolTip = Loc.T(s.GadgetLocked ? "Gadget fixo: clique para liberar posição e tamanho" : "Fixar o gadget (bloqueia posição e tamanho)");
+        BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
+        Opacity = s.GadgetFaded ? FadedOpacity : 1;
+        Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
+        UpdateTools(IsMouseOver);
+    }
+
+    private void UpdateTools(bool hover)
+    {
+        Tools.Visibility = hover ? Visibility.Visible : Visibility.Collapsed;
+        Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void OnToggleLock(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.GadgetLocked = !_settings.Current.GadgetLocked;
+        _settings.Save();
+        ApplyLockAndFade();
+    }
+
+    private void OnToggleFade(object sender, RoutedEventArgs e)
+    {
+        _settings.Current.GadgetFaded = !_settings.Current.GadgetFaded;
+        _settings.Save();
+        ApplyLockAndFade();
+    }
+
+    private void OnGripDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked) return;
+        var cur = _settings.Current.GadgetScale;
+        var next = Math.Clamp(cur * (1 + e.HorizontalChange / Math.Max(60, ActualWidth)), 0.5, 3);
+        _settings.Current.GadgetScale = next;
+        ApplyScale();
+    }
+
+    private void OnGripDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+    {
+        _settings.Save();
+        if (IsFixedPosition) Reposition();
+    }
+
+    private void OnGripReset(object sender, MouseButtonEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked) return;
+        _settings.Current.GadgetScale = 1;
+        _settings.Save();
+        ApplyScale();
+        e.Handled = true;
+    }
+
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2)
@@ -143,7 +210,7 @@ public partial class GadgetWindow : Window
             RestoreRequested?.Invoke(this, EventArgs.Empty);
             return;
         }
-        if (IsFixedPosition) return;
+        if (IsFixedPosition || _settings.Current.GadgetLocked) return;
         try { DragMove(); } catch (InvalidOperationException) { }
     }
 
