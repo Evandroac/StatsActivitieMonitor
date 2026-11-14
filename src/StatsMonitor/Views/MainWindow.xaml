@@ -126,10 +126,10 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel MinWidth="130" Margin="0,0,14,6">
+                                <Border Style="{StaticResource Tile}" MinWidth="130"><StackPanel>
                                     <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}"/>
                                     <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Value}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/></StackPanel>
-                                </StackPanel>
+                                </StackPanel></Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -311,12 +311,12 @@
                             <StackPanel Margin="0,4,0,6">
                                 <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Name}" h:Copy.Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" VerticalAlignment="Center"/></StackPanel>
                                 <WrapPanel>
-                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Temperatura'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Temp}"/></StackPanel>
-                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Leitura'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Read}"/></StackPanel>
-                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Escrita'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Write}"/></StackPanel>
-                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Tempo de atividade'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Activity}"/></StackPanel>
-                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Saúde SMART'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Health}"/></StackPanel>
-                                    <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Vida útil'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Life}"/></StackPanel>
+                                    <Border Style="{StaticResource Tile}" MinWidth="100" Margin="0,0,8,8" Padding="10,6"><StackPanel><TextBlock Text="{h:Tr 'Temperatura'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Temp}"/></StackPanel></Border>
+                                    <Border Style="{StaticResource Tile}" MinWidth="100" Margin="0,0,8,8" Padding="10,6"><StackPanel><TextBlock Text="{h:Tr 'Leitura'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Read}"/></StackPanel></Border>
+                                    <Border Style="{StaticResource Tile}" MinWidth="100" Margin="0,0,8,8" Padding="10,6"><StackPanel><TextBlock Text="{h:Tr 'Escrita'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Write}"/></StackPanel></Border>
+                                    <Border Style="{StaticResource Tile}" MinWidth="100" Margin="0,0,8,8" Padding="10,6"><StackPanel><TextBlock Text="{h:Tr 'Tempo de atividade'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Activity}"/></StackPanel></Border>
+                                    <Border Style="{StaticResource Tile}" MinWidth="100" Margin="0,0,8,8" Padding="10,6"><StackPanel><TextBlock Text="{h:Tr 'Saúde SMART'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Health}"/></StackPanel></Border>
+                                    <Border Style="{StaticResource Tile}" MinWidth="100" Margin="0,0,8,8" Padding="10,6"><StackPanel><TextBlock Text="{h:Tr 'Vida útil'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Life}"/></StackPanel></Border>
                                 </WrapPanel>
 <StackPanel Visibility="{Binding DataContext.ShowChart, ElementName=VramCard, Converter={StaticResource BoolToVis}}">
 <TextBlock Text="{h:Tr 'Atividade'}" Style="{StaticResource Caption}" Margin="0,4,0,0"/>
@@ -344,14 +344,14 @@
                     <ProgressBar Height="14" Minimum="0" Maximum="100" Value="{Binding Percent, Mode=OneWay}" Foreground="{Binding LevelBrush}" Background="{DynamicResource TrackBrush}" BorderThickness="0" VerticalAlignment="Center" AutomationProperties.Name="{h:Tr 'Nível de carga'}"/>
                 </DockPanel>
                 <WrapPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8"><TextBlock Text="{h:Tr 'Fonte de alimentação'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding SourceText}" FontSize="16"/></StackPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8"><TextBlock Text="{h:Tr 'Tempo restante'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding RemainingText}" FontSize="16"/></StackPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8"><TextBlock Text="{h:Tr 'Tempo para carga completa'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding ToFullText}" FontSize="16" TextWrapping="Wrap"/></StackPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8">
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel><TextBlock Text="{h:Tr 'Fonte de alimentação'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding SourceText}" FontSize="16"/></StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel><TextBlock Text="{h:Tr 'Tempo restante'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding RemainingText}" FontSize="16"/></StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel><TextBlock Text="{h:Tr 'Tempo para carga completa'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding ToFullText}" FontSize="16" TextWrapping="Wrap"/></StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel>
                         <TextBlock Text="{h:Tr 'Estado de conservação'}" Style="{StaticResource Caption}"/>
                         <StackPanel Orientation="Horizontal"><Ellipse Width="10" Height="10" Fill="{Binding HealthBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding HealthText}" FontSize="16"/></StackPanel>
                         <TextBlock Text="{Binding CapacityText}" Style="{StaticResource Caption}" TextWrapping="Wrap"/>
-                    </StackPanel>
+                    </StackPanel></Border>
                 </WrapPanel>
             </StackPanel>
         </Border>
@@ -376,27 +376,27 @@
                     <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Rede / Internet'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" CommandParameter="Network" Click="OnShortcut"/></StackPanel>
                 </DockPanel>
                 <WrapPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8">
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel>
                         <TextBlock Text="{h:Tr '↓ Download'}" Style="{StaticResource Caption}"/>
                         <TextBlock Text="{Binding Download}" FontSize="20" FontWeight="SemiBold"/>
                         <TextBlock Style="{StaticResource Caption}" Text="{Binding TotalReceived, StringFormat=Sessão: {0}}"/>
-                    </StackPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8">
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel>
                         <TextBlock Text="{h:Tr '↑ Upload'}" Style="{StaticResource Caption}"/>
                         <TextBlock Text="{Binding Upload}" FontSize="20" FontWeight="SemiBold"/>
                         <TextBlock Style="{StaticResource Caption}" Text="{Binding TotalSent, StringFormat=Sessão: {0}}"/>
-                    </StackPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8">
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel>
                         <TextBlock Text="{h:Tr 'Latência'}" Style="{StaticResource Caption}"/>
                         <TextBlock Text="{Binding Latency}" FontSize="20" FontWeight="SemiBold"/>
                         <TextBlock Style="{StaticResource Caption}" Text="{Binding Link, StringFormat=Link: {0}}"/>
-                    </StackPanel>
-                    <StackPanel Width="200" Margin="0,0,12,8">
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="200"><StackPanel>
                         <TextBlock Text="{h:Tr 'Conexão'}" Style="{StaticResource Caption}"/>
                         <TextBlock Text="{Binding Adapter}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Adapter}" VerticalAlignment="Center"/>
                         <StackPanel Orientation="Horizontal"><TextBlock h:Copy.Text="{Binding Ip}" ToolTip="{h:Tr 'Clique para copiar'}" Style="{StaticResource Caption}" Text="{Binding Ip, StringFormat=IP: {0}}" VerticalAlignment="Center"/></StackPanel>
                         <StackPanel Orientation="Horizontal"><TextBlock h:Copy.Text="{Binding Gateway}" ToolTip="{h:Tr 'Clique para copiar'}" Style="{StaticResource Caption}" Text="{Binding Gateway, StringFormat=Gateway: {0}}" VerticalAlignment="Center"/></StackPanel>
-                    </StackPanel>
+                    </StackPanel></Border>
                 </WrapPanel>
             </StackPanel>
         </Border>
@@ -411,11 +411,11 @@
                     <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Width="220" Margin="0,0,12,8">
+                            <Border Style="{StaticResource Tile}" Width="220"><StackPanel>
                                 <TextBlock Text="{Binding Category}" Style="{StaticResource Caption}"/>
                                 <TextBlock Text="{Binding Value}" FontSize="18" FontWeight="SemiBold"/>
                                 <TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/>
-                            </StackPanel>
+                            </StackPanel></Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -426,21 +426,21 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10"><TextBlock Text="📈" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Status do sistema'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/></StackPanel>
                 <WrapPanel>
-                    <StackPanel Width="220" Margin="0,0,12,8">
+                    <Border Style="{StaticResource Tile}" Width="220"><StackPanel>
                         <StackPanel Orientation="Horizontal"><TextBlock Text="⏱️" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Tempo ligado'}" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
                         <TextBlock Text="{Binding UptimeText}" FontSize="16"/>
-                    </StackPanel>
-                    <StackPanel Width="220" Margin="0,0,12,8">
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="220"><StackPanel>
                         <StackPanel Orientation="Horizontal"><TextBlock Text="🔄" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Última atualização'}" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
                         <TextBlock Text="{Binding LastUpdateText}" FontSize="16"/>
-                    </StackPanel>
-                    <StackPanel Width="220" Margin="0,0,12,8">
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="220"><StackPanel>
                         <StackPanel Orientation="Horizontal"><TextBlock Text="🩺" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Status do hardware'}" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="{Binding StatusBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <TextBlock Text="{Binding StatusText}" FontSize="16"/>
                         </StackPanel>
-                    </StackPanel>
+                    </StackPanel></Border>
                 </WrapPanel>
                 <TextBlock Text="{Binding SensorNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,8,0,0"
                            Foreground="{DynamicResource TextSecondary}"/>
