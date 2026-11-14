@@ -24,7 +24,7 @@ src/StatsMonitor
 
 ## Telas principais
 
-- **Principal / Sistema / CPU / GPU / Memória / Discos / Rede / Sensores / Periféricos:** leituras em tempo real, com intervalo de atualização individual por componente e pesquisa geral.
+- **Principal / Sistema e periféricos (página unificada com filtro) / CPU / GPU / Memória / Discos / Rede / Sensores:** leituras em tempo real, com intervalo de atualização individual por componente e pesquisa geral.
 - **Bateria (notebooks):** nível, status, tempo restante, tempo para carga completa, saúde e fonte de energia.
 - **Processos:** visão estilo Gerenciador de Tarefas (árvore, CPU/RAM/disco/rede, filtros, ordenação, finalizar/reiniciar, gráfico timeline).
 - **Testes de conexão:** diagnóstico, ping, traceroute, DNS, portas, HTTP e velocidade.

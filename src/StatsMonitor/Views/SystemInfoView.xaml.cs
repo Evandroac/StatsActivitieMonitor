@@ -12,14 +12,47 @@ public partial class SystemInfoView : UserControl
 
     private Func<Task> _load = () => Task.CompletedTask;
 
-    public bool IsPeripherals { get; }
+    private string _filter = "all";
+
+    /// <summary>Filters the unified page: "all", "system" or "peripherals".</summary>
+    public void ShowSection(string section)
+    {
+        _filter = section;
+        FilterAll.IsChecked = section == "all";
+        FilterSystem.IsChecked = section == "system";
+        FilterPeripherals.IsChecked = section == "peripherals";
+        ApplyFilter();
+    }
+
+    private void OnFilter(object sender, RoutedEventArgs e)
+    {
+        if (sender is RadioButton { Tag: string tag } && tag != _filter) { _filter = tag; ApplyFilter(); }
+    }
+
+    private void ApplyFilter()
+    {
+        if (Component is not null) { Groups.ItemsSource = _groups; return; }
+        var shown = _groups.Where(g => _filter == "all" || g.Section == _filter).ToList();
+        var view = new System.Windows.Data.ListCollectionView(shown);
+        view.GroupDescriptions.Add(new System.Windows.Data.PropertyGroupDescription(nameof(InfoGroup.Section)));
+        Groups.ItemsSource = view;
+        EmptyHint.Visibility = shown.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        CountText.Text = Loc.T("{0} grupos · {1} itens", shown.Count, shown.Sum(g => g.Lines.Count));
+    }
+
+    private static async Task<List<InfoGroup>> LoadUnified()
+    {
+        var system = await SystemInfoService.GetAsync();
+        var peripherals = await PeripheralInfoService.GetAsync();
+        return [.. system.Select(g => g with { Section = "system" }), .. peripherals.Select(g => g with { Section = "peripherals" })];
+    }
 
     private async void OnRescan(object sender, RoutedEventArgs e)
     {
         RescanPanelButton.IsEnabled = false;
         try
         {
-            if (!IsPeripherals) SystemInfoService.Invalidate();
+            if (Component is null) SystemInfoService.Invalidate();
             ComponentDetailService.Invalidate();
             await _load();
         }
@@ -147,21 +180,19 @@ public partial class SystemInfoView : UserControl
 
     private void SampleCharts() { foreach (var s in _series) s.Tick(); }
 
-    public SystemInfoView(bool peripherals = false) : this(
-        () => Loc.T(peripherals ? "Periféricos" : "Sistema"),
-        () => peripherals ? PeripheralInfoService.GetAsync() : SystemInfoService.GetAsync(),
-        peripherals, null, peripherals) { }
+    public SystemInfoView() : this(
+        () => Loc.T("Sistema e periféricos"), LoadUnified, null, false) { }
 
     public SystemInfoView(ComponentKind kind, Func<StatsMonitor.Models.HardwareSnapshot?> snap, Func<NetworkSnapshot?> net) : this(
         () => ComponentDetailService.Title(kind),
         () => ComponentDetailService.GetAsync(kind, snap(), net()),
-        false, kind, true, (snap, net)) { }
+        kind, true, (snap, net)) { }
 
-    private SystemInfoView(Func<string> title, Func<Task<List<InfoGroup>>> loader, bool peripherals, ComponentKind? comp, bool twoColumns, (Func<StatsMonitor.Models.HardwareSnapshot?> snap, Func<NetworkSnapshot?> net)? chartSrc = null)
+    private SystemInfoView(Func<string> title, Func<Task<List<InfoGroup>>> loader, ComponentKind? comp, bool twoColumns, (Func<StatsMonitor.Models.HardwareSnapshot?> snap, Func<NetworkSnapshot?> net)? chartSrc = null)
     {
         InitializeComponent();
-        IsPeripherals = peripherals;
         Component = comp;
+        FilterBar.Visibility = comp is null ? Visibility.Visible : Visibility.Collapsed;
         if (comp is { } ck && chartSrc is not null)
         {
             _series = BuildSeries(ck, chartSrc.Value.snap, chartSrc.Value.net);
@@ -208,7 +239,8 @@ public partial class SystemInfoView : UserControl
         if (!same)
         {
             _groups = fresh;
-            Groups.ItemsSource = _groups;
+            ApplyFilter();
+            if (Component is not null) Groups.ItemsSource = _groups;
             return;
         }
         for (int i = 0; i < _groups.Count; i++)

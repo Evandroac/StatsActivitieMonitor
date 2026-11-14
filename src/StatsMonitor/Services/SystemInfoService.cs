@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace StatsMonitor.Services;
 
-public sealed record InfoGroup(string Title, List<InfoLine> Lines);
+public sealed record InfoGroup(string Title, List<InfoLine> Lines, string Section = "");
 /// <summary>CopyText is the text the copy button puts on the clipboard; null hides the button.</summary>
 public sealed class InfoLine : System.ComponentModel.INotifyPropertyChanged
 {

@@ -132,12 +132,12 @@ public static class SearchIndex
             Add(SearchPage.Main, "Principal › Bateria", "Bateria", "Nível de carga", "Status da bateria", "Tempo restante", "Tempo para carga completa",
                 "Estado de conservação", "Fonte de alimentação", "Capacidade atual (carga máxima)", "Capacidade original (projeto)", "Ciclos de carga", "Economia de bateria");
         Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível");
-        Add(SearchPage.System, "Sistema", "Sistema");
+        Add(SearchPage.System, "Sistema", "Sistema", "Sistema e periféricos");
         Add(SearchPage.Processes, "Processos", [.. StatsMonitor.Views.ProcessesView.Keywords]);
         Add(SearchPage.Diagnostics, "Diagnóstico do computador", [.. StatsMonitor.Views.DiagnosticsView.Keywords]);
         Add(SearchPage.NetTools, "Testes de conexão", [.. StatsMonitor.Views.NetworkToolsView.Keywords]);
         Add(SearchPage.Help, "Ajuda", ["Ajuda e tutorial", .. StatsMonitor.Views.HelpView.SectionTitles]);
-        Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");
+        Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Sistema e periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");
         Add(SearchPage.Settings, "Configurações", "Configurações");
         Add(SearchPage.Appearance, "Personalização", "Personalização");
         return list;

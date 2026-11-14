@@ -40,8 +40,8 @@ public partial class HelpView : UserControl
               "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
         ]);
         Card("🧭", 1, [
-            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Periféricos, Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",
-              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Peripherals, Processes, Connection tests, Computer diagnostic and Settings. The app version is shown below the Settings button."),
+            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema e periféricos (com filtro Tudo/Sistema/Periféricos), CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",
+              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System and peripherals (with an All/System/Peripherals filter), CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Processes, Connection tests, Computer diagnostic and Settings. The app version is shown below the Settings button."),
             L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada.",
               "🔍 Search: type a term to jump straight to the information or option you want."),
             L("📋 Copiar: clique em qualquer valor ou rótulo para copiá-lo. Uma mensagem rápida confirma a cópia.",
