@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -65,12 +65,10 @@ public sealed class PetsView : UserControl
     private static readonly Random Rng = new();
     private readonly List<PetData> _pets = PetStore.Load();
     private readonly List<Sprite> _sprites = [];
-    private readonly Canvas _field = new() { ClipToBounds = true, MinHeight = 300, Height = 320 };
-    private readonly StackPanel _list = new();
-    private readonly TextBox _name = new() { MaxLength = 20, Width = 170, Margin = new Thickness(0, 0, 8, 0), VerticalContentAlignment = VerticalAlignment.Center };
-    private readonly ComboBox _species = new() { Width = 150, Margin = new Thickness(0, 0, 8, 0) };
-    private readonly TextBox _custom = new() { MaxLength = 8, Width = 90, Margin = new Thickness(0, 0, 8, 0), VerticalContentAlignment = VerticalAlignment.Center };
-    private readonly TextBlock _status = new() { Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8), TextWrapping = TextWrapping.Wrap };
+    private readonly Canvas _field = new() { ClipToBounds = true, Height = 96 };
+    private readonly TextBox _name = new() { MaxLength = 20, VerticalContentAlignment = VerticalAlignment.Center };
+    private readonly ComboBox _species = new() { Width = 56, Margin = new Thickness(4, 0, 0, 0) };
+    private readonly TextBlock _status = new() { Opacity = 0.8, FontSize = 11, Margin = new Thickness(0, 0, 0, 4), TextWrapping = TextWrapping.Wrap };
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(40) };
     private Point? _food;
     private TextBlock? _foodVisual;
@@ -86,46 +84,40 @@ public sealed class PetsView : UserControl
 
     private void Build()
     {
-        var root = new StackPanel();
-        root.Children.Add(new TextBlock { Text = "🐾 " + L("Pets", "Pets"), FontSize = 20, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 4) });
-        root.Children.Add(new TextBlock
-        {
-            Text = L("Adicione bichinhos com nome para fazer companhia enquanto você espera, por exemplo durante um diagnóstico do computador (ele continua rodando em segundo plano). Clique em um pet para fazer carinho.",
-                     "Add named pets to keep you company while you wait, for example during a computer diagnostic (it keeps running in the background). Click a pet to cuddle it."),
-            TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 10),
-        });
+        var root = new StackPanel { Margin = new Thickness(6, 4, 6, 4) };
+        var head = new DockPanel { Margin = new Thickness(0, 0, 0, 4) };
+        var feed = MakeButton("🍖", (_, _) => Feed(), false);
+        feed.ToolTip = L("Alimentar os pets", "Feed the pets");
+        DockPanel.SetDock(feed, Dock.Right);
+        head.Children.Add(feed);
+        head.Children.Add(new TextBlock { Text = "🐾 Pets", FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
+        root.Children.Add(head);
         root.Children.Add(_status);
 
-        var add = new WrapPanel { Margin = new Thickness(0, 0, 0, 10) };
-        _species.Items.Clear();
-        foreach (var s in Species) _species.Items.Add($"{s.Emoji}  {L(s.Pt, s.En)}");
-        if (_species.SelectedIndex < 0) _species.SelectedIndex = 0;
-        _name.ToolTip = L("Nome do pet", "Pet name");
-        _custom.ToolTip = L("Emoji personalizado (opcional): cole ou digite qualquer emoji para usar no lugar da espécie", "Custom emoji (optional): paste or type any emoji to use instead of the species");
-        _name.KeyDown -= OnNameKey; _name.KeyDown += OnNameKey;
-        add.Children.Add(Label(L("Nome", "Name"))); add.Children.Add(Detach(_name));
-        add.Children.Add(Label(L("Espécie", "Species"))); add.Children.Add(Detach(_species));
-        add.Children.Add(Label(L("Emoji próprio", "Own emoji"))); add.Children.Add(Detach(_custom));
-        add.Children.Add(MakeButton("➕  " + L("Adicionar", "Add"), OnAdd, true));
-        root.Children.Add(add);
-
-        var actions = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 8) };
-        actions.Children.Add(MakeButton("🍖  " + L("Alimentar", "Feed"), (_, _) => Feed(), false));
-        root.Children.Add(actions);
-
-        var frame = new Border { CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1), Child = Detach(_field), Margin = new Thickness(0, 0, 0, 12) };
-        frame.SetResourceReference(Border.BackgroundProperty, "CardBg");
+        var frame = new Border { CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1), Child = Detach(_field), Margin = new Thickness(0, 0, 0, 6) };
+        frame.SetResourceReference(Border.BackgroundProperty, "Background");
         frame.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
         root.Children.Add(frame);
 
-        root.Children.Add(new TextBlock { Text = L("Seus pets", "Your pets"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 6) });
-        root.Children.Add(Detach(_list));
+        _species.Items.Clear();
+        foreach (var s in Species) _species.Items.Add(new ComboBoxItem { Content = s.Emoji, ToolTip = L(s.Pt, s.En), FontFamily = new FontFamily("Segoe UI Emoji") });
+        if (_species.SelectedIndex < 0) _species.SelectedIndex = 0;
+        _name.ToolTip = L("Nome do pet (Enter adiciona). Botão direito em um pet o remove.", "Pet name (Enter adds). Right-click a pet to remove it.");
+        _name.KeyDown -= OnNameKey; _name.KeyDown += OnNameKey;
+        var add = new DockPanel();
+        var plus = MakeButton("➕", OnAdd, true);
+        plus.ToolTip = L("Adicionar pet", "Add pet");
+        plus.Margin = new Thickness(4, 0, 0, 0);
+        DockPanel.SetDock(plus, Dock.Right);
+        DockPanel.SetDock(_species, Dock.Right);
+        add.Children.Add(plus);
+        add.Children.Add(Detach(_species));
+        add.Children.Add(Detach(_name));
+        root.Children.Add(add);
 
-        Content = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = root, Padding = new Thickness(0, 0, 12, 0) };
-        RefreshList();
+        Content = root;
         if (IsLoaded) { _field.Children.Clear(); _sprites.Clear(); SyncSprites(); }
     }
-
     private static T Detach<T>(T el) where T : FrameworkElement
     {
         if (el.Parent is Panel p) p.Children.Remove(el);
@@ -133,11 +125,9 @@ public sealed class PetsView : UserControl
         return el;
     }
 
-    private static TextBlock Label(string t) => new() { Text = t, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 6, 0), Opacity = 0.8 };
-
-    private static Button MakeButton(string text, RoutedEventHandler click, bool primary)
+        private static Button MakeButton(string text, RoutedEventHandler click, bool primary)
     {
-        var b = new Button { Content = text, Padding = new Thickness(12, 5, 12, 5), Margin = new Thickness(0, 0, 8, 0), Cursor = Cursors.Arrow };
+        var b = new Button { Content = text, Padding = new Thickness(7, 2, 7, 2), Margin = new Thickness(0), Cursor = Cursors.Arrow };
         if (Application.Current.TryFindResource(primary ? "PrimaryButton" : "PillButton") is Style st) b.Style = st;
         b.Click += click;
         return b;
@@ -150,39 +140,11 @@ public sealed class PetsView : UserControl
         string name = _name.Text.Trim();
         if (name.Length == 0) { _name.Focus(); return; }
         if (_pets.Count >= PetStore.MaxPets) { _status.Text = L($"Limite de {PetStore.MaxPets} pets atingido.", $"Limit of {PetStore.MaxPets} pets reached."); return; }
-        string emoji = _custom.Text.Trim();
-        if (emoji.Length == 0) emoji = Species[Math.Max(0, _species.SelectedIndex)].Emoji;
+        string emoji = Species[Math.Max(0, _species.SelectedIndex)].Emoji;
         _pets.Add(new PetData(name, emoji));
         PetStore.Save(_pets);
-        _name.Clear(); _custom.Clear();
-        RefreshList();
+        _name.Clear();
         SyncSprites();
-    }
-
-    private void RefreshList()
-    {
-        _list.Children.Clear();
-        if (_pets.Count == 0)
-        {
-            _list.Children.Add(new TextBlock { Text = L("Nenhum pet ainda. Dê um nome e adicione o primeiro!", "No pets yet. Give it a name and add the first one!"), Opacity = 0.7 });
-            return;
-        }
-        var wrap = new WrapPanel();
-        foreach (var p in _pets.ToList())
-        {
-            var row = new StackPanel { Orientation = Orientation.Horizontal };
-            row.Children.Add(new TextBlock { Text = p.Emoji, FontSize = 18, FontFamily = new FontFamily("Segoe UI Emoji"), Margin = new Thickness(0, 0, 6, 0), VerticalAlignment = VerticalAlignment.Center });
-            row.Children.Add(new TextBlock { Text = p.Name, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0) });
-            var del = new Button { Content = "🗑", ToolTip = L("Remover pet", "Remove pet"), Padding = new Thickness(6, 2, 6, 2), Cursor = Cursors.Arrow };
-            if (Application.Current.TryFindResource("PillButton") is Style st) del.Style = st;
-            del.Click += (_, _) => { _pets.Remove(p); PetStore.Save(_pets); RefreshList(); SyncSprites(); };
-            row.Children.Add(del);
-            var card = new Border { CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1), Padding = new Thickness(10, 6, 8, 6), Margin = new Thickness(0, 0, 8, 8), Child = row };
-            card.SetResourceReference(Border.BackgroundProperty, "CardBg");
-            card.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
-            wrap.Children.Add(card);
-        }
-        _list.Children.Add(wrap);
     }
 
     // ---------- playground ----------
@@ -190,15 +152,15 @@ public sealed class PetsView : UserControl
     private void SyncSprites()
     {
         foreach (var sp in _sprites.Where(s => !_pets.Contains(s.Data)).ToList()) { _field.Children.Remove(sp.Root); _sprites.Remove(sp); }
-        double w = Math.Max(200, _field.ActualWidth > 0 ? _field.ActualWidth : 600), h = _field.Height;
+        double w = Math.Max(120, _field.ActualWidth > 0 ? _field.ActualWidth : 160), h = _field.Height;
         foreach (var p in _pets.Where(p => _sprites.All(s => s.Data != p)))
         {
             var flip = new ScaleTransform(1, 1);
             var hop = new TranslateTransform();
             var group = new TransformGroup();
             group.Children.Add(flip); group.Children.Add(hop);
-            var face = new TextBlock { Text = p.Emoji, FontSize = 40, FontFamily = new FontFamily("Segoe UI Emoji"), RenderTransform = group, RenderTransformOrigin = new Point(0.5, 0.5), HorizontalAlignment = HorizontalAlignment.Center };
-            var label = new TextBlock { Text = p.Name, FontSize = 12, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, Padding = new Thickness(6, 1, 6, 1) };
+            var face = new TextBlock { Text = p.Emoji, FontSize = 24, FontFamily = new FontFamily("Segoe UI Emoji"), RenderTransform = group, RenderTransformOrigin = new Point(0.5, 0.5), HorizontalAlignment = HorizontalAlignment.Center };
+            var label = new TextBlock { Text = p.Name, FontSize = 10, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, Padding = new Thickness(4, 0, 4, 0) };
             var tag = new Border { CornerRadius = new CornerRadius(8), Child = label, HorizontalAlignment = HorizontalAlignment.Center, Opacity = 0.9 };
             tag.SetResourceReference(Border.BackgroundProperty, "CardBorder");
             var root = new StackPanel { Cursor = Cursors.Arrow, Background = Brushes.Transparent };
@@ -206,12 +168,13 @@ public sealed class PetsView : UserControl
             var sp = new Sprite
             {
                 Data = p, Root = root, Face = face, Flip = flip, Hop = hop,
-                X = Rng.NextDouble() * (w - 80), Y = 30 + Rng.NextDouble() * (h - 110),
+                X = Rng.NextDouble() * Math.Max(1, w - 50), Y = Rng.NextDouble() * Math.Max(1, h - 60),
                 Speed = 1.2 + Rng.NextDouble() * 1.6, Phase = Rng.NextDouble() * 6,
             };
             sp.TX = sp.X; sp.TY = sp.Y;
             root.MouseLeftButtonDown += (_, e) => { Cuddle(sp); e.Handled = true; };
             ToolTipService.SetToolTip(root, p.Name);
+            root.MouseRightButtonUp += (_, e) => { _pets.Remove(p); PetStore.Save(_pets); SyncSprites(); e.Handled = true; };
             _field.Children.Add(root);
             _sprites.Add(sp);
             Canvas.SetLeft(root, sp.X); Canvas.SetTop(root, sp.Y);
@@ -221,7 +184,7 @@ public sealed class PetsView : UserControl
     private void Tick()
     {
         var st = Views.DiagnosticsView.Status;
-        _status.Text = st is null ? "" : "🩺 " + L("Diagnóstico em andamento: ", "Diagnostic in progress: ") + st;
+        _status.Text = st is null ? "" : "🩺 " + st;
         _status.Visibility = st is null ? Visibility.Collapsed : Visibility.Visible;
 
         double w = _field.ActualWidth, h = _field.ActualHeight;
@@ -241,7 +204,7 @@ public sealed class PetsView : UserControl
                     if (s.Eating) { s.Eating = false; s.Excite = 1; Heart(s, "😋"); }
                     s.Pause = 25 + Rng.Next(90);
                     s.TX = Rng.NextDouble() * Math.Max(1, w - sw);
-                    s.TY = 20 + Rng.NextDouble() * Math.Max(1, h - sh - 20);
+                    s.TY = Rng.NextDouble() * Math.Max(1, h - sh);
                 }
                 else
                 {
