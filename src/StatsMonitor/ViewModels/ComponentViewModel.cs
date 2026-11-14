@@ -43,7 +43,16 @@ public sealed class ComponentViewModel : ObservableObject
     private static readonly Brush LoadOk = Frozen("#3FB950"), LoadMid = Frozen("#F5A623"), LoadHigh = Frozen("#FF5252");
     private static Brush Frozen(string hex) { var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex)); b.Freeze(); return b; }
     /// <summary>Usage indicator color: green below 60%, orange below 85%, red above.</summary>
-    public Brush LoadBrush => _load < 60 ? LoadOk : _load < 85 ? LoadMid : LoadHigh;
+    public Brush LoadBrush
+    {
+        get
+        {
+            bool light = Application.Current?.Resources["GadgetBg"] is SolidColorBrush bg
+                && (0.299 * bg.Color.R + 0.587 * bg.Color.G + 0.114 * bg.Color.B) > 150;
+            return _load < 60 ? (light ? LoadOkLight : LoadOk) : _load < 85 ? (light ? LoadMidLight : LoadMid) : (light ? LoadHighLight : LoadHigh);
+        }
+    }
+    private static readonly Brush LoadOkLight = Frozen("#1A7F37"), LoadMidLight = Frozen("#B35900"), LoadHighLight = Frozen("#CF222E");
     public string LoadText { get => _loadText; private set => Set(ref _loadText, value); }
     public string TempText
     {
