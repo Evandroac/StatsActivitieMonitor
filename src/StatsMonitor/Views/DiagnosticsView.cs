@@ -109,6 +109,12 @@ public sealed class DiagnosticsView : UserControl
         {
             var snap = _vm.LastSnapshot;
             var ses = DiagnosticRunner.NewSession(false, snap);
+            if (_cur.Inventory.Collected.Count == 0)
+            {
+                var quick = DiagnosticRunner.NewSession(false, snap);
+                quick.Inventory = await Task.Run(() => InventoryCollector.CollectBasics(snap));
+                if (!_running && _cur.Inventory.Collected.Count == 0) { _cur = quick; if (_sec == 0) Show(0); }
+            }
             ses.Inventory = await Task.Run(() => InventoryCollector.CollectAll(snap, null));
             ses.Model = ses.Inventory.S("hardware.model") ?? "";
             DiagnosticEngine.Analyze(ses, snap, Limits);
@@ -270,14 +276,20 @@ public sealed class DiagnosticsView : UserControl
     private void Overview()
     {
         var inv = _cur.Inventory;
-        string S(string k) => inv.S(k) ?? InventoryCollector.NA;
+        string pending = _loading ? L("Coletando…", "Collecting…") : InventoryCollector.NA;
+        string S(string k) => inv.S(k) is { Length: > 0 } v ? v : pending;
+        string Hw(string pt) => inv.Sections.TryGetValue(Comp.Hardware, out var hw) && hw.FirstOrDefault(x => x.Label == L(pt, pt == "Placa-mãe" ? "Motherboard" : "BIOS date")) is { } fact ? fact.Value : pending;
         var ident = new List<Fact>
         {
-            new(L("Computador", "Computer"), Environment.MachineName),
-            new(L("Fabricante / modelo", "Manufacturer / model"), $"{S("hardware.maker")} {S("hardware.model")}"),
-            new(L("Sistema", "System"), $"{S("os.caption")} (build {S("os.build")})"),
+            new(L("Computador", "Computer"), inv.S("hardware.name") is { Length: > 0 } cn ? cn : Environment.MachineName),
+            new(L("Fabricante", "Manufacturer"), S("hardware.maker")),
+            new(L("Modelo", "Model"), S("hardware.model")),
+            new(L("Placa-mãe", "Motherboard"), Hw("Placa-mãe")),
+            new(L("Data da BIOS", "BIOS date"), Hw("Data da BIOS")),
+            new(L("Usuário", "User"), Environment.UserName),
+            new(L("Sistema", "System"), inv.S("os.caption") is { Length: > 0 } oc ? $"{oc} (build {S("os.build")})" : pending),
             new(L("Processador", "Processor"), S("cpu.name")),
-            new("RAM", inv.N("memory.totalGb") is { } m ? $"{m:0.0} GB" : InventoryCollector.NA),
+            new("RAM", inv.N("memory.totalGb") is { } m ? $"{m:0.0} GB" : pending),
             new(L("Placa de vídeo", "Graphics"), S("gpu.name")),
             new(L("Administrador", "Administrator"), _vm.LastSnapshot?.IsElevated == true ? L("Sim", "Yes") : L("Não — alguns sensores/dados ficam indisponíveis", "No — some sensors/data stay unavailable")),
         };
