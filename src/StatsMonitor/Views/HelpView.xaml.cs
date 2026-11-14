@@ -46,6 +46,7 @@ public partial class HelpView : UserControl
     public HelpView(int? topic)
     {
         InitializeComponent();
+        Scroll.ScrollChanged += OnScrollChanged;
         _initialTopic = topic;
         Loaded += (_, _) =>
         {
@@ -69,6 +70,7 @@ public partial class HelpView : UserControl
         Host.Children.Clear();
         NavHost.Children.Clear();
         _navButtons.Clear();
+        _navCards.Clear();
         _jumps.Clear();
         _cards.Clear();
         var navTitle = new TextBlock { Text = L("TÓPICOS", "TOPICS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) };
@@ -277,7 +279,28 @@ public partial class HelpView : UserControl
         _jumps[titleIndex] = Jump;
         _cards[titleIndex] = border;
         _navButtons.Add(btn);
+        _navCards.Add(border);
         NavHost.Children.Add(btn);
+    }
+
+    private readonly List<Border> _navCards = [];
+
+    // Highlights the topic whose card is currently at the top of the page.
+    private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        if (_navCards.Count == 0 || (e.VerticalChange == 0 && e.ExtentHeightChange == 0)) return;
+        int current = 0;
+        for (int i = 0; i < _navCards.Count; i++)
+        {
+            if (!_navCards[i].IsDescendantOf(Scroll)) continue;
+            if (_navCards[i].TranslatePoint(new Point(0, 0), Scroll).Y <= 40) current = i;
+        }
+        if (Scroll.ScrollableHeight > 0 && Scroll.VerticalOffset >= Scroll.ScrollableHeight - 1) current = _navCards.Count - 1;
+        for (int i = 0; i < _navButtons.Count; i++)
+        {
+            object? want = i == current ? "active" : null;
+            if (!Equals(_navButtons[i].Tag, want)) _navButtons[i].Tag = want;
+        }
     }
 
     /// <summary>A bullet row; a short lead-in ("Topic:" or a question) is highlighted so the text can be scanned quickly.</summary>
