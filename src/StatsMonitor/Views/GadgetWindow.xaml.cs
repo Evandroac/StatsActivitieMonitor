@@ -206,11 +206,22 @@ public partial class GadgetWindow : Window
         ApplyLockAndFade();
     }
 
+    private double _gripStartX, _gripStartScale, _gripStartWidth;
+
+    private void OnGripStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+    {
+        _gripStartX = Grip.PointToScreen(Mouse.GetPosition(Grip)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
+        _gripStartScale = _settings.Current.GadgetScale;
+        _gripStartWidth = Math.Max(60, ActualWidth);
+    }
+
+    // Scale is derived from the absolute cursor position, not incremental deltas, so resizing the window cannot feed back into the drag.
     private void OnGripDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
     {
         if (_settings.Current.GadgetLocked) return;
-        var cur = _settings.Current.GadgetScale;
-        var next = Math.Clamp(cur * (1 + e.HorizontalChange / Math.Max(60, ActualWidth)), 0.5, 3);
+        double x = Grip.PointToScreen(Mouse.GetPosition(Grip)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
+        var next = Math.Clamp(_gripStartScale * (1 + (x - _gripStartX) / _gripStartWidth), 0.5, 3);
+        if (Math.Abs(next - _settings.Current.GadgetScale) < 0.005) return;
         _settings.Current.GadgetScale = next;
         ApplyScale();
     }
