@@ -11,7 +11,7 @@ public partial class HelpView : UserControl
     public static readonly string[] SectionTitles =
     [
         "O que é o Stats Monitor", "Como usar", "Gadget e bandeja do sistema", "Alertas", "Economia de recursos",
-        "Ressalvas importantes", "Perguntas frequentes",
+        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos",
     ];
 
     public HelpView()
@@ -40,8 +40,8 @@ public partial class HelpView : UserControl
               "✔ Data stays on your computer. The app does not upload readings. Its only connection is a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access."),
         ]);
         Card("🧭", 1, [
-            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Periféricos e Configurações.",
-              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Peripherals and Settings."),
+            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Periféricos, Processos e Configurações. A versão do app aparece abaixo do botão de Configurações.",
+              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Peripherals, Processes and Settings. The app version is shown below the Settings button."),
             L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada.",
               "🔍 Search: type a term to jump straight to the information or option you want."),
             L("📋 Copiar: clique em qualquer valor ou rótulo para copiá-lo. Uma mensagem rápida confirma a cópia.",
@@ -52,6 +52,20 @@ public partial class HelpView : UserControl
               "⚙️ Settings: update interval (general and per component), visible panels, temperature limits, appearance, font size, language, °C/°F unit and profiles (Gaming, Work, Quiet)."),
             L("🎨 Cores: verde, amarelo e vermelho indicam normal, atenção e crítico, de acordo com os limites que você definiu.",
               "🎨 Colors: green, yellow and red mean normal, attention and critical, based on the limits you set."),
+        ]);
+        Card("⚙️", 7, [
+            L("Funciona como o Gerenciador de Tarefas: lista os processos com ícone, nome, status e uso de CPU, memória, disco e rede. Processos com subprocessos aparecem em árvore.",
+              "Works like Task Manager: lists processes with icon, name, status and CPU, memory, disk and network usage. Processes with child processes appear as a tree."),
+            L("Pesquisa e filtros: busque por nome, PID ou caminho e filtre por tipo e status. Ordene por qualquer coluna (clique no cabeçalho) ou pelo seletor, por exemplo do maior para o menor uso de CPU.",
+              "Search and filters: search by name, PID or path and filter by type and status. Sort by any column (click the header) or with the selector, for example highest CPU first."),
+            L("Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias entre os cabeçalhos para ajustar a largura das colunas.",
+              "Headers: show the total % used in each column. Drag the dividers between headers to resize columns."),
+            L("Painel de ações (à esquerda): expandir/recolher tudo, finalizar tarefa, finalizar árvore, reiniciar, alterar prioridade, abrir o local do arquivo e copiar o caminho. O menu do botão direito também funciona. Clicar em área vazia remove a seleção.",
+              "Actions panel (left): expand/collapse all, end task, end tree, restart, change priority, open file location and copy path. The right-click menu also works. Clicking an empty area clears the selection."),
+            L("Gráfico de linha do tempo: abaixo da lista, mostra o histórico recente de cada processo, cada um com uma cor própria (a mesma barra colorida da linha). Escolha a métrica (CPU, memória, disco ou rede). Ao selecionar um processo, a linha dele é destacada.",
+              "Timeline chart: below the list, shows the recent history of each process in its own color (the same colored bar as in its row). Pick the metric (CPU, memory, disk or network). Selecting a process highlights its line."),
+            L("Ressalvas: processos críticos do Windows e o próprio app não podem ser finalizados. Disco e rede por processo são estimativas, e a rede exige administrador.",
+              "Caveats: critical Windows processes and the app itself cannot be ended. Per-process disk and network are estimates, and network requires administrator."),
         ]);
         Card("🪟", 2, [
             L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante, na barra de tarefas, barra flutuante e acoplado ao topo.",

@@ -190,6 +190,7 @@ public static class LocData
         ["Processos"] = "Processes",
         ["Gerenciador de tarefas"] = "Task Manager",
         ["Finalizar tarefa"] = "End task",
+        ["Tela de Processos"] = "Processes screen",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",
