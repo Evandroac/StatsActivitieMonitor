@@ -31,7 +31,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         ApplySettings();
         _monitor.SnapshotUpdated += OnSnapshot;
         _monitor.ErrorOccurred += OnError;
-        Loc.LanguageChanged += () => { if (_last is { } l) Apply(l); if (_lastNet is { } n) Network.Update(n); };
+        Loc.LanguageChanged += () => { if (_last is { } l) Apply(l); if (_lastNet is { } n) Network.Update(n); Battery.Refresh(); };
         Units.Changed += () => { if (_last is { } l) Apply(l); };
     }
 
@@ -79,6 +79,11 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public ComponentViewModel Ram { get; }
     public DiskViewModel Disk { get; } = new();
     public NetworkViewModel Network { get; } = new();
+    public BatteryViewModel Battery { get; } = new();
+    public bool HasBattery => Services.BatteryService.HasBattery;
+    private readonly Services.BatteryAlertNotifier _batteryAlerts = new();
+    private System.Windows.Threading.DispatcherTimer? _batteryTimer;
+    private bool _batteryBusy;
     public System.Collections.ObjectModel.ObservableCollection<SensorLine> SensorLines { get; } = new();
     public bool HasSensors => SensorLines.Count > 0;
     public string UptimeText { get => _uptimeText; private set => Set(ref _uptimeText, value); }
@@ -101,6 +106,32 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _monitor.Start();
         _network.SnapshotUpdated += OnNetwork;
         _network.Start();
+        StartBattery();
+    }
+
+    private void StartBattery()
+    {
+        if (!HasBattery) return;
+        _batteryTimer = new System.Windows.Threading.DispatcherTimer { Interval = BatteryPeriod() };
+        _batteryTimer.Tick += async (_, _) => await RefreshBatteryAsync();
+        _batteryTimer.Start();
+        _ = RefreshBatteryAsync();
+    }
+
+    private TimeSpan BatteryPeriod() => TimeSpan.FromSeconds(_eco ? 30 : 5);
+
+    private async Task RefreshBatteryAsync()
+    {
+        if (_batteryBusy) return;
+        _batteryBusy = true;
+        try
+        {
+            var info = await Task.Run(() => Services.BatteryService.ReadCached(TimeSpan.Zero));
+            Battery.Update(info);
+            foreach (var a in _batteryAlerts.Evaluate(info, S)) { Services.AlertHistory.Add(a); AlertRaised?.Invoke(a); }
+        }
+        catch { /* a failed read keeps the previous values */ }
+        finally { _batteryBusy = false; }
     }
 
     private void OnNetwork(object? sender, NetworkSnapshot s)
@@ -158,6 +189,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _eco = eco;
         UpdateInterval();
         _network.SetPeriod(eco ? 5000 : 1000);
+        if (_batteryTimer is not null) _batteryTimer.Interval = BatteryPeriod();
         Helpers.PowerSaver.Apply(eco);
     }
 
@@ -275,6 +307,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         _monitor.SnapshotUpdated -= OnSnapshot;
         _monitor.ErrorOccurred -= OnError;
         _network.SnapshotUpdated -= OnNetwork;
+        _batteryTimer?.Stop();
         _network.Dispose();
     }
 }

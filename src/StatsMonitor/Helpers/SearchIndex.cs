@@ -51,6 +51,7 @@ public static class SearchIndex
         AddGroups(await SystemInfoService.GetAsync(), "Sistema", SearchPage.System);
         foreach (var kind in Enum.GetValues<ComponentKind>())
         {
+            if (kind == ComponentKind.Battery && !BatteryService.HasBattery) continue;
             try { AddComponent(kind, await ComponentDetailService.GetAsync(kind, null, null), Loc.T("Exportar gráficos")); }
             catch { /* a failing component must not break the whole index */ }
         }
@@ -102,7 +103,7 @@ public static class SearchIndex
             "Barra horizontal flutuante (arrastável)", "Faixa fixa no topo da tela", "Não fazer nada (sem gadget)",
             "Pré-visualização do gadget (valores de exemplo)");
         Add(SearchPage.Settings, "Configurações › Painéis exibidos",
-            "Painéis exibidos", "Janela principal", "Gadget (minimizado)", "CPU", "GPU", "Memória RAM", "Discos", "Rede / Internet", "FPS (em jogos)");
+            "Painéis exibidos", "Janela principal", "Gadget (minimizado)", "CPU", "GPU", "Memória RAM", "Discos", "Rede / Internet", "Bateria (notebooks)", "FPS (em jogos)");
         Add(SearchPage.Settings, "Configurações › Alertas de temperatura", "Alertas de temperatura (°C)", "Atenção", "Crítica");
         Add(SearchPage.Settings, "Configurações › Alertas", "Notificar ao passar do limite crítico", "Uso crítico (%):",
             "Tempo acima do limite (s):", "Intervalo mínimo entre avisos (min):", "Histórico de alertas", "Limpar", "Nenhum alerta registrado");
@@ -123,6 +124,9 @@ public static class SearchIndex
         Add(SearchPage.Main, "Principal › Discos", "Leitura", "Escrita", "Saúde SMART", "Vida útil", "Tempo de atividade");
         Add(SearchPage.Main, "Principal › Rede", "Download", "Upload", "Latência", "Conexão");
         Add(SearchPage.Main, "Principal", "Tempo ligado", "Última atualização", "Monitor", "Visualização simplificada");
+        if (BatteryService.HasBattery)
+            Add(SearchPage.Main, "Principal › Bateria", "Bateria", "Nível de carga", "Status da bateria", "Tempo restante", "Tempo para carga completa",
+                "Estado de conservação", "Fonte de alimentação", "Capacidade atual (carga máxima)", "Capacidade original (projeto)", "Ciclos de carga", "Economia de bateria");
         Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível");
         Add(SearchPage.System, "Sistema", "Sistema");
         Add(SearchPage.Processes, "Processos", [.. StatsMonitor.Views.ProcessesView.Keywords]);

@@ -98,6 +98,7 @@ public sealed class AppSettings
     public string GadgetHotkey { get; set; } = "Ctrl+Alt+G";
 
     public bool ShowSensorsMain { get; set; } = true;
+    public bool ShowBatteryMain { get; set; } = true;
 
     public string? ActiveProfile { get; set; }
     public List<SettingsProfile> Profiles { get; set; } = new();

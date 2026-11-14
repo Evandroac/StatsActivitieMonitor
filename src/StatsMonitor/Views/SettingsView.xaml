@@ -210,6 +210,7 @@
                 <CheckBox Content="{h:Tr 'Memória RAM'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowRamMain}"/>
                 <CheckBox Content="{h:Tr 'Discos'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowVramMain}"/>
                 <CheckBox Content="{h:Tr 'Rede / Internet'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowNetworkMain}"/>
+        <CheckBox Content="{h:Tr 'Bateria (notebooks)'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowBatteryMain}" Visibility="{Binding HasBattery, Converter={StaticResource BoolToVis}}"/>
         <CheckBox Content="{h:Tr 'Sensores (ventiladores, energia, tensões, bateria)'}" ToolTip="{h:Tr 'Exibir na janela principal'}" IsChecked="{Binding ShowSensorsMain}"/>
             </StackPanel>
             <StackPanel Grid.Column="1">

@@ -108,6 +108,11 @@ public partial class SystemInfoView : UserControl
                 Rate("Download", () => net()?.DownloadBps ?? 0, a1, Mbps, "bytes/s", 125000),
                 Rate("Upload", () => net()?.UploadBps ?? 0, a2, Mbps, "bytes/s", 125000),
             ],
+            ComponentKind.Battery =>
+            [
+                Pct(T("Nível de carga", "Charge level"), () => BatteryService.Latest.Percent ?? 0, a1),
+                Rate(T("Potência (carga ou consumo)", "Power (charge or draw)"), () => BatteryService.Latest.RateW ?? 0, a2, v => $"{v:0.0} W", "W", 10),
+            ],
             _ => [],
         };
     }

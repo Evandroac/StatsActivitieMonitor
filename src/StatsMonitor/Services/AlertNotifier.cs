@@ -5,13 +5,13 @@ using StatsMonitor.Settings;
 namespace StatsMonitor.Services;
 
 public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad, NoNetwork, NoInternet, NetworkRestored, HighLatency, GreetingMorning, GreetingAfternoon, GreetingNight,
-    CpuTempWarn, GpuTempWarn, CpuLoadWarn, GpuLoadWarn, RamLoadWarn }
+    CpuTempWarn, GpuTempWarn, CpuLoadWarn, GpuLoadWarn, RamLoadWarn, BatteryLow, BatteryCritical }
 
 public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
 {
     public bool IsGreeting => Kind is AlertKind.GreetingMorning or AlertKind.GreetingAfternoon or AlertKind.GreetingNight;
-    public bool IsAttention => Kind is AlertKind.CpuTempWarn or AlertKind.GpuTempWarn or AlertKind.CpuLoadWarn or AlertKind.GpuLoadWarn or AlertKind.RamLoadWarn;
-    public bool IsCritical => Kind is AlertKind.CpuTemp or AlertKind.GpuTemp or AlertKind.CpuLoad or AlertKind.GpuLoad or AlertKind.RamLoad;
+    public bool IsAttention => Kind is AlertKind.CpuTempWarn or AlertKind.GpuTempWarn or AlertKind.CpuLoadWarn or AlertKind.GpuLoadWarn or AlertKind.RamLoadWarn or AlertKind.BatteryLow;
+    public bool IsCritical => Kind is AlertKind.CpuTemp or AlertKind.GpuTemp or AlertKind.CpuLoad or AlertKind.GpuLoad or AlertKind.RamLoad or AlertKind.BatteryCritical;
     public bool IsInfo => Kind == AlertKind.NetworkRestored || IsGreeting;
 
     public string Title => Kind switch
@@ -20,6 +20,8 @@ public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
         AlertKind.NoNetwork or AlertKind.NoInternet => Loc.T("Sem conexão"),
         AlertKind.NetworkRestored => Loc.T("Conexão restabelecida"),
         AlertKind.HighLatency => Loc.T("Rede instável"),
+        AlertKind.BatteryLow => Loc.T("Bateria fraca"),
+        AlertKind.BatteryCritical => Loc.T("Bateria crítica"),
         _ when IsAttention => Loc.T("Atenção"),
         AlertKind.GreetingMorning => Loc.T("Bom dia!"),
         AlertKind.GreetingAfternoon => Loc.T("Boa tarde!"),
@@ -34,6 +36,7 @@ public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
         AlertKind.CpuLoadWarn => Loc.T("{0}: {1:0}% de uso (atenção acima de {2:0}%)", "CPU", Value, Limit),
         AlertKind.GpuLoadWarn => Loc.T("{0}: {1:0}% de uso (atenção acima de {2:0}%)", "GPU", Value, Limit),
         AlertKind.RamLoadWarn => Loc.T("{0}: {1:0}% de uso (atenção acima de {2:0}%)", "RAM", Value, Limit),
+        AlertKind.BatteryLow or AlertKind.BatteryCritical => Loc.T("Bateria em {0:0}% (limite {1:0}%). Conecte o carregador.", Value, Limit),
         AlertKind.GreetingMorning => Loc.T("Tenha um ótimo dia! O Stats Monitor está acompanhando seu PC."),
         AlertKind.GreetingAfternoon => Loc.T("Bom resto de dia! O Stats Monitor continua de olho no seu PC."),
         AlertKind.GreetingNight => Loc.T("Boa noite! O Stats Monitor segue monitorando seu PC."),
@@ -207,5 +210,37 @@ public sealed class GreetingNotifier
         if (_last is { } l && l.Day == day && l.Kind == kind) return null;
         _last = (day, kind);
         return new AlertEvent(kind, 0, 0);
+    }
+}
+
+/// <summary>Battery alerts while discharging: attention at 20% and critical at 10%, once per discharge episode.</summary>
+public sealed class BatteryAlertNotifier
+{
+    public const int LowPercent = 20, CriticalPercent = 10, Rearm = 5;
+    private bool _lowFired, _criticalFired;
+
+    public IReadOnlyList<AlertEvent> Evaluate(BatteryInfo b, AppSettings cfg)
+    {
+        var events = new List<AlertEvent>();
+        if (!b.Present || b.Percent is not { } p || b.State != BatteryState.Discharging)
+        {
+            if (b.Present && b.State != BatteryState.Discharging) { _lowFired = false; _criticalFired = false; }
+            return events;
+        }
+        if (p > LowPercent + Rearm) { _lowFired = false; _criticalFired = false; }
+        if (!cfg.NotifyAlerts) return events;
+
+        bool crit = cfg.AlertLevel != "attention", warn = cfg.AlertLevel != "critical";
+        if (p <= CriticalPercent && crit && !_criticalFired)
+        {
+            _criticalFired = _lowFired = true;
+            events.Add(new AlertEvent(AlertKind.BatteryCritical, p, CriticalPercent));
+        }
+        else if (p <= LowPercent && !(p <= CriticalPercent && crit) && warn && !_lowFired)
+        {
+            _lowFired = true;
+            events.Add(new AlertEvent(AlertKind.BatteryLow, p, LowPercent));
+        }
+        return events;
     }
 }

@@ -413,3 +413,53 @@ public class NetworkToolsTests
         Assert.Equal("4.3.2.1.in-addr.arpa", NetworkToolsService.ReverseName(System.Net.IPAddress.Parse("1.2.3.4")));
     }
 }
+
+public class BatteryTests
+{
+    [Fact]
+    public void Estimate_UsesDischargeRateAndChargeRate()
+    {
+        var (rem, _) = BatteryService.Estimate(30000, 50000, 0, 15000, BatteryState.Discharging);
+        Assert.Equal(TimeSpan.FromHours(2), rem);
+        var (_, full) = BatteryService.Estimate(30000, 50000, 20000, 0, BatteryState.Charging);
+        Assert.Equal(TimeSpan.FromHours(1), full);
+        Assert.Equal((null, null), BatteryService.Estimate(30000, 50000, 0, 100, BatteryState.Discharging));
+    }
+
+    [Theory]
+    [InlineData(40000, 50000, 80.0, 0)]
+    [InlineData(35000, 50000, 70.0, 1)]
+    [InlineData(20000, 50000, 40.0, 2)]
+    public void Health_ComparesFullAndDesignCapacity(int full, int design, double pct, int level)
+    {
+        var h = BatteryService.Health(full, design);
+        Assert.Equal(pct, h);
+        Assert.Equal(level, BatteryService.HealthLevel(h));
+        Assert.Null(BatteryService.Health(null, design));
+        Assert.Equal(-1, BatteryService.HealthLevel(null));
+    }
+
+    [Fact]
+    public void ClassifyState_DistinguishesChargingFullAndDischarging()
+    {
+        Assert.Equal(BatteryState.Charging, BatteryService.ClassifyState(60, true, true, false));
+        Assert.Equal(BatteryState.Full, BatteryService.ClassifyState(100, true, true, false));
+        Assert.Equal(BatteryState.PluggedNotCharging, BatteryService.ClassifyState(80, true, false, false));
+        Assert.Equal(BatteryState.Discharging, BatteryService.ClassifyState(50, false, false, true));
+    }
+
+    [Fact]
+    public void BatteryAlerts_FireOncePerDischargeAndRearm()
+    {
+        var n = new BatteryAlertNotifier();
+        var cfg = new AppSettings();
+        BatteryInfo B(int p, BatteryState s) => BatteryInfo.None with { Present = true, Percent = p, State = s, PluggedIn = s != BatteryState.Discharging };
+        Assert.Empty(n.Evaluate(B(50, BatteryState.Discharging), cfg));
+        Assert.Equal(AlertKind.BatteryLow, Assert.Single(n.Evaluate(B(19, BatteryState.Discharging), cfg)).Kind);
+        Assert.Empty(n.Evaluate(B(18, BatteryState.Discharging), cfg));
+        Assert.Equal(AlertKind.BatteryCritical, Assert.Single(n.Evaluate(B(9, BatteryState.Discharging), cfg)).Kind);
+        Assert.Empty(n.Evaluate(B(8, BatteryState.Discharging), cfg));
+        Assert.Empty(n.Evaluate(B(30, BatteryState.Charging), cfg));
+        Assert.Single(n.Evaluate(B(15, BatteryState.Discharging), cfg));
+    }
+}

@@ -11,7 +11,7 @@ public partial class HelpView : UserControl
     public static readonly string[] SectionTitles =
     [
         "O que é o Stats Monitor", "Como usar", "Gadget e bandeja do sistema", "Alertas", "Economia de recursos",
-        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão",
+        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)",
     ];
 
     public HelpView()
@@ -40,8 +40,8 @@ public partial class HelpView : UserControl
               "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
         ]);
         Card("🧭", 1, [
-            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Periféricos, Processos, Testes de conexão e Configurações. A versão do app aparece abaixo do botão de Configurações.",
-              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Peripherals, Processes, Connection tests and Settings. The app version is shown below the Settings button."),
+            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Periféricos, Processos, Testes de conexão e Configurações. A versão do app aparece abaixo do botão de Configurações.",
+              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Peripherals, Processes, Connection tests and Settings. The app version is shown below the Settings button."),
             L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada.",
               "🔍 Search: type a term to jump straight to the information or option you want."),
             L("📋 Copiar: clique em qualquer valor ou rótulo para copiá-lo. Uma mensagem rápida confirma a cópia.",
@@ -66,6 +66,18 @@ public partial class HelpView : UserControl
               "Timeline chart: below the list, shows the recent history of each process in its own color (the same colored bar as in its row). Pick the metric (CPU, memory, disk or network). Selecting a process highlights its line."),
             L("Ressalvas: processos críticos do Windows e o próprio app não podem ser finalizados. Disco e rede por processo são estimativas, e a rede exige administrador.",
               "Caveats: critical Windows processes and the app itself cannot be ended. Per-process disk and network are estimates, and network requires administrator."),
+        ]);
+        Card("🔋", 9, [
+            L("Em notebooks, o app mostra um painel de bateria na tela Principal e uma página própria no menu (🔋). Em desktops, nada disso aparece.",
+              "On laptops, the app shows a battery panel on the Main screen and its own page in the menu (🔋). Desktops show none of this."),
+            L("Nível de carga e status: a porcentagem e se a bateria está carregando, totalmente carregada ou descarregando. Fonte de alimentação: indica se o notebook usa a bateria ou o carregador.",
+              "Charge level and status: the percentage and whether the battery is charging, fully charged or discharging. Power source: whether the laptop runs on battery or on the charger."),
+            L("Tempo restante e tempo para carga completa: estimativas calculadas pela carga atual e pelo consumo (ou velocidade de carga) do momento. Elas variam conforme o uso e aparecem como Calculando… até haver dados.",
+              "Time remaining and time to full charge: estimates based on the current charge and the present draw (or charging speed). They vary with usage and show Calculating… until data is available."),
+            L("Estado de conservação: compara a capacidade atual (carga máxima) com a capacidade original de fábrica. 80% ou mais é Boa, de 60% a 80% é Desgastada e abaixo de 60% é Ruim. A página também mostra ciclos de carga, fabricante e tecnologia, quando o computador informa.",
+              "Battery health: compares the current capacity (full charge) with the original factory capacity. 80% or more is Good, 60% to 80% is Worn and below 60% is Poor. The page also shows charge cycles, manufacturer and chemistry when the computer reports them."),
+            L("Alertas: aviso de bateria fraca (20%, atenção) e crítica (10%) enquanto descarrega, respeitando a sua escolha de alertas. Em modo econômico a bateria é lida a cada 30 s. Nem todo notebook informa capacidade, ciclos ou ritmo de carga; o que faltar aparece como N/D.",
+              "Alerts: low battery (20%, attention) and critical battery (10%) while discharging, following your alert choice. In eco mode the battery is read every 30 s. Not every laptop reports capacity, cycles or charge rate; whatever is missing shows as N/A."),
         ]);
         Card("🌐", 8, [
             L("Ferramentas de rede para diagnosticar problemas de conexão. Nada é executado até você clicar em Executar/Iniciar, e cada teste pode ser interrompido com Parar.",

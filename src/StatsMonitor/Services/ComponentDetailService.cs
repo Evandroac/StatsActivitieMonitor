@@ -8,7 +8,7 @@ using StatsMonitor.Models;
 
 namespace StatsMonitor.Services;
 
-public enum ComponentKind { Cpu, Gpu, Memory, Disk, Network, Sensors }
+public enum ComponentKind { Cpu, Gpu, Memory, Disk, Network, Sensors, Battery }
 
 /// <summary>
 /// Detailed per-component pages (hamburger menu): live values from the latest snapshots plus static hardware
@@ -31,6 +31,7 @@ public static class ComponentDetailService
         ComponentKind.Memory => T("Memória RAM", "RAM memory"),
         ComponentKind.Disk => T("Discos e armazenamento", "Disks and storage"),
         ComponentKind.Network => T("Rede", "Network"),
+        ComponentKind.Battery => T("Bateria", "Battery"),
         _ => T("Sensores", "Sensors"),
     };
 
@@ -43,7 +44,7 @@ public static class ComponentDetailService
             if (!StaticCache.TryGetValue(kind, out task!)) StaticCache[kind] = task = Wmi.RunAsync(() => ReadStatic(kind), Wmi.Unavailable());
         }
         var statics = await task;
-        var live = kind is ComponentKind.Network or ComponentKind.Cpu or ComponentKind.Memory ? await Task.Run(() => Live(kind, snap, net)) : Live(kind, snap, net);
+        var live = kind is ComponentKind.Network or ComponentKind.Cpu or ComponentKind.Memory or ComponentKind.Battery ? await Task.Run(() => Live(kind, snap, net)) : Live(kind, snap, net);
         return [.. live, .. statics];
     }
 
@@ -57,6 +58,7 @@ public static class ComponentDetailService
         ComponentKind.Memory => LiveMemory(s),
         ComponentKind.Disk => LiveDisk(s),
         ComponentKind.Network => LiveNetwork(net),
+        ComponentKind.Battery => LiveBattery(),
         _ => LiveSensors(s),
     };
 
@@ -75,6 +77,61 @@ public static class ComponentDetailService
         }
         catch { return Wmi.Unavailable(); }
     }
+
+    #region Battery
+
+    private static List<InfoGroup> LiveBattery()
+    {
+        var b = BatteryService.ReadCached(TimeSpan.FromSeconds(3));
+        if (!b.Present)
+            return [new(T("Bateria", "Battery"), [new(T("Nenhuma bateria detectada neste computador.", "No battery detected on this computer."), "")])];
+
+        string Dur(TimeSpan? t, string fallback) => t is { } x ? ViewModels.BatteryViewModel.FormatDuration(x) : fallback;
+        string calc = T("Calculando…", "Calculating…");
+        string remaining = b.State == BatteryState.Discharging ? Dur(b.Remaining, calc) : T("Na tomada", "Plugged in");
+        string toFull = b.State switch
+        {
+            BatteryState.Charging => Dur(b.ToFull, calc),
+            BatteryState.Full => T("Totalmente carregada", "Fully charged"),
+            BatteryState.PluggedNotCharging => T("Carregamento pausado", "Charging paused"),
+            _ => T("Não está carregando", "Not charging"),
+        };
+        var vm = new ViewModels.BatteryViewModel();
+        vm.Update(b);
+
+        var state = new List<InfoLine>
+        {
+            new(T("Nível de carga", "Charge level"), vm.PercentText),
+            new(T("Status da bateria", "Battery status"), vm.StatusText),
+            new(T("Fonte de alimentação", "Power source"), vm.SourceText),
+            new(T("Tempo restante", "Time remaining"), remaining),
+            new(T("Tempo para carga completa", "Time to full charge"), toFull),
+            new(b.State == BatteryState.Charging ? T("Potência de carga", "Charging power") : T("Consumo atual", "Current draw"), vm.PowerText),
+            new(T("Economia de bateria", "Battery saver"), b.BatterySaver ? T("Ativada", "On") : T("Desativada", "Off")),
+        };
+
+        var health = new List<InfoLine>
+        {
+            new(T("Estado de conservação", "Battery health"), vm.HealthText),
+            new(T("Capacidade atual (carga máxima)", "Current capacity (full charge)"), b.FullMWh is { } f ? ViewModels.BatteryViewModel.Wh(f) : NA),
+            new(T("Capacidade original (projeto)", "Original (design) capacity"), b.DesignMWh is { } d ? ViewModels.BatteryViewModel.Wh(d) : NA),
+            new(T("Desgaste", "Wear"), b.HealthPercent is { } h ? $"{100 - h:0.#}%" : NA),
+            new(T("Carga armazenada agora", "Stored charge now"), b.RemainingMWh is { } r ? ViewModels.BatteryViewModel.Wh(r) : NA),
+            new(T("Ciclos de carga", "Charge cycles"), b.Cycles is { } c ? c.ToString("N0") : NA),
+        };
+
+        var info = new List<InfoLine>();
+        if (b.Name is not null) info.Add(new(T("Modelo", "Model"), b.Name, b.Name));
+        if (b.Manufacturer is not null) info.Add(new(T("Fabricante", "Manufacturer"), b.Manufacturer));
+        if (b.Chemistry is not null) info.Add(new(T("Tecnologia", "Chemistry"), b.Chemistry));
+        if (b.Volts is { } v) info.Add(new(T("Tensão", "Voltage"), $"{v:0.00} V"));
+
+        var groups = new List<InfoGroup> { new(T("Estado atual", "Current state"), state), new(T("Saúde da bateria", "Battery health"), health) };
+        if (info.Count > 0) groups.Add(new(T("Informações da bateria", "Battery information"), info));
+        return groups;
+    }
+
+    #endregion
 
     #region CPU
 

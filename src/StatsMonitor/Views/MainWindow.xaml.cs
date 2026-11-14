@@ -26,6 +26,7 @@ public partial class MainWindow : Window
         ApplyUiScale();
         UiScale.Changed += ApplyUiScale;
         ChkSimple.IsChecked = settings.Current.SimplifiedView;
+        NavBattery.Visibility = _vm.HasBattery ? Visibility.Visible : Visibility.Collapsed;
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
         Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
@@ -213,6 +214,8 @@ public partial class MainWindow : Window
 
     private string _layoutKey = "";
 
+    private bool ShowBattery(StatsMonitor.Settings.AppSettings s) => s.ShowBatteryMain && _vm.HasBattery;
+
     /// <summary>Lays out the enabled cards in 2 columns on wide windows and 1 column on narrow ones.</summary>
     private void ArrangeCards(bool force = false)
     {
@@ -223,7 +226,7 @@ public partial class MainWindow : Window
             (CpuCard, s.ShowCpuMain), (GpuCard, s.ShowGpuMain), (RamCard, s.ShowRamMain), (VramCard, s.ShowVramMain),
         };
 
-        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}|{(s.ShowSensorsMain ? 1 : 0)}|{(s.SimplifiedView ? 1 : 0)}";
+        string key = $"{cols}|{string.Join("", cards.Select(c => c.show ? 1 : 0))}|{(s.ShowSensorsMain ? 1 : 0)}|{(ShowBattery(s) ? 1 : 0)}|{(s.SimplifiedView ? 1 : 0)}";
         if (!force && key == _layoutKey) return;
         _layoutKey = key;
 
@@ -241,14 +244,16 @@ public partial class MainWindow : Window
             visible++;
         }
         int cardRows = (visible + cols - 1) / cols;
-        for (int r = 0; r < cardRows + 3; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        for (int r = 0; r < cardRows + 4; r++) CardsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
         NetCard.Visibility = s.ShowNetworkMain && !s.SimplifiedView ? Visibility.Visible : Visibility.Collapsed;
         SensorsCard.Visibility = s.ShowSensorsMain && !s.SimplifiedView ? Visibility.Visible : Visibility.Collapsed;
-        Grid.SetRow(NetCard, cardRows);
-        Grid.SetRow(SensorsCard, cardRows + 1);
-        Grid.SetRow(FooterCard, cardRows + 2);
-        foreach (var f in new FrameworkElement[] { NetCard, SensorsCard, FooterCard })
+        BatteryCard.Visibility = ShowBattery(s) ? Visibility.Visible : Visibility.Collapsed;
+        Grid.SetRow(BatteryCard, cardRows);
+        Grid.SetRow(NetCard, cardRows + 1);
+        Grid.SetRow(SensorsCard, cardRows + 2);
+        Grid.SetRow(FooterCard, cardRows + 3);
+        foreach (var f in new FrameworkElement[] { BatteryCard, NetCard, SensorsCard, FooterCard })
         {
             Grid.SetColumn(f, 0);
             Grid.SetColumnSpan(f, cols);
@@ -401,6 +406,14 @@ public partial class MainWindow : Window
             sb.AppendLine(Loc.T("Download: {0} | Upload: {1} | Latência: {2}", n.Download, n.Upload, n.Latency));
             sb.AppendLine(Loc.T("Total recebido: {0} | Total enviado: {1}", n.TotalReceived, n.TotalSent));
         }
+        if (BatteryCard.Visibility == Visibility.Visible)
+        {
+            var b = _vm.Battery;
+            sb.AppendLine().AppendLine($"[{Loc.T("Bateria")}] {b.PercentText} - {b.StatusText}");
+            sb.AppendLine($"{Loc.T("Fonte de alimentação")}: {b.SourceText}");
+            sb.AppendLine($"{Loc.T("Tempo restante")}: {b.RemainingText} | {Loc.T("Tempo para carga completa")}: {b.ToFullText}");
+            sb.AppendLine($"{Loc.T("Estado de conservação")}: {b.HealthText} ({b.CapacityText})");
+        }
         if (SensorsCard.Visibility == Visibility.Visible && _vm.SensorLines.Count > 0)
         {
             sb.AppendLine().AppendLine($"[{Loc.T("Sensores")}]");
@@ -482,7 +495,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblPeripherals.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
@@ -510,7 +523,7 @@ public partial class MainWindow : Window
         {
             StatsMonitor.Services.ComponentKind.Cpu => NavCpu, StatsMonitor.Services.ComponentKind.Gpu => NavGpu,
             StatsMonitor.Services.ComponentKind.Memory => NavRam, StatsMonitor.Services.ComponentKind.Disk => NavDisk,
-            StatsMonitor.Services.ComponentKind.Network => NavNet, _ => NavSensors,
+            StatsMonitor.Services.ComponentKind.Network => NavNet, StatsMonitor.Services.ComponentKind.Battery => NavBattery, _ => NavSensors,
         };
         OnOpenComponent(nav, new RoutedEventArgs());
     }
@@ -623,7 +636,7 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavPeripherals, NavProcesses, NavNetTools, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavBattery, NavPeripherals, NavProcesses, NavNetTools, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenComponent(object sender, RoutedEventArgs e)
