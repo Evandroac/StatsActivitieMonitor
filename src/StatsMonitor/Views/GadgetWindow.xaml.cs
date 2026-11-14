@@ -34,6 +34,15 @@ public partial class GadgetWindow : Window
         ApplyScale();
         ApplyLockAndFade();
         LocationChanged += (_, _) => SavePosition();
+        // Games that go borderless-fullscreen can end up above us; re-assert topmost without activating.
+        var keepTop = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        keepTop.Tick += (_, _) =>
+        {
+            if (!IsVisible) return;
+            var h = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            if (h != IntPtr.Zero) SetWindowPos(h, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010 | 0x0040);
+        };
+        keepTop.Start();
         SizeChanged += (_, _) => { if (IsVisible && IsFixedPosition) Reposition(); };
 
     }
