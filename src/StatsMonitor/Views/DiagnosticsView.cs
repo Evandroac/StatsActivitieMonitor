@@ -53,6 +53,8 @@ public sealed class DiagnosticsView : UserControl
     private TextBlock? _barText;
     private TextBox? _logBox;
     private bool _loading;
+    private string? _diagComp;
+    private string _compNote = "";
 
     public DiagnosticsView(MainViewModel vm)
     {
@@ -169,6 +171,7 @@ public sealed class DiagnosticsView : UserControl
 
     private void Show(int i)
     {
+        if (i != _sec) _compNote = "";
         _sec = i;
         for (int k = 0; k < _nav.Count; k++)
         {
@@ -405,7 +408,11 @@ public sealed class DiagnosticsView : UserControl
         hp.Children.Add(Badge(health));
         _body.Children.Add(hp);
 
-        _body.Children.Add(Pill("🔄  " + L("Diagnosticar este componente", "Diagnose this component"), async (_, _) => await DiagnoseComponentAsync(comp)));
+        bool busy = _diagComp == comp;
+        var diag = Pill(busy ? "⏳  " + L("Diagnosticando…", "Diagnosing…") : "🔄  " + L("Diagnosticar este componente", "Diagnose this component"), async (_, _) => await DiagnoseComponentAsync(comp));
+        diag.IsEnabled = !_running;
+        _body.Children.Add(diag);
+        if (_compNote.Length > 0 && !busy) _body.Children.Add(Cap(_compNote));
         _body.Children.Add(Cap(L("Atualiza a leitura e executa o teste do componente (quando existir).", "Refreshes the reading and runs the component test (when one exists).")));
 
         foreach (var t in _cur.Tests.Where(x => x.Component == comp))
@@ -415,9 +422,11 @@ public sealed class DiagnosticsView : UserControl
 
     private async Task DiagnoseComponentAsync(string comp)
     {
-        if (_running || _loading) return;
-        _loading = true;
+        if (_running) return;
         _cts = new CancellationTokenSource();
+        _diagComp = comp;
+        _compNote = "";
+        Show(_sec);
         try
         {
             var snap = _vm.LastSnapshot;
@@ -436,12 +445,13 @@ public sealed class DiagnosticsView : UserControl
                 _ => null,
             };
             if (r != null) ses.Tests.Add(r);
+            else _compNote = L("Este componente não tem teste de desempenho; a leitura foi atualizada.", "This component has no performance test; the reading was refreshed.");
             DiagnosticEngine.Analyze(ses, snap, Limits);
             Store.Audit($"component diagnostic {comp}");
         }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { Log("✖ " + ex.Message); }
-        finally { _cts?.Dispose(); _cts = null; _loading = false; Show(_sec); }
+        catch (Exception ex) { Log("✖ " + ex.Message); _compNote = "⚠ " + L("Falha no diagnóstico: ", "Diagnostic failed: ") + ex.Message; }
+        finally { _cts?.Dispose(); _cts = null; _diagComp = null; Show(_sec); }
     }
 
     private UIElement TestCard(TestResult t)
