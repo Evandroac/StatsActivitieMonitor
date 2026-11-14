@@ -136,9 +136,13 @@
         <CheckBox ToolTip="{h:Tr 'Mantém o gadget na tela mesmo com a janela principal aberta'}" Content="{h:Tr 'Manter gadget sempre visível'}" IsChecked="{Binding AlwaysShowGadget}"/>
         <TextBlock Text="{h:Tr 'Exibição do gadget ao minimizar'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget compacto ao lado da área de notificação'}" Content="{h:Tr 'Na barra de tarefas, canto direito (widget)'}" IsChecked="{Binding GadgetOnTaskbar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto superior esquerdo da tela'}" Content="{h:Tr 'Canto superior esquerdo'}" IsChecked="{Binding GadgetTopLeft}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto superior direito da tela'}" Content="{h:Tr 'Canto superior direito'}" IsChecked="{Binding GadgetTopRight}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto inferior esquerdo da tela'}" Content="{h:Tr 'Canto inferior esquerdo'}" IsChecked="{Binding GadgetBottomLeft}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto inferior direito da tela'}" Content="{h:Tr 'Canto inferior direito'}" IsChecked="{Binding GadgetBottomRight}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada na parte de baixo da tela'}" Content="{h:Tr 'Faixa fixa na parte inferior da tela'}" IsChecked="{Binding GadgetDockedBottom}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
         <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="{h:Tr 'Mostra como o gadget ficará no modo escolhido, com os indicadores marcados'}">
             <StackPanel>
@@ -164,9 +168,6 @@
                                         <Grid>
                                             <TextBlock Text="⊞" Foreground="#9CC4FF" FontSize="16" VerticalAlignment="Center" Margin="12,0,0,0" HorizontalAlignment="Left"/>
                                             <TextBlock Text="🔊  12:30" Foreground="#CCCCD4" FontSize="11" VerticalAlignment="Center" Margin="0,0,10,0" HorizontalAlignment="Right"/>
-                                            <Border x:Name="TaskbarBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="6" Padding="8,2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,76,0">
-                                                <WrapPanel x:Name="TaskbarPanel" MaxWidth="300"/>
-                                            </Border>
                                         </Grid>
                                     </Border>
                                     <Border x:Name="FloatingBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="10" Padding="12,8" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,24,24,0">
@@ -177,6 +178,9 @@
                                     </Border>
                                     <Border x:Name="TopBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1,0,1,1" CornerRadius="0,0,10,10" Padding="14,5" HorizontalAlignment="Center" VerticalAlignment="Top">
                                         <WrapPanel x:Name="TopPanel" MaxWidth="440"/>
+                                    </Border>
+                                    <Border x:Name="BottomBox" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1,1,1,0" CornerRadius="10,10,0,0" Padding="14,5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,32">
+                                        <WrapPanel x:Name="BottomPanel" MaxWidth="440"/>
                                     </Border>
                                     <Border x:Name="OffBox" Background="#99000000" CornerRadius="8" Padding="12,6" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <TextBlock x:Name="OffText" Text="{h:Tr 'Sem gadget neste modo'}" Foreground="White"/>

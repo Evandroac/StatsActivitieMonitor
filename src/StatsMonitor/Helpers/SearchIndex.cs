@@ -100,7 +100,7 @@ public static class SearchIndex
             "Geral", "Gadget", "Alertas", "Registro de dados", "Personalização", "Perfis", "Seções", "Ações", "Restaurar cores do tema");
         Add(SearchPage.Settings, "Configurações › Gadget",
             "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar",
-            "Sobre a tela (flutuante, arrastável)", "Na barra de tarefas, canto direito (widget)",
+            "Sobre a tela (flutuante, arrastável)", "Canto superior esquerdo", "Canto superior direito", "Canto inferior esquerdo", "Canto inferior direito", "Faixa fixa na parte inferior da tela",
             "Barra horizontal flutuante (arrastável)", "Faixa fixa no topo da tela", "Não fazer nada (sem gadget)",
             "Pré-visualização do gadget (valores de exemplo)");
         Add(SearchPage.Settings, "Configurações › Painéis exibidos",

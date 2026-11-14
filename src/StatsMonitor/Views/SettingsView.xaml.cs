@@ -197,16 +197,21 @@ public partial class SettingsView : UserControl
         if (floating.Count == 0) { floating.Add(Loc.T("Nenhum indicador")); taskbar.Add(Loc.T("Nenhum indicador")); }
 
         Fill(FloatingPanel, floating, 13, false);
-        Fill(TaskbarPanel, taskbar, 12, true);
+        Fill(BottomPanel, taskbar, 12, true);
         Fill(BarPanel, taskbar, 12, true);
         Fill(TopPanel, taskbar, 12, true);
 
-        FloatingBox.Visibility = Show(vm.GadgetFloating && !off);
-        TaskbarBox.Visibility = Show(vm.GadgetOnTaskbar && !off);
+        bool corner = vm.GadgetTopLeft || vm.GadgetTopRight || vm.GadgetBottomLeft || vm.GadgetBottomRight;
+        FloatingBox.Visibility = Show((vm.GadgetFloating || corner) && !off);
+        FloatingBox.HorizontalAlignment = vm.GadgetTopLeft || vm.GadgetBottomLeft ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+        FloatingBox.VerticalAlignment = vm.GadgetBottomLeft || vm.GadgetBottomRight ? VerticalAlignment.Bottom : VerticalAlignment.Top;
+        FloatingBox.Margin = vm.GadgetFloating ? new Thickness(0, 24, 24, 0)
+            : new Thickness(vm.GadgetTopLeft || vm.GadgetBottomLeft ? 10 : 0, vm.GadgetTopLeft || vm.GadgetTopRight ? 10 : 0, vm.GadgetTopRight || vm.GadgetBottomRight ? 10 : 0, vm.GadgetBottomLeft || vm.GadgetBottomRight ? 42 : 0);
+        BottomBox.Visibility = Show(vm.GadgetDockedBottom && !off);
         BarBox.Visibility = Show(vm.GadgetFloatingBar && !off);
         TopBox.Visibility = Show(vm.GadgetDockedTop && !off);
         OffText.Parent.SetValue(UIElement.VisibilityProperty, Show(off));
-        ModeBadge.Text = Loc.T(off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetOnTaskbar ? "Barra de tarefas" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo");
+        ModeBadge.Text = Loc.T(off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetTopLeft ? "Canto superior esquerdo" : vm.GadgetTopRight ? "Canto superior direito" : vm.GadgetBottomLeft ? "Canto inferior esquerdo" : vm.GadgetBottomRight ? "Canto inferior direito" : vm.GadgetDockedBottom ? "Faixa na parte inferior" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo");
     }
 
     private static Visibility Show(bool v) => v ? Visibility.Visible : Visibility.Collapsed;

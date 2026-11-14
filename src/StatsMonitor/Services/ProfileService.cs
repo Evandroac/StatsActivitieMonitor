@@ -48,7 +48,7 @@ public static class ProfileService
             [nameof(AppSettings.CpuIntervalMs)] = 0, [nameof(AppSettings.GpuIntervalMs)] = 0, [nameof(AppSettings.RamIntervalMs)] = 0, [nameof(AppSettings.OtherIntervalMs)] = 0,
             [nameof(AppSettings.ShowGadget)] = true,
             [nameof(AppSettings.AlwaysShowGadget)] = false,
-            [nameof(AppSettings.GadgetMode)] = GadgetDisplayMode.Taskbar,
+            [nameof(AppSettings.GadgetMode)] = GadgetDisplayMode.BottomRight,
             [nameof(AppSettings.ShowCpuGadget)] = true,
             [nameof(AppSettings.ShowGpuGadget)] = false,
             [nameof(AppSettings.ShowRamGadget)] = true,
