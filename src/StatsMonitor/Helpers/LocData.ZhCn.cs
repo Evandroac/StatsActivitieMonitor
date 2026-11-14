@@ -730,5 +730,13 @@ public static partial class LocData
         ["Código-fonte no GitHub"] = "GitHub 上的源代码",
         ["Autor no GitHub"] = "GitHub 上的作者",
         ["Sem bateria neste computador"] = "此电脑没有电池",
+        ["Velocidade de atualização"] = "刷新速度",
+        ["Escolha a velocidade das leituras ou defina os intervalos manualmente"] = "选择读取速度，或手动设置间隔",
+        ["Normal (1 s)"] = "正常（1 秒）",
+        ["Baixo (10 s)"] = "低（10 秒）",
+        ["Alto (0,25 s)"] = "高（0.25 秒）",
+        ["Pausado"] = "已暂停",
+        ["Personalizado"] = "自定义",
+        ["Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado."] = "刷新速度：可选择正常（1 秒）、低（10 秒）、高（0.25 秒）或暂停。选择自定义后，可设置总体间隔以及每个组件的间隔（0 表示使用总体间隔）。暂停会冻结读数和警报；间隔越短越精确，但负担越重。",
     };
 }

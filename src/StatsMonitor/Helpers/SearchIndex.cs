@@ -91,7 +91,7 @@ public static class SearchIndex
         }
 
         Add(SearchPage.Settings, "Configurações › Geral",
-            "Intervalo de atualização (s):", "Intervalo por componente", "CPU (s):", "GPU e VRAM (s):", "Memória RAM (s):", "Discos e sensores (s):", "Iniciar com o Windows", "Iniciar minimizado", "Exibir temperaturas",
+            "Velocidade de atualização", "Normal (1 s)", "Baixo (10 s)", "Alto (0,25 s)", "Pausado", "Personalizado", "Intervalo por componente", "CPU (s):", "GPU e VRAM (s):", "Memória RAM (s):", "Discos e sensores (s):", "Iniciar com o Windows", "Iniciar minimizado", "Exibir temperaturas",
             "Idioma", "Unidade de temperatura", "Visualização simplificada", "Perfis", "Seguir o tema do Windows", "Atalho global",
             "Exportar configurações", "Importar configurações", "Restaurar padrões", "Notificações de alerta", "Tocar som de alerta", "Testar alerta",
             "Mostrar painel de Pets no menu", "Animações suaves ao abrir e trocar de tela", "Sensores (ventiladores, energia, tensões, bateria)", "Pausar a leitura quando oculto e sem gadget",

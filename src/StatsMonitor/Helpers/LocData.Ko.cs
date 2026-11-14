@@ -729,5 +729,13 @@ public static partial class LocData
         ["Código-fonte no GitHub"] = "GitHub 소스 코드",
         ["Autor no GitHub"] = "GitHub 작성자",
         ["Sem bateria neste computador"] = "이 컴퓨터에는 배터리가 없습니다",
+        ["Velocidade de atualização"] = "새로 고침 속도",
+        ["Escolha a velocidade das leituras ou defina os intervalos manualmente"] = "읽기 속도를 선택하거나 간격을 직접 설정하세요",
+        ["Normal (1 s)"] = "보통(1초)",
+        ["Baixo (10 s)"] = "낮음(10초)",
+        ["Alto (0,25 s)"] = "높음(0.25초)",
+        ["Pausado"] = "일시 중지",
+        ["Personalizado"] = "사용자 지정",
+        ["Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado."] = "새로 고침 속도: 보통(1초), 낮음(10초), 높음(0.25초) 또는 일시 중지를 선택하세요. 사용자 지정에서는 전체 간격과 구성 요소별 간격을 설정합니다(0은 전체 간격 사용). 일시 중지하면 측정값과 알림이 멈추며, 간격이 짧을수록 정확하지만 더 무겁습니다.",
     };
 }

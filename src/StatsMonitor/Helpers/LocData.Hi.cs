@@ -729,5 +729,13 @@ public static partial class LocData
         ["Código-fonte no GitHub"] = "GitHub पर स्रोत कोड",
         ["Autor no GitHub"] = "GitHub पर लेखक",
         ["Sem bateria neste computador"] = "इस कंप्यूटर में बैटरी नहीं है",
+        ["Velocidade de atualização"] = "रीफ़्रेश गति",
+        ["Escolha a velocidade das leituras ou defina os intervalos manualmente"] = "पढ़ने की गति चुनें या अंतराल मैन्युअल रूप से सेट करें",
+        ["Normal (1 s)"] = "सामान्य (1 s)",
+        ["Baixo (10 s)"] = "कम (10 s)",
+        ["Alto (0,25 s)"] = "अधिक (0.25 s)",
+        ["Pausado"] = "रुका हुआ",
+        ["Personalizado"] = "कस्टम",
+        ["Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado."] = "रीफ़्रेश गति: सामान्य (1 s), कम (10 s), अधिक (0.25 s) या रुका हुआ चुनें। कस्टम में सामान्य अंतराल और प्रत्येक घटक का अंतराल सेट करें (0 का अर्थ सामान्य अंतराल)। रुका हुआ होने पर रीडिंग और अलर्ट थम जाते हैं; छोटे अंतराल अधिक सटीक पर भारी होते हैं।",
     };
 }

@@ -728,5 +728,13 @@ public static partial class LocData
         ["Código-fonte no GitHub"] = "Code source sur GitHub",
         ["Autor no GitHub"] = "Auteur sur GitHub",
         ["Sem bateria neste computador"] = "Pas de batterie sur cet ordinateur",
+        ["Velocidade de atualização"] = "Vitesse d'actualisation",
+        ["Escolha a velocidade das leituras ou defina os intervalos manualmente"] = "Choisissez la vitesse de lecture ou définissez les intervalles manuellement",
+        ["Normal (1 s)"] = "Normale (1 s)",
+        ["Baixo (10 s)"] = "Basse (10 s)",
+        ["Alto (0,25 s)"] = "Élevée (0,25 s)",
+        ["Pausado"] = "En pause",
+        ["Personalizado"] = "Personnalisé",
+        ["Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado."] = "Vitesse d'actualisation : choisissez Normale (1 s), Basse (10 s), Élevée (0,25 s) ou En pause. En mode Personnalisé, définissez l'intervalle général et un par composant (0 utilise le général). La pause fige les lectures et les alertes ; des intervalles plus courts sont plus précis mais plus lourds.",
     };
 }

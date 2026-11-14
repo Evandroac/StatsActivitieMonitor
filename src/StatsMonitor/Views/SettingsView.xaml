@@ -88,6 +88,15 @@
     <StackPanel x:Name="SectionsStack" Margin="20,20,20,20">
         <Border x:Name="SecGeneral" Style="{StaticResource SecCard}"><StackPanel>
         <TextBlock Text="{h:Tr '⚙️  Geral'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <TextBlock Text="{h:Tr 'Velocidade de atualização'}" Style="{StaticResource Caption}" Margin="0,2,0,2"/>
+        <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" ToolTip="{h:Tr 'Escolha a velocidade das leituras ou defina os intervalos manualmente'}" AutomationProperties.Name="{h:Tr 'Velocidade de atualização'}" SelectedValuePath="Tag" SelectedValue="{Binding SpeedMode, Mode=TwoWay}">
+            <ComboBoxItem Tag="normal" Content="{h:Tr 'Normal (1 s)'}"/>
+            <ComboBoxItem Tag="low" Content="{h:Tr 'Baixo (10 s)'}"/>
+            <ComboBoxItem Tag="high" Content="{h:Tr 'Alto (0,25 s)'}"/>
+            <ComboBoxItem Tag="paused" Content="{h:Tr 'Pausado'}"/>
+            <ComboBoxItem Tag="custom" Content="{h:Tr 'Personalizado'}"/>
+        </ComboBox>
+        <StackPanel Visibility="{Binding IsCustomSpeed, Converter={StaticResource BoolToVis}}">
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Intervalo de atualização (s):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="{h:Tr 'Segundos entre atualizações (mínimo 0,25; máximo 60)'}" Value="{Binding IntervalSeconds}"/>
@@ -109,6 +118,7 @@
         <StackPanel Orientation="Horizontal" Margin="0,2">
             <TextBlock Text="{h:Tr 'Discos e sensores (s):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding OtherIntervalSeconds}"/>
+        </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🔠  Tamanho da fonte:'}" VerticalAlignment="Center" Width="200"/>

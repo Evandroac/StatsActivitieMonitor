@@ -729,5 +729,13 @@ public static partial class LocData
         ["Código-fonte no GitHub"] = "الشيفرة المصدرية على GitHub",
         ["Autor no GitHub"] = "المؤلف على GitHub",
         ["Sem bateria neste computador"] = "لا توجد بطارية في هذا الكمبيوتر",
+        ["Velocidade de atualização"] = "سرعة التحديث",
+        ["Escolha a velocidade das leituras ou defina os intervalos manualmente"] = "اختر سرعة القراءة أو حدّد الفواصل يدويًا",
+        ["Normal (1 s)"] = "عادية (1 ث)",
+        ["Baixo (10 s)"] = "منخفضة (10 ث)",
+        ["Alto (0,25 s)"] = "عالية (0.25 ث)",
+        ["Pausado"] = "متوقف مؤقتًا",
+        ["Personalizado"] = "مخصص",
+        ["Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado."] = "سرعة التحديث: اختر عادية (1 ث) أو منخفضة (10 ث) أو عالية (0.25 ث) أو متوقف مؤقتًا. في الوضع المخصص حدّد الفاصل العام وفاصلًا لكل مكوّن (0 يعني استخدام العام). الإيقاف المؤقت يجمّد القراءات والتنبيهات؛ الفواصل الأقصر أدق لكنها أثقل.",
     };
 }

@@ -740,5 +740,13 @@ public static partial class LocData
         ["Código-fonte no GitHub"] = "GitHub のソースコード",
         ["Autor no GitHub"] = "GitHub の作者",
         ["Sem bateria neste computador"] = "このコンピューターにはバッテリーがありません",
+        ["Velocidade de atualização"] = "更新速度",
+        ["Escolha a velocidade das leituras ou defina os intervalos manualmente"] = "読み取り速度を選択するか、間隔を手動で設定します",
+        ["Normal (1 s)"] = "標準（1 秒）",
+        ["Baixo (10 s)"] = "低（10 秒）",
+        ["Alto (0,25 s)"] = "高（0.25 秒）",
+        ["Pausado"] = "一時停止",
+        ["Personalizado"] = "カスタム",
+        ["Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado."] = "更新速度：標準（1 秒）、低（10 秒）、高（0.25 秒）、一時停止から選びます。カスタムでは全体の間隔とコンポーネントごとの間隔を設定できます（0 は全体の間隔を使用）。一時停止すると読み取りとアラートが止まります。間隔が短いほど正確ですが負荷が高くなります。",
     };
 }

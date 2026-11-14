@@ -26,6 +26,8 @@ public sealed class SettingsViewModel : ObservableObject
     private void Load(AppSettings s)
     {
         IntervalSeconds = s.UpdateIntervalMs / 1000.0;
+        bool perComponent = s.CpuIntervalMs + s.GpuIntervalMs + s.RamIntervalMs + s.OtherIntervalMs > 0;
+        _speedMode = s.UpdatePaused ? "paused" : perComponent ? "custom" : s.UpdateIntervalMs switch { 1000 => "normal", 10000 => "low", 250 => "high", _ => "custom" };
         CpuIntervalSeconds = s.CpuIntervalMs / 1000.0;
         GpuIntervalSeconds = s.GpuIntervalMs / 1000.0;
         RamIntervalSeconds = s.RamIntervalMs / 1000.0;
@@ -132,6 +134,22 @@ public sealed class SettingsViewModel : ObservableObject
         Persist();
     }
 
+    // normal (1 s), low (10 s), high (0.25 s), paused or custom (manual general and per-component intervals).
+    private string _speedMode = "normal";
+    public string SpeedMode
+    {
+        get => _speedMode;
+        set
+        {
+            if (_speedMode == value || value is null) return;
+            _speedMode = value;
+            double? preset = value switch { "normal" => 1.0, "low" => 10.0, "high" => 0.25, _ => null };
+            if (preset is { } p) _intervalSeconds = p;
+            Raise(nameof(SpeedMode)); Raise(nameof(IsCustomSpeed)); Raise(nameof(IntervalSeconds)); Raise(nameof(IntervalWarning));
+            AutoSave();
+        }
+    }
+    public bool IsCustomSpeed => _speedMode == "custom";
     private double _cpuIntervalSeconds; public double CpuIntervalSeconds { get => _cpuIntervalSeconds; set { if (_cpuIntervalSeconds != value) { _cpuIntervalSeconds = value; AutoSave(); } } }
     private double _gpuIntervalSeconds; public double GpuIntervalSeconds { get => _gpuIntervalSeconds; set { if (_gpuIntervalSeconds != value) { _gpuIntervalSeconds = value; AutoSave(); } } }
     private double _ramIntervalSeconds; public double RamIntervalSeconds { get => _ramIntervalSeconds; set { if (_ramIntervalSeconds != value) { _ramIntervalSeconds = value; AutoSave(); } } }
@@ -289,11 +307,16 @@ public sealed class SettingsViewModel : ObservableObject
     private void Apply()
     {
         var s = _service.Current;
-        s.UpdateIntervalMs = (int)Math.Clamp(IntervalSeconds * 1000, 250, 60000);
-        s.CpuIntervalMs = PerComponentMs(CpuIntervalSeconds);
-        s.GpuIntervalMs = PerComponentMs(GpuIntervalSeconds);
-        s.RamIntervalMs = PerComponentMs(RamIntervalSeconds);
-        s.OtherIntervalMs = PerComponentMs(OtherIntervalSeconds);
+        s.UpdatePaused = _speedMode == "paused";
+        if (_speedMode != "paused")
+        {
+            bool custom = IsCustomSpeed;
+            s.UpdateIntervalMs = (int)Math.Clamp(IntervalSeconds * 1000, 250, 60000);
+            s.CpuIntervalMs = custom ? PerComponentMs(CpuIntervalSeconds) : 0;
+            s.GpuIntervalMs = custom ? PerComponentMs(GpuIntervalSeconds) : 0;
+            s.RamIntervalMs = custom ? PerComponentMs(RamIntervalSeconds) : 0;
+            s.OtherIntervalMs = custom ? PerComponentMs(OtherIntervalSeconds) : 0;
+        }
         s.RunAtStartup = RunAtStartup;
         s.StartMinimized = StartMinimized;
         s.ShowTemperatures = ShowTemperatures;

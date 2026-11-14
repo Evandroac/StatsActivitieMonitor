@@ -194,7 +194,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void OnNetwork(object? sender, NetworkSnapshot s)
     {
-        if (_held) return;
+        if (_held || S.UpdatePaused) return;
         _lastNet = s;
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
@@ -204,9 +204,10 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     }
 
     private bool _autoPaused, _held;
-    public void SetPaused(bool paused) { _autoPaused = paused; _monitor.Paused = _autoPaused || _held; }
+    public void SetPaused(bool paused) { _autoPaused = paused; RefreshPaused(); }
+    private void RefreshPaused() => _monitor.Paused = _autoPaused || _held || S.UpdatePaused;
     /// <summary>Freezes all readings (hardware and network) while the user holds the gadget button.</summary>
-    public void HoldReadings(bool hold) { _held = hold; _monitor.Paused = _autoPaused || _held; }
+    public void HoldReadings(bool hold) { _held = hold; RefreshPaused(); }
 
     private bool _gadgetOnly;
 
@@ -261,6 +262,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         (_normal, _warn, _crit) = ThemeHelper.AlertBrushes(S);
         UpdateInterval();
         UpdateScope();
+        RefreshPaused();
         _monitor.SlowSensors = S.SlowSensors;
         Services.DataLogger.Configure(S.LogEnabled, S.LogIntervalSeconds);
         foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;

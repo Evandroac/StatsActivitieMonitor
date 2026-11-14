@@ -36,6 +36,7 @@ public sealed class AppSettings
     public bool GadgetNoCharts { get; set; }
     public int UpdateIntervalMs { get; set; } = 1000;
     /// <summary>Per-component update interval in ms; 0 follows the general interval.</summary>
+    public bool UpdatePaused { get; set; }
     public int CpuIntervalMs { get; set; }
     public int GpuIntervalMs { get; set; }
     public int RamIntervalMs { get; set; }

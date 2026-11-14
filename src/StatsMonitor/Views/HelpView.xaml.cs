@@ -193,8 +193,8 @@ public partial class HelpView : UserControl
               "Eco mode: with the window minimized and no gadget, the app reads sensors only every 10 s, lowers its priority and frees memory. Alerts keep working."),
             L("Modo gadget: com o gadget visível e a janela fechada, só são lidos os componentes que o gadget exibe. Os outros ficam sem leitura e, por isso, sem alertas.",
               "Gadget mode: with the gadget visible and the window closed, only the components the gadget shows are read. The others are not read and so produce no alerts."),
-            L("Intervalo por componente: cada peça pode ter o seu próprio tempo de atualização (0 usa o intervalo geral). Intervalos menores deixam o app mais preciso, porém mais pesado.",
-              "Per-component interval: each part can have its own refresh time (0 uses the general interval). Shorter intervals are more precise but heavier."),
+            L("Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado.",
+              "Refresh speed: choose Normal (1 s), Low (10 s), High (0.25 s) or Paused. With Custom, set the general interval and one per component (0 uses the general one). Paused freezes readings and alerts; shorter intervals are more precise but heavier."),
         ]);
         Card("⚠️", 5, [
             L("Administrador: o app precisa ser executado como administrador para ler temperaturas, voltagens e ventoinhas. Sem isso, muitos valores aparecem vazios.",
