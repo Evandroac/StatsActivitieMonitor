@@ -202,7 +202,7 @@ public sealed class DiagnosticsView : UserControl
 
     private Border Card(UIElement child, double? width = null)
     {
-        var b = new Border { Padding = new Thickness(12), CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1), Margin = new Thickness(0, 0, 10, 10), HorizontalAlignment = HorizontalAlignment.Left, MaxWidth = 980, Child = child };
+        var b = new Border { Padding = new Thickness(12), CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1), Margin = new Thickness(0, 0, 10, 10), HorizontalAlignment = HorizontalAlignment.Left, MaxWidth = 1100, Child = child };
         if (width != null) b.Width = width.Value;
         b.SetResourceReference(Border.BackgroundProperty, "CardBg");
         b.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
@@ -225,16 +225,21 @@ public sealed class DiagnosticsView : UserControl
 
     private UIElement FactGrid(IEnumerable<Fact> facts)
     {
-        var g = new Grid { MinWidth = 520 };
-        g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(230) });
+        var g = new Grid { MinWidth = 780 };
+        g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(270) });
         g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         int r = 0;
         foreach (var f in facts)
         {
             g.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            var l = new TextBlock { Text = f.Label, Opacity = 0.7, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 8, 2) };
+            var band = new Border { CornerRadius = new CornerRadius(6) };
+            if (r % 2 == 0) band.SetResourceReference(Border.BackgroundProperty, "InputBg");
+            Grid.SetRow(band, r); Grid.SetColumnSpan(band, 2);
+            g.Children.Add(band);
+            var l = new TextBlock { Text = f.Label, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(10, 6, 10, 6), VerticalAlignment = VerticalAlignment.Center };
+            l.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
             bool na = f.Value.StartsWith("Indispon", StringComparison.OrdinalIgnoreCase) || f.Value.StartsWith("Unavail", StringComparison.OrdinalIgnoreCase);
-            var v = new TextBlock { Text = f.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 2), IsHitTestVisible = true };
+            var v = new TextBlock { Text = f.Value, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 6, 10, 6), VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = true };
             if (na) v.Foreground = Warn;
             if (na) v.ToolTip = L("Dado indisponível: não é tratado como saudável.", "Unavailable data: not treated as healthy.");
             Grid.SetRow(l, r); Grid.SetRow(v, r); Grid.SetColumn(v, 1);
