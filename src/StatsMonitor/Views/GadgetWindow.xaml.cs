@@ -99,7 +99,7 @@ public partial class GadgetWindow : Window
         FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
         FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
         FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
-        FFps.Visibility = TFps.Visibility = DFps.Visibility = V(s.ShowFpsGadget && _vm.FpsActive);
+        FFps.Visibility = TFps.Visibility = DFps.Visibility = V(s.ShowFpsGadget);
         DCpu.Visibility = V(s.ShowCpuGadget); DGpu.Visibility = V(s.ShowGpuGadget); DRam.Visibility = V(s.ShowRamGadget);
         DDisk.Visibility = V(s.ShowVramGadget); DNet.Visibility = V(s.ShowNetworkGadget);
 

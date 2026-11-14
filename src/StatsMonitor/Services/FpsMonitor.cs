@@ -44,7 +44,7 @@ public sealed class FpsMonitor : IDisposable
         if (!_settings.Current.ShowFpsGadget || _vm.EcoMode)
         {
             StopTrace();
-            _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--";
+            _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--"; _vm.FpsText = "--";
             _vm.FpsActive = false;
             return;
         }
@@ -70,6 +70,7 @@ public sealed class FpsMonitor : IDisposable
         else
         {
             if (++_idleTicks >= 10) { _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--"; }
+            if (_idleTicks >= 2) _vm.FpsText = "--";
             _vm.FpsActive = false;
         }
     }

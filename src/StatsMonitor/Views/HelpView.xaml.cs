@@ -168,8 +168,8 @@ public partial class HelpView : UserControl
               "The tray icon changes color with your computer's state. Double-click it to open the app."),
             L("Atalho Ctrl+Alt+G (configurável) mostra ou esconde o gadget.",
               "Ctrl+Alt+G (configurable) shows or hides the gadget."),
-            L("Com a opção de FPS ligada, o gadget mostra os quadros por segundo do jogo em primeiro plano: vermelho abaixo de 30, verde a partir de 30 e azul a partir de 60. Ao lado aparece a média (Média/méd) do jogo atual, calculada desde que ele entrou em primeiro plano, para comparar com o valor instantâneo.",
-              "With FPS enabled, the gadget shows the frames per second of the foreground game: red below 30, green from 30 and cyan from 60. Next to it, the average (Average/avg) of the current game is shown, computed since it came to the foreground, to compare with the instant value."),
+            L("Com a opção de FPS ligada, o gadget mostra os quadros por segundo do jogo em primeiro plano: vermelho abaixo de 30, verde a partir de 30 e azul a partir de 60. Ao lado aparece a média (Média/méd) do jogo atual, calculada desde que ele entrou em primeiro plano, para comparar com o valor instantâneo. O bloco de FPS fica sempre visível e mostra "--" quando nenhum jogo é detectado.",
+              "With FPS enabled, the gadget shows the frames per second of the foreground game: red below 30, green from 30 and cyan from 60. Next to it, the average (Average/avg) of the current game is shown, computed since it came to the foreground, to compare with the instant value. The FPS block is always visible and shows "--" when no game is detected."),
         ]);
         Card("🔔", 3, [
             L("Atenção: avisa antes do problema, quando a temperatura passa do limite de atenção ou o uso fica 10 pontos abaixo do limite crítico.",
