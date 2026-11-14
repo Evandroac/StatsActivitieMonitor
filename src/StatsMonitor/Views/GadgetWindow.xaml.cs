@@ -31,6 +31,11 @@ public partial class GadgetWindow : Window
         MouseLeftButtonDown += OnMouseDown;
         MouseEnter += (_, _) => UpdateTools(true);
         MouseLeave += (_, _) => UpdateTools(false);
+        Deactivated += (_, _) => UpdateTools(IsMouseOver);
+        // Safety net: hide the buttons if the mouse left without a MouseLeave (e.g. after a drag).
+        var hoverWatch = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+        hoverWatch.Tick += (_, _) => { if (IsVisible && Tools.Visibility == Visibility.Visible) UpdateTools(IsMouseOver); };
+        hoverWatch.Start();
         ApplyScale();
         ApplyLockAndFade();
         LocationChanged += (_, _) => SavePosition();
