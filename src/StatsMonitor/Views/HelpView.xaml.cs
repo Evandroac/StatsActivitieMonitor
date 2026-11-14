@@ -93,6 +93,7 @@ public partial class HelpView : UserControl
             L("💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial.",
               "💡 Open-source project: Stats Monitor is open source and was designed, programmed and built entirely with the help of artificial intelligence."),
         ]);
+        ((StackPanel)_cards[0].Child).Children.Add(LinkRow());
         Card("🧭", 1, [
             L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes; com o menu aberto, arraste a borda direita para ajustar a largura (fica salvo). As páginas são: Principal, Sistema e periféricos (com filtro Tudo/Sistema/Periféricos), CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",
               "☰ Side menu: click ☰ to show or hide the names; with the menu open, drag its right edge to resize it (saved). Pages are: Main, System and peripherals (with an All/System/Peripherals filter), CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Processes, Connection tests, Computer diagnostic and Settings. The app version is shown below the Settings button."),
@@ -254,6 +255,24 @@ public partial class HelpView : UserControl
     {
         Text = text, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10), Opacity = 0.8,
     };
+
+    private static Button Link(string label, string url)
+    {
+        var b = new Button { Content = label, Style = (Style)Application.Current.FindResource("PillButton"), Margin = new Thickness(0, 4, 8, 0), ToolTip = url };
+        b.Click += (_, _) =>
+        {
+            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
+        };
+        return b;
+    }
+
+    private static WrapPanel LinkRow()
+    {
+        var row = new WrapPanel { Margin = new Thickness(0, 4, 0, 0) };
+        row.Children.Add(Link("🔗  " + Loc.T("Código-fonte no GitHub"), "https://github.com/Evandroac/StatsActivitieMonitor"));
+        row.Children.Add(Link("👤  " + Loc.T("Autor no GitHub"), "https://github.com/Evandroac"));
+        return row;
+    }
 
     private void Card(string icon, int titleIndex, string[] paragraphs)
     {
