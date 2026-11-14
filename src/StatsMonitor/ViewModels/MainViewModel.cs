@@ -85,7 +85,11 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     public string LastUpdateText { get => _lastUpdateText; private set => Set(ref _lastUpdateText, value); }
     public string StatusText { get => _statusText; private set => Set(ref _statusText, value); }
     public Brush StatusBrush { get => _statusBrush; private set => Set(ref _statusBrush, value); }
-    public string FpsText { get => _fpsText; set => Set(ref _fpsText, value); }
+    public string FpsText { get => _fpsText; set { if (Set(ref _fpsText, value)) Raise(nameof(FpsBrush)); } }
+ private static readonly Brush FpsBad = Frozen("#FF5252"), FpsGood = Frozen("#3FB950"), FpsExcellent = Frozen("#22D3EE"), FpsIdle = Frozen("#9AA4B2");
+ private static Brush Frozen(string hex) { var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex)); b.Freeze(); return b; }
+ /// <summary>Below 30 FPS: bad; 30-59: good; 60 and above: excellent.</summary>
+ public Brush FpsBrush => double.TryParse(_fpsText, out var f) ? (f < 30 ? FpsBad : f < 60 ? FpsGood : FpsExcellent) : FpsIdle;
     private string _fpsText = "--";
     private bool _fpsActive;
     public bool FpsActive { get => _fpsActive; set => Set(ref _fpsActive, value); }
