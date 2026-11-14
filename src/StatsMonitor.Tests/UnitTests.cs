@@ -365,3 +365,51 @@ public class ProcessTreeTests
     public void Command_line_arguments_are_extracted(string cmd, string path, string expected) =>
         Assert.Equal(expected, ProcessTree.StripExecutable(cmd, path));
 }
+
+public class NetworkToolsTests
+{
+    [Fact]
+    public void ParsePorts_HandlesListsRangesAndInvalid()
+    {
+        Assert.Equal([22, 80, 443, 8000, 8001, 8002], NetworkToolsService.ParsePorts("443, 80;22 8000-8002 abc 0 70000 9-5"));
+    }
+
+    [Fact]
+    public void PingStats_ComputesLossAndJitter()
+    {
+        var s = new PingStats();
+        s.Add(10); s.Add(20); s.Add(null); s.Add(10);
+        Assert.Equal(4, s.Sent);
+        Assert.Equal(3, s.Received);
+        Assert.Equal(25, s.Loss);
+        Assert.Equal(10, s.Min);
+        Assert.Equal(20, s.Max);
+        Assert.Equal(10, s.Jitter);
+    }
+
+    [Fact]
+    public void Dns_QueryRoundTripsAndParsesAnswers()
+    {
+        var q = NetworkToolsService.BuildDnsQuery("example.com", 1, 0x1234);
+        Assert.Equal(0x12, q[0]);
+        Assert.Equal(7, q[12]);
+        // Response: header + question + one A answer using a compression pointer to the name.
+        var resp = new List<byte> { 0x12, 0x34, 0x81, 0x80, 0, 1, 0, 1, 0, 0, 0, 0 };
+        resp.AddRange(q.Skip(12));
+        resp.AddRange([0xC0, 0x0C, 0, 1, 0, 1, 0, 0, 1, 0x2C, 0, 4, 93, 184, 216, 34]);
+        var (id, rcode, tc, answers) = NetworkToolsService.ParseDnsResponse([.. resp]);
+        Assert.Equal(0x1234, id);
+        Assert.Equal("NOERROR", rcode);
+        Assert.False(tc);
+        var a = Assert.Single(answers);
+        Assert.Equal("example.com", a.Name);
+        Assert.Equal("93.184.216.34", a.Data);
+        Assert.Equal(300u, a.Ttl);
+    }
+
+    [Fact]
+    public void ReverseName_BuildsArpaNames()
+    {
+        Assert.Equal("4.3.2.1.in-addr.arpa", NetworkToolsService.ReverseName(System.Net.IPAddress.Parse("1.2.3.4")));
+    }
+}

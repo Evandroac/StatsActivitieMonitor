@@ -11,7 +11,7 @@ public partial class HelpView : UserControl
     public static readonly string[] SectionTitles =
     [
         "O que é o Stats Monitor", "Como usar", "Gadget e bandeja do sistema", "Alertas", "Economia de recursos",
-        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos",
+        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão",
     ];
 
     public HelpView()
@@ -36,12 +36,12 @@ public partial class HelpView : UserControl
               "Stats Monitor shows, in real time, how your computer is doing: CPU and GPU usage and temperature, RAM and VRAM, disks, network, fans and other sensors."),
             L("✔ Ele apenas LÊ os sensores. Não altera configurações, não controla ventoinhas, não faz overclock e não mexe nos seus arquivos.",
               "✔ It only READS sensors. It does not change settings, control fans, overclock or touch your files."),
-            L("✔ Os dados ficam no seu computador. O app não envia leituras para a internet. A única conexão é um ping simples ao DNS 1.1.1.1 para medir a latência e saber se há internet.",
-              "✔ Data stays on your computer. The app does not upload readings. Its only connection is a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access."),
+            L("✔ Os dados ficam no seu computador. O app não envia leituras para a internet. A conexão em segundo plano é um ping simples ao DNS 1.1.1.1 para medir a latência e saber se há internet; a tela Testes de conexão só acessa a rede quando você manda executar.",
+              "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
         ]);
         Card("🧭", 1, [
-            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Periféricos, Processos e Configurações. A versão do app aparece abaixo do botão de Configurações.",
-              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Peripherals, Processes and Settings. The app version is shown below the Settings button."),
+            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Periféricos, Processos, Testes de conexão e Configurações. A versão do app aparece abaixo do botão de Configurações.",
+              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Peripherals, Processes, Connection tests and Settings. The app version is shown below the Settings button."),
             L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada.",
               "🔍 Search: type a term to jump straight to the information or option you want."),
             L("📋 Copiar: clique em qualquer valor ou rótulo para copiá-lo. Uma mensagem rápida confirma a cópia.",
@@ -66,6 +66,20 @@ public partial class HelpView : UserControl
               "Timeline chart: below the list, shows the recent history of each process in its own color (the same colored bar as in its row). Pick the metric (CPU, memory, disk or network). Selecting a process highlights its line."),
             L("Ressalvas: processos críticos do Windows e o próprio app não podem ser finalizados. Disco e rede por processo são estimativas, e a rede exige administrador.",
               "Caveats: critical Windows processes and the app itself cannot be ended. Per-process disk and network are estimates, and network requires administrator."),
+        ]);
+        Card("🌐", 8, [
+            L("Ferramentas de rede para diagnosticar problemas de conexão. Nada é executado até você clicar em Executar/Iniciar, e cada teste pode ser interrompido com Parar.",
+              "Network tools to troubleshoot connection problems. Nothing runs until you click Run/Start, and every test can be stopped with Stop."),
+            L("🩺 Diagnóstico: verifica adaptador, gateway, internet por IP, DNS, portal cativo e IP público, e indica onde está o problema.",
+              "🩺 Diagnostics: checks adapter, gateway, internet by IP, DNS, captive portal and public IP, and points to where the problem is."),
+            L("📡 Ping: latência, perda, jitter e desvio padrão em tempo real, com gráfico. 🧭 Traceroute: cada salto até o destino.",
+              "📡 Ping: latency, loss, jitter and standard deviation in real time, with a chart. 🧭 Traceroute: every hop to the target."),
+            L("🔎 DNS: consulta registros (A, AAAA, MX, TXT...) direto em vários servidores e compara tempo e respostas. 🔌 Portas: testa portas TCP abertas, fechadas ou filtradas.",
+              "🔎 DNS: queries records (A, AAAA, MX, TXT...) directly on several servers and compares time and answers. 🔌 Ports: tests for open, closed or filtered TCP ports."),
+            L("🔗 HTTP/TLS: tempo de DNS, TCP e resposta, código HTTP e validade do certificado. 🚀 Velocidade: download, upload, latência e jitter pela Cloudflare. 🖧 Adaptadores: IP, gateway, DNS, MAC, link, MTU e IP público.",
+              "🔗 HTTP/TLS: DNS, TCP and response time, HTTP status and certificate validity. 🚀 Speed: download, upload, latency and jitter via Cloudflare. 🖧 Adapters: IP, gateway, DNS, MAC, link, MTU and public IP."),
+            L("Ressalvas: o teste de velocidade consome dados e depende dos servidores da Cloudflare. Diagnóstico, velocidade e IP público contatam serviços externos (Cloudflare e Microsoft); as demais ferramentas falam apenas com o destino que você informar. Firewalls podem bloquear ICMP (ping/traceroute).",
+              "Caveats: the speed test consumes data and depends on Cloudflare servers. Diagnostics, speed and public IP contact external services (Cloudflare and Microsoft); the other tools talk only to the target you enter. Firewalls may block ICMP (ping/traceroute)."),
         ]);
         Card("🪟", 2, [
             L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante, na barra de tarefas, barra flutuante e acoplado ao topo.",

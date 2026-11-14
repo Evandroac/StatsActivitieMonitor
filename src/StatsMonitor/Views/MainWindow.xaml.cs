@@ -482,7 +482,7 @@ public partial class MainWindow : Window
         _menuOpen = open;
         NavPanel.Width = open ? 220 : 48;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
-        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblProcesses.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
+        LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblPeripherals.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
@@ -583,6 +583,7 @@ public partial class MainWindow : Window
             case SearchPage.System: if (PageHost.Content is not SystemInfoView { IsPeripherals: false, Component: null }) OnOpenSystem(this, new RoutedEventArgs()); break;
             case SearchPage.Peripherals: if (PageHost.Content is not SystemInfoView { IsPeripherals: true }) OnOpenPeripherals(this, new RoutedEventArgs()); break;
             case SearchPage.Processes: if (PageHost.Content is not ProcessesView) OnOpenProcesses(this, new RoutedEventArgs()); break;
+            case SearchPage.NetTools: if (PageHost.Content is not NetworkToolsView) OnOpenNetTools(this, new RoutedEventArgs()); break;
             case SearchPage.Help: if (PageHost.Content is not HelpView) OnOpenHelp(this, new RoutedEventArgs()); break;
             case SearchPage.Settings: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
             case SearchPage.Appearance: if (PageHost.Content is not SettingsView) OnOpenSettings(this, new RoutedEventArgs()); break;
@@ -622,7 +623,7 @@ public partial class MainWindow : Window
 
     private void SetActiveNav(Button active)
     {
-        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavPeripherals, NavProcesses, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
+        foreach (var b in new[] { NavMain, NavSystem, NavCpu, NavGpu, NavRam, NavDisk, NavNet, NavSensors, NavPeripherals, NavProcesses, NavNetTools, NavSettings, NavHelp }) b.Tag = b == active ? "active" : null;
     }
 
     private void OnOpenComponent(object sender, RoutedEventArgs e)
@@ -636,6 +637,8 @@ public partial class MainWindow : Window
     private void OnOpenPeripherals(object sender, RoutedEventArgs e) => ShowPage(new SystemInfoView(peripherals: true), NavPeripherals);
 
     private void OnOpenProcesses(object sender, RoutedEventArgs e) => ShowPage(new ProcessesView(), NavProcesses);
+
+    private void OnOpenNetTools(object sender, RoutedEventArgs e) => ShowPage(new NetworkToolsView(), NavNetTools);
 
     private void OnOpenHelp(object sender, RoutedEventArgs e) => ShowPage(new HelpView(), NavHelp);
 

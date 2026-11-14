@@ -257,6 +257,9 @@
             <Button x:Name="NavProcesses" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Processos em execução: CPU, memória, disco e rede, com ações'}" AutomationProperties.Name="{h:Tr 'Processos em execução: CPU, memória, disco e rede, com ações'}" Click="OnOpenProcesses">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblProcesses" Text="{h:Tr 'Processos'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
+            <Button x:Name="NavNetTools" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Testes de conexão: diagnóstico, ping, traceroute, DNS, portas, HTTP e velocidade'}" AutomationProperties.Name="{h:Tr 'Testes de conexão: diagnóstico, ping, traceroute, DNS, portas, HTTP e velocidade'}" Click="OnOpenNetTools">
+                <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblNetTools" Text="{h:Tr 'Testes de conexão'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+            </Button>
         </StackPanel>
         </DockPanel>
     </Border>
