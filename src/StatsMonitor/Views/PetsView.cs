@@ -149,23 +149,23 @@ public sealed class PetsView : UserControl
         _bg.SelectionChanged += OnBgChanged;
         _bg.ToolTip = L("Plano de fundo dos pets", "Pets background");
         ApplyBackground();
-        root.Children.Add(Detach(_bg));
         var hint = new TextBlock { Text = L("Nome do pet…", "Pet name…"), Opacity = 0.5, IsHitTestVisible = false, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0, 0, 0) };
         _name.TextChanged -= OnNameChanged; _name.TextChanged += OnNameChanged;
         _hint = hint;
-        var nameBox = new Grid { Margin = new Thickness(0, 0, 0, 4) };
+        var nameBox = new Grid();
         nameBox.Children.Add(Detach(_name));
         nameBox.Children.Add(hint);
-        root.Children.Add(nameBox);
-        var add = new DockPanel();
         var plus = MakeButton("➕", OnAdd, true);
         plus.ToolTip = L("Adicionar pet", "Add pet");
-        plus.Margin = new Thickness(4, 0, 0, 0);
-        DockPanel.SetDock(plus, Dock.Right);
-        _species.Width = double.NaN; _species.Margin = new Thickness(0);
-        add.Children.Add(plus);
-        add.Children.Add(Detach(_species));        root.Children.Add(add);
-
+        _species.Width = 104; _species.Margin = new Thickness(4, 0, 4, 0);
+        var row = new Grid { Margin = new Thickness(0, 0, 0, 4) };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 40 });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(Detach(_species), 1); Grid.SetColumn(plus, 2);
+        row.Children.Add(nameBox); row.Children.Add(_species); row.Children.Add(plus);
+        root.Children.Add(row);
+        root.Children.Add(Detach(_bg));
         Content = root;
         if (IsLoaded) { _field.Children.Clear(); _sprites.Clear(); SyncSprites(); }
     }
