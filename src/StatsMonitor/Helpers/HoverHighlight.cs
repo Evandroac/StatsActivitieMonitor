@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -30,9 +30,17 @@ public static class HoverHighlight
         if (Window.GetWindow(b) is not Views.MainWindow w) return false;
         if (b.ActualWidth > w.ActualWidth * 0.9 && b.ActualHeight > w.ActualHeight * 0.9) return false;
         for (DependencyObject? p = VisualTreeHelper.GetParent(b); p != null; p = VisualTreeHelper.GetParent(p))
+        {
             if (p is ButtonBase or ComboBox or ToolTip or Popup or TextBoxBase or ScrollBar) return false;
+            // Only the outermost panel is highlighted; nested cards are skipped.
+            if (p is Border pb && IsPanel(pb, w)) return false;
+        }
         return true;
     }
+
+    static bool IsPanel(Border b, Window w) =>
+        b.CornerRadius.TopLeft >= 8 && b.Background != null && b.BorderThickness != default && b.ActualWidth >= 100 && b.ActualHeight >= 40
+        && !(b.ActualWidth > w.ActualWidth * 0.9 && b.ActualHeight > w.ActualHeight * 0.9);
 
     static void OnEnter(object sender, MouseEventArgs e)
     {
