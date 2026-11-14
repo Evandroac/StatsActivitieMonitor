@@ -200,14 +200,14 @@ public partial class SettingsView : UserControl
         bool detailed = vm.GadgetViewKey == "Detailed";
         if (detailed)
         {
-            var blocks = new List<(string Title, string Sub, double[] Data, string Brush)>();
-            if (vm.ShowCpuGadget) blocks.Add(($"CPU: 23%{t(Units.Temp(52))}", "4,2 GHz", new double[] { 12, 18, 15, 30, 26, 41, 23, 35, 22, 28, 20, 23 }, "Accent"));
-            if (vm.ShowRamGadget) blocks.Add(("RAM: 41%", "13,2 GB / 32 GB", new double[] { 38, 39, 39, 40, 40, 41, 41, 40, 41, 41, 41, 41 }, "Accent2"));
-            if (vm.ShowGpuGadget) blocks.Add(($"GPU: 37%{t(Units.Temp(58))}", "1,8 GHz", new double[] { 20, 35, 60, 45, 30, 52, 44, 37, 41, 33, 39, 37 }, "Accent2"));
-            if (vm.ShowVramGadget) blocks.Add(($"{Loc.T("Disco")}: 12%", "R 12 MB/s · W 3 MB/s", new double[] { 5, 8, 4, 20, 12, 9, 30, 14, 8, 6, 10, 12 }, "Accent"));
-            if (vm.ShowNetworkGadget) blocks.Add((Loc.T("NET: ↓ 12,3 Mbps"), "↑ 1,2 Mbps · 18 ms", new double[] { 10, 30, 22, 45, 38, 25, 50, 42, 30, 35, 28, 33 }, "Accent"));
-            if (vm.ShowFpsGadget) blocks.Add(("FPS: 144", Loc.T("Média: ") + "139", Array.Empty<double>(), "Accent"));
-            if (blocks.Count == 0) blocks.Add((Loc.T("Nenhum indicador"), "", Array.Empty<double>(), "Accent"));
+            var blocks = new List<DetailBlock>();
+            if (vm.ShowCpuGadget) blocks.Add(new("CPU: ", "23%", t(Units.Temp(52)), "4,2 GHz", new double[] { 12, 18, 15, 30, 26, 41, 23, 35, 22, 28, 20, 23 }, "Accent"));
+            if (vm.ShowRamGadget) blocks.Add(new("RAM: ", "41%", "", "13,2 GB / 32 GB", new double[] { 38, 39, 39, 40, 40, 41, 41, 40, 41, 41, 41, 41 }, "Accent2"));
+            if (vm.ShowGpuGadget) blocks.Add(new("GPU: ", "37%", t(Units.Temp(58)), "1,8 GHz", new double[] { 20, 35, 60, 45, 30, 52, 44, 37, 41, 33, 39, 37 }, "Accent2"));
+            if (vm.ShowVramGadget) blocks.Add(new(Loc.T("Disco") + ": ", "12%", "", "R 12 MB/s · W 3 MB/s", new double[] { 5, 8, 4, 20, 12, 9, 30, 14, 8, 6, 10, 12 }, "Accent"));
+            if (vm.ShowNetworkGadget) blocks.Add(new(Loc.T("NET: ↓ "), "12,3 Mbps", "", "↑ 1,2 Mbps · 18 ms", new double[] { 10, 30, 22, 45, 38, 25, 50, 42, 30, 35, 28, 33 }, "Accent"));
+            if (vm.ShowFpsGadget) blocks.Add(new("FPS: ", "144", "", Loc.T("Média: ") + "139", Array.Empty<double>(), "Accent"));
+            if (blocks.Count == 0) blocks.Add(new(Loc.T("Nenhum indicador"), "", "", "", Array.Empty<double>(), "Accent"));
             FillDetailed(FloatingPanel, blocks, false);
             FillDetailed(BottomPanel, blocks, true);
             FillDetailed(BarPanel, blocks, true);
@@ -231,26 +231,53 @@ public partial class SettingsView : UserControl
         BarBox.Visibility = Show(vm.GadgetFloatingBar && !off);
         TopBox.Visibility = Show(vm.GadgetDockedTop && !off);
         OffText.Parent.SetValue(UIElement.VisibilityProperty, Show(off));
+        FitBox(FloatingBox, detailed, 250);
+        FitBox(BarBox, detailed, 90);
+        FitBox(TopBox, detailed, 90);
+        FitBox(BottomBox, detailed, 90);
         ModeBadge.Text = Loc.T(off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetTopLeft ? "Canto superior esquerdo" : vm.GadgetTopRight ? "Canto superior direito" : vm.GadgetBottomLeft ? "Canto inferior esquerdo" : vm.GadgetBottomRight ? "Canto inferior direito" : vm.GadgetDockedBottom ? "Faixa na parte inferior" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo");
     }
 
-    private static void FillDetailed(Panel panel, List<(string Title, string Sub, double[] Data, string Brush)> blocks, bool horizontal)
+    private sealed record DetailBlock(string Prefix, string Value, string Suffix, string Sub, double[] Data, string Brush);
+
+    // Mirrors the real gadget detail block (GadgetWindow.xaml): 176 px wide, 13/10.5 pt text, 26 px sparkline.
+    private static void FillDetailed(Panel panel, List<DetailBlock> blocks, bool horizontal)
     {
         panel.Children.Clear();
-        for (int i = 0; i < blocks.Count; i++)
+        foreach (var b in blocks)
         {
-            var b = blocks[i];
-            var sp = new StackPanel { Width = horizontal ? 120 : 150, Margin = horizontal ? new Thickness(i > 0 ? 12 : 0, 0, 0, 0) : new Thickness(0, i > 0 ? 4 : 0, 0, 0) };
-            sp.Children.Add(Line(b.Title, 11, null));
-            if (b.Sub.Length > 0) { var sub = Line(b.Sub, 9, null); sub.Opacity = 0.7; sp.Children.Add(sub); }
+            var sp = new StackPanel { Width = 176, Margin = horizontal ? new Thickness(0, 0, 14, 0) : new Thickness(0, 0, 0, 8) };
+            var title = new TextBlock { FontSize = 13 };
+            title.SetResourceReference(TextBlock.ForegroundProperty, "GadgetText");
+            title.Inlines.Add(new System.Windows.Documents.Run(b.Prefix));
+            title.Inlines.Add(new System.Windows.Documents.Run(b.Value) { FontWeight = FontWeights.SemiBold, Foreground = new SolidColorBrush(Color.FromRgb(0x3F, 0xB9, 0x50)) });
+            if (b.Suffix.Length > 0) title.Inlines.Add(new System.Windows.Documents.Run(b.Suffix) { Foreground = new SolidColorBrush(Color.FromRgb(0x3F, 0xB9, 0x50)) });
+            sp.Children.Add(title);
+            if (b.Sub.Length > 0)
+            {
+                var sub = new TextBlock { Text = b.Sub, FontSize = 10.5, Opacity = 0.7 };
+                sub.SetResourceReference(TextBlock.ForegroundProperty, "GadgetText");
+                sp.Children.Add(sub);
+            }
             if (b.Data.Length > 0)
             {
-                var sl = new StatsMonitor.Controls.Sparkline { Height = 14, Margin = new Thickness(0, 2, 0, 0), Values = new System.Collections.ObjectModel.ObservableCollection<double>(b.Data) };
+                var sl = new StatsMonitor.Controls.Sparkline { Height = 26, Margin = new Thickness(0, 3, 0, 0), Values = new System.Collections.ObjectModel.ObservableCollection<double>(b.Data) };
                 sl.SetResourceReference(StatsMonitor.Controls.Sparkline.StrokeProperty, b.Brush);
                 sp.Children.Add(sl);
             }
             panel.Children.Add(sp);
         }
+    }
+
+    // Shrinks the preview box (never enlarges) so the real-size content fits the preview area.
+    private void FitBox(Border box, bool detailed, double maxH)
+    {
+        box.LayoutTransform = Transform.Identity;
+        if (!detailed || box.Visibility != Visibility.Visible) return;
+        box.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        double maxW = (box.Parent as FrameworkElement)?.ActualWidth is > 0 and var w ? w - 24 : 460;
+        double s = Math.Min(1, Math.Min(maxW / Math.Max(1, box.DesiredSize.Width), maxH / Math.Max(1, box.DesiredSize.Height)));
+        if (s < 1) box.LayoutTransform = new ScaleTransform(s, s);
     }
 
     private static Visibility Show(bool v) => v ? Visibility.Visible : Visibility.Collapsed;
