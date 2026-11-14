@@ -97,6 +97,14 @@ public sealed class MainViewModel : ObservableObject, IDisposable
  public Brush FpsBrush => double.TryParse(_fpsText, out var f) ? (f < 30 ? FpsBad : f < 60 ? FpsGood : FpsExcellent) : FpsIdle;
     private string _fpsText = "--", _fpsAvgText = "--";
     public string FpsAvgText { get => _fpsAvgText; set => Set(ref _fpsAvgText, value); }
+    public System.Collections.ObjectModel.ObservableCollection<double> FpsHistory { get; } = new(new double[ComponentViewModel.HistoryLength]);
+    private double _fpsMax = 60;
+    public double FpsMax { get => _fpsMax; private set => Set(ref _fpsMax, value); }
+    public void PushFps(double fps)
+    {
+        FpsHistory.RemoveAt(0); FpsHistory.Add(fps);
+        FpsMax = Math.Max(60, FpsHistory.Max() * 1.2);
+    }
     private bool _fpsActive;
     public bool FpsActive { get => _fpsActive; set => Set(ref _fpsActive, value); }
     public string SensorNote { get => _sensorNote; private set => Set(ref _sensorNote, value); }

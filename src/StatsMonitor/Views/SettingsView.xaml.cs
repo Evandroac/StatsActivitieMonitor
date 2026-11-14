@@ -206,7 +206,7 @@ public partial class SettingsView : UserControl
             if (vm.ShowGpuGadget) blocks.Add(new("GPU: ", "37%", t(Units.Temp(58)), "1,8 GHz", new double[] { 20, 35, 60, 45, 30, 52, 44, 37, 41, 33, 39, 37 }, "Accent2"));
             if (vm.ShowVramGadget) blocks.Add(new(Loc.T("Disco") + ": ", "12%", "", "R 12 MB/s · W 3 MB/s", new double[] { 5, 8, 4, 20, 12, 9, 30, 14, 8, 6, 10, 12 }, "Accent"));
             if (vm.ShowNetworkGadget) blocks.Add(new(Loc.T("NET: ↓ "), "12,3 Mbps", "", "↑ 1,2 Mbps · 18 ms", new double[] { 10, 30, 22, 45, 38, 25, 50, 42, 30, 35, 28, 33 }, "Accent"));
-            if (vm.ShowFpsGadget) blocks.Add(new("FPS: ", "144", "", Loc.T("Média: ") + "139", Array.Empty<double>(), "Accent"));
+            if (vm.ShowFpsGadget) blocks.Add(new("FPS: ", "144", "", Loc.T("Média: ") + "139", new double[] { 55, 60, 58, 66, 62, 70, 64, 68, 60, 66, 72, 68 }, "Accent"));
             if (blocks.Count == 0) blocks.Add(new(Loc.T("Nenhum indicador"), "", "", "", Array.Empty<double>(), "Accent"));
             FillDetailed(FloatingPanel, blocks, false);
             FillDetailed(BottomPanel, blocks, true);

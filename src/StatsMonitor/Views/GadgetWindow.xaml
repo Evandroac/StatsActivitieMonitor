@@ -92,6 +92,7 @@
                 </StackPanel>                <StackPanel x:Name="DFps" Width="176">
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
                     <TextBlock FontSize="10.5" Opacity="0.7"><Run Text="{h:Tr 'Média: '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}"/></TextBlock>
+                    <c:Sparkline Height="26" Margin="0,3,0,0" Values="{Binding FpsHistory}" Maximum="{Binding FpsMax}" Unit="FPS" Stroke="{DynamicResource Accent}"/>
                 </StackPanel>            </StackPanel>
             <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" Margin="-12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock x:Name="TCpu" FontSize="12" Margin="12,0,0,0">
