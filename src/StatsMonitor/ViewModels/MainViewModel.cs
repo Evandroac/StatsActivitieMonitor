@@ -149,11 +149,13 @@ public sealed class MainViewModel : ObservableObject, IDisposable
             Services.DataLogger.Write(s);
             SnapshotApplied?.Invoke(s);
             foreach (var a in _alerts.Evaluate(s, S)) { Services.AlertHistory.Add(a); AlertRaised?.Invoke(a); }
+            if (_greeting.Evaluate(S) is { } g) AlertRaised?.Invoke(g);
         });
     }
 
     private readonly Services.AlertNotifier _alerts = new();
     private readonly Services.NetworkAlertNotifier _netAlerts = new();
+    private readonly Services.GreetingNotifier _greeting = new();
     public event Action<Services.AlertEvent>? AlertRaised;
     public event Action<HardwareSnapshot>? SnapshotApplied;
 

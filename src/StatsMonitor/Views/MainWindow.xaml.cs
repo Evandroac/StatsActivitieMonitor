@@ -80,7 +80,7 @@ public partial class MainWindow : Window
         _vm.AlertRaised += a =>
         {
             _tray?.ShowBalloonTip(8000, a.Title, a.Message, a.IsInfo ? System.Windows.Forms.ToolTipIcon.Info : System.Windows.Forms.ToolTipIcon.Warning);
-            if (_settings.Current.AlertSound) System.Media.SystemSounds.Exclamation.Play();
+            if (_settings.Current.AlertSound && !a.IsGreeting) System.Media.SystemSounds.Exclamation.Play();
         };
     }
 

@@ -62,6 +62,26 @@ public class LocAndUnitsTests : IDisposable
 }
 
 [Collection("global-state")]
+public class GreetingTests
+{
+    [Fact]
+    public void Greets_once_per_period_and_follows_the_time_of_day()
+    {
+        var now = new DateTime(2025, 1, 1, 8, 0, 0);
+        var g = new GreetingNotifier(() => now);
+        var cfg = new AppSettings();
+        Assert.Equal(AlertKind.GreetingMorning, g.Evaluate(cfg)!.Kind);
+        Assert.Null(g.Evaluate(cfg));
+        now = now.AddHours(5);
+        Assert.Equal(AlertKind.GreetingAfternoon, g.Evaluate(cfg)!.Kind);
+        now = now.AddHours(6);
+        Assert.Equal(AlertKind.GreetingNight, g.Evaluate(cfg)!.Kind);
+        now = now.AddHours(4);
+        Assert.Null(g.Evaluate(cfg));
+        Assert.Null(new GreetingNotifier(() => now).Evaluate(new AppSettings { NotifyGreetings = false }));
+    }
+}
+
 public class NetworkAlertTests
 {
     private static NetworkSnapshot Net(bool connected, bool internet, long? lat = 20) =>

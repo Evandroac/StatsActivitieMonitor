@@ -4,11 +4,12 @@ using StatsMonitor.Settings;
 
 namespace StatsMonitor.Services;
 
-public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad, NoNetwork, NoInternet, NetworkRestored, HighLatency }
+public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad, NoNetwork, NoInternet, NetworkRestored, HighLatency, GreetingMorning, GreetingAfternoon, GreetingNight }
 
 public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
 {
-    public bool IsInfo => Kind == AlertKind.NetworkRestored;
+    public bool IsGreeting => Kind is AlertKind.GreetingMorning or AlertKind.GreetingAfternoon or AlertKind.GreetingNight;
+    public bool IsInfo => Kind == AlertKind.NetworkRestored || IsGreeting;
 
     public string Title => Kind switch
     {
@@ -16,11 +17,17 @@ public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
         AlertKind.NoNetwork or AlertKind.NoInternet => Loc.T("Sem conexão"),
         AlertKind.NetworkRestored => Loc.T("Conexão restabelecida"),
         AlertKind.HighLatency => Loc.T("Rede instável"),
+        AlertKind.GreetingMorning => Loc.T("Bom dia!"),
+        AlertKind.GreetingAfternoon => Loc.T("Boa tarde!"),
+        AlertKind.GreetingNight => Loc.T("Boa noite!"),
         _ => Loc.T("Uso muito alto"),
     };
 
     public string Message => Kind switch
     {
+        AlertKind.GreetingMorning => Loc.T("Tenha um ótimo dia! O Stats Monitor está acompanhando seu PC."),
+        AlertKind.GreetingAfternoon => Loc.T("Bom resto de dia! O Stats Monitor continua de olho no seu PC."),
+        AlertKind.GreetingNight => Loc.T("Boa noite! O Stats Monitor segue monitorando seu PC."),
         AlertKind.NoNetwork => Loc.T("Nenhuma rede ativa. Verifique o cabo ou o Wi-Fi."),
         AlertKind.NoInternet => Loc.T("Conectado à rede, mas sem acesso à internet."),
         AlertKind.NetworkRestored => Loc.T("A conexão com a internet voltou."),
@@ -152,4 +159,26 @@ public sealed class NetworkAlertNotifier
     }
 
     private AlertKind? _lastKind;
+}
+/// <summary>Greets once per period of the day (morning 05-12, afternoon 12-18, night otherwise), including at startup.</summary>
+public sealed class GreetingNotifier
+{
+    private readonly Func<DateTime> _now;
+    private (DateOnly Day, AlertKind Kind)? _last;
+
+    public GreetingNotifier(Func<DateTime>? now = null) => _now = now ?? (() => DateTime.Now);
+
+    public AlertEvent? Evaluate(AppSettings cfg)
+    {
+        if (!cfg.NotifyGreetings) return null;
+        var now = _now();
+        var kind = now.Hour is >= 5 and < 12 ? AlertKind.GreetingMorning
+                 : now.Hour is >= 12 and < 18 ? AlertKind.GreetingAfternoon
+                 : AlertKind.GreetingNight;
+        // After midnight the night period belongs to the previous day, so it is not repeated.
+        var day = DateOnly.FromDateTime(now.Hour < 5 ? now.AddDays(-1) : now);
+        if (_last is { } l && l.Day == day && l.Kind == kind) return null;
+        _last = (day, kind);
+        return new AlertEvent(kind, 0, 0);
+    }
 }
