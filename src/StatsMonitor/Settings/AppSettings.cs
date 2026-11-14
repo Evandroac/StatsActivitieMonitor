@@ -9,6 +9,7 @@ public sealed class AppearancePreset
 {
     public string Name { get; set; } = "";
     public bool DarkTheme { get; set; } = true;
+    public string ThemeId { get; set; } = "";
     public Dictionary<string, string> ColorOverrides { get; set; } = new();
     public int GadgetOpacity { get; set; } = 80;
     public string NormalColor { get; set; } = "#3DDC84";
@@ -41,6 +42,7 @@ public sealed class AppSettings
     public bool AlwaysShowGadget { get; set; }
     
     public bool DarkTheme { get; set; } = true;
+    public string ThemeId { get; set; } = "";
 
     // Custom colors keyed by theme resource name (WindowBg, CardBg, ...); missing/empty means theme default.
     public Dictionary<string, string> ColorOverrides { get; set; } = new();

@@ -4,7 +4,7 @@
         xmlns:c="clr-namespace:StatsMonitor.Controls"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         Title="{h:Tr 'Stats Monitor'}" Icon="/StatsMonitor.ico" Width="990" MinWidth="990" SizeToContent="Height"
-        Background="{DynamicResource WindowBg}" FontFamily="Segoe UI"
+        Background="{DynamicResource WindowBg}" FontFamily="{DynamicResource AppFont}"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="NavButton" TargetType="Button">
@@ -207,7 +207,7 @@
                          Background="{DynamicResource WindowBg}" Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource CardBorder}" CaretBrush="{DynamicResource TextPrimary}"
                          h:Hint.Text="{h:Tr 'Pesquisar…'}" TextChanged="OnSearchChanged" PreviewKeyDown="OnSearchKey"/>
                 <Popup x:Name="SearchPopup" PlacementTarget="{Binding ElementName=SearchRow}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
-                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Margin="0,2,8,8" MinWidth="300" MaxWidth="420">
+                    <Border Background="{DynamicResource PopupBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Margin="0,2,8,8" MinWidth="300" MaxWidth="420">
                         <ListBox x:Name="SearchList" MaxHeight="320" Background="Transparent" BorderThickness="0" Focusable="False"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseLeftButtonUp="OnSearchClick">
                             <ListBox.ItemTemplate>

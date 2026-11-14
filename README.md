@@ -58,7 +58,7 @@ Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir te
 
 ## Personalização
 
-Botão "Personalização" na janela principal (separado das configurações): tema base escuro/claro, cores de fundo, painéis, bordas, textos e destaques da janela principal, cor/texto/opacidade do gadget e cores dos alertas. Campos vazios usam o padrão do tema; "Restaurar padrões" limpa tudo.
+Botão "Personalização" na janela principal (separado das configurações): tema base escuro/claro, **temas visuais** em quadros de seleção (Windows XP/98, Cyberpunk e futurismo, Retrô 80/90, Vaporwave, Arcade 8-bit, CRT/Terminal, Moderno, Minimalista, Anime/kawaii, artísticos — cada um com paleta e fonte próprias, definidos em `Helpers\ThemeCatalog.cs`), cores de fundo, painéis, bordas, textos e destaques da janela principal, cor/texto/opacidade do gadget e cores dos alertas. Campos vazios usam o padrão do tema; "Restaurar padrões" limpa tudo.
 
 ## Testes
 

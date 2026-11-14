@@ -116,7 +116,7 @@ public static class SearchIndex
         Add(SearchPage.Settings, "Configurações › Atalho global", "Atalho global", "Ativar atalho para mostrar/ocultar o gadget", "Atalho:");
 
         Add(SearchPage.Appearance, "Personalização › Presets", "Minhas personalizações", "Salvar como", "Carregar", "Excluir");
-        Add(SearchPage.Appearance, "Personalização › Tema", "Tema base", "Escuro", "Claro", "Restaurar padrões");
+        Add(SearchPage.Appearance, "Personalização › Tema", "Tema base", "Escuro", "Claro", "Restaurar padrões", "Temas visuais", "Tema", "Estilo", "Fonte", "Cor de fundo do menu de cores", "Windows XP (Oliva)", "Cyberpunk Neon", "Futurista (Gelo)", "Holograma", "Synthwave anos 80", "Vintage sépia", "Anos 90", "Vaporwave pastel", "Terminal verde", "Terminal âmbar", "Moderno claro", "Grafite", "Nórdico", "Branco puro", "Preto puro", "Sakura kawaii", "Neo Tóquio", "Matcha zen", "Pôr do sol", "Oceano profundo", "Art déco", "🎨  Temas visuais", "Escolha um estilo completo: cores, fonte e clima do aplicativo. Você ainda pode ajustar cada cor depois.", "Windows XP", "Windows 98", "Cyberpunk", "Futurismo", "Retrô", "Vintage", "Anos 80", "Anos 90", "Vaporwave", "Arcade", "8-bit", "CRT", "Terminal", "Minimalismo", "Anime", "Kawaii", "Japonês", "Game Boy", "Synthwave");
         Add(SearchPage.Appearance, "Personalização › Cores",
             "Cores dos alertas de temperatura", "Janela principal (maximizada)", "Fundo da janela", "Fundo dos painéis",
             "Borda dos painéis", "Texto principal", "Texto secundário", "Destaque (CPU, GPU, rede)", "Destaque (memória)",

@@ -13,7 +13,7 @@
 
             <Style TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontFamily" Value="{DynamicResource AppFont}"/>
             </Style>
             <Style x:Key="Caption" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
@@ -288,7 +288,7 @@
                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" IsHitTestVisible="False"/>
                                 <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
                                     <Border MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" Margin="0,4,0,0" Padding="3"
-                                            Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" CornerRadius="6">
+                                            Background="{DynamicResource PopupBg}" BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1" CornerRadius="6">
                                         <StackPanel IsItemsHost="True"/>
                                     </Border>
                                 </Popup>

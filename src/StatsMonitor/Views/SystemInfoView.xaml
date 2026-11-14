@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         xmlns:c="clr-namespace:StatsMonitor.Controls"
-        FontFamily="Segoe UI">
+        FontFamily="{DynamicResource AppFont}">
     <UserControl.Resources>
         <Style x:Key="CopyButton" TargetType="Button">
             <Setter Property="Content" Value="📋"/>

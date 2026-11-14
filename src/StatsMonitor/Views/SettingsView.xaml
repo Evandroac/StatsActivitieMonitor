@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:h="clr-namespace:StatsMonitor.Helpers"
         xmlns:local="clr-namespace:StatsMonitor.Views"
-        FontFamily="Segoe UI">
+        FontFamily="{DynamicResource AppFont}">
     <UserControl.Resources>
         <h:TempUnitConverter x:Key="TempConv"/>
         <Style x:Key="WarnText" TargetType="TextBlock">
