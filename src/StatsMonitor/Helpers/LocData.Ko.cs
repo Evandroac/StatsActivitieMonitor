@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 
 public static partial class LocData
 {
@@ -478,6 +478,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "커밋된 메모리",
         ["Tipo e velocidade"] = "종류 및 속도",
         ["Módulos instalados"] = "설치된 모듈",
+        ["Detalhada sem gráficos"] = "자세히 (차트 없음)",
+        ["Mudar para a visão detalhada sem gráficos"] = "차트 없는 자세한 보기로 전환",
         ["Excluir"] = "삭제",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "관리자 권한으로 실행: 상승된 권한으로 앱을 다시 엽니다 (온도 표시에 필요)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "게임(전체 화면 또는 테두리 없음)이 전면에 있을 때 가젯에 초당 프레임 수(FPS)를 표시합니다. 관리자 권한이 필요합니다.",

@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 
 public static partial class LocData
 {
@@ -478,6 +478,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "Memoria confirmada (commit)",
         ["Tipo e velocidade"] = "Tipo y velocidad",
         ["Módulos instalados"] = "Módulos instalados",
+        ["Detalhada sem gráficos"] = "Detallada sin gráficos",
+        ["Mudar para a visão detalhada sem gráficos"] = "Cambiar a la vista detallada sin gráficos",
         ["Excluir"] = "Eliminar",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Ejecutar como administrador: reabre la app con privilegios elevados (necesario para las temperaturas)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Muestra los fotogramas por segundo en el gadget mientras un juego (pantalla completa o sin bordes) está en primer plano. Requiere administrador.",

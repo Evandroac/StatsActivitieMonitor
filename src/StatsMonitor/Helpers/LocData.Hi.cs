@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 
 public static partial class LocData
 {
@@ -478,6 +478,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "कमिटेड मेमोरी",
         ["Tipo e velocidade"] = "प्रकार और गति",
         ["Módulos instalados"] = "स्थापित मॉड्यूल",
+        ["Detalhada sem gráficos"] = "विस्तृत (चार्ट के बिना)",
+        ["Mudar para a visão detalhada sem gráficos"] = "चार्ट के बिना विस्तृत दृश्य पर स्विच करें",
         ["Excluir"] = "हटाएँ",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "व्यवस्थापक के रूप में चलाएँ: ऐप को उच्च अधिकारों के साथ फिर खोलता है (तापमान के लिए आवश्यक)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "गेम (फ़ुलस्क्रीन या बॉर्डरलेस) सामने होने पर गैजेट में फ़्रेम प्रति सेकंड दिखाता है। व्यवस्थापक आवश्यक।",

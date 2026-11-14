@@ -197,7 +197,8 @@ public partial class SettingsView : UserControl
         bool off = vm.GadgetNone || !vm.ShowGadget;
         if (floating.Count == 0) { floating.Add(Loc.T("Nenhum indicador")); taskbar.Add(Loc.T("Nenhum indicador")); }
 
-        bool detailed = vm.GadgetViewKey == "Detailed";
+        bool detailed = vm.GadgetViewKey is "Detailed" or "DetailedPlain";
+        bool plain = vm.GadgetViewKey == "DetailedPlain";
         if (detailed)
         {
             var blocks = new List<DetailBlock>();
@@ -208,6 +209,7 @@ public partial class SettingsView : UserControl
             if (vm.ShowNetworkGadget) blocks.Add(new(Loc.T("NET: ↓ "), "12,3 Mbps", "", "↑ 1,2 Mbps · 18 ms", new double[] { 10, 30, 22, 45, 38, 25, 50, 42, 30, 35, 28, 33 }, "Accent"));
             if (vm.ShowFpsGadget) blocks.Add(new("FPS: ", "144", "", Loc.T("Média: ") + "139", new double[] { 55, 60, 58, 66, 62, 70, 64, 68, 60, 66, 72, 68 }, "Accent"));
             if (blocks.Count == 0) blocks.Add(new(Loc.T("Nenhum indicador"), "", "", "", Array.Empty<double>(), "Accent"));
+            if (plain) blocks = blocks.Select(b => b with { Data = Array.Empty<double>() }).ToList();
             FillDetailed(FloatingPanel, blocks, false);
             FillDetailed(BottomPanel, blocks, true);
             FillDetailed(BarPanel, blocks, true);

@@ -85,8 +85,12 @@ public partial class GadgetWindow : Window
         TaskbarPanel.Visibility = taskbar && !detailed ? Visibility.Visible : Visibility.Collapsed;
         DetailPanel.Visibility = detailed ? Visibility.Visible : Visibility.Collapsed;
         DetailPanel.Orientation = taskbar ? System.Windows.Controls.Orientation.Horizontal : System.Windows.Controls.Orientation.Vertical;
-        foreach (FrameworkElement block in DetailPanel.Children)
+        foreach (System.Windows.Controls.Panel block in DetailPanel.Children)
+        {
             block.Margin = taskbar ? new Thickness(0, 0, 14, 0) : new Thickness(0, 0, 0, 8);
+            foreach (var child in block.Children)
+                if (child is StatsMonitor.Controls.Sparkline sl) sl.Visibility = _settings.Current.GadgetNoCharts ? Visibility.Collapsed : Visibility.Visible;
+        }
         Root.Padding = mode switch
         {
             GadgetDisplayMode.FloatingBar => new Thickness(12, 6, 12, 6),
@@ -217,8 +221,8 @@ public partial class GadgetWindow : Window
         Body.Opacity = s.GadgetFaded ? FadedOpacity : 1;
         if (s.GadgetFaded) { Root.Background = HitBrush; Root.BorderBrush = Brushes.Transparent; }
         else { Root.ClearValue(System.Windows.Controls.Border.BackgroundProperty); Root.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardBorder"); }
-        BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
-        BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
+        BtnView.Content = !s.GadgetDetailed ? "▤" : s.GadgetNoCharts ? "▢" : "▣";
+        BtnView.ToolTip = Loc.T(!s.GadgetDetailed ? "Mudar para a visão detalhada" : s.GadgetNoCharts ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada sem gráficos");
         MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)");
         MoveY.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na vertical (funciona mesmo com o gadget fixo)");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
@@ -242,7 +246,10 @@ public partial class GadgetWindow : Window
 
     private void OnToggleView(object sender, RoutedEventArgs e)
     {
-        _settings.Current.GadgetDetailed = !_settings.Current.GadgetDetailed;
+        var c = _settings.Current;
+        if (!c.GadgetDetailed) { c.GadgetDetailed = true; c.GadgetNoCharts = false; }
+        else if (!c.GadgetNoCharts) c.GadgetNoCharts = true;
+        else { c.GadgetDetailed = false; c.GadgetNoCharts = false; }
         _settings.Save();
         ApplyLockAndFade();
         ApplyMode();

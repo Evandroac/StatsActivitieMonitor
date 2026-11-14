@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 
 /// <summary>Simplified Chinese translations keyed by the original Portuguese text.</summary>
 public static partial class LocData
@@ -479,6 +479,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "已提交内存",
         ["Tipo e velocidade"] = "类型和速度",
         ["Módulos instalados"] = "已安装模块",
+        ["Detalhada sem gráficos"] = "详细（无图表）",
+        ["Mudar para a visão detalhada sem gráficos"] = "切换到无图表的详细视图",
         ["Excluir"] = "删除",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "以管理员身份运行：以提升的权限重新打开应用（读取温度需要）",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "当游戏（全屏或无边框）位于前台时，在小工具中显示每秒帧数。需要管理员权限。",

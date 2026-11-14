@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 
 public static partial class LocData
 {
@@ -478,6 +478,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "Zugesagter Speicher (Commit)",
         ["Tipo e velocidade"] = "Typ und Geschwindigkeit",
         ["Módulos instalados"] = "Installierte Module",
+        ["Detalhada sem gráficos"] = "Detailliert ohne Diagramme",
+        ["Mudar para a visão detalhada sem gráficos"] = "Zur detaillierten Ansicht ohne Diagramme wechseln",
         ["Excluir"] = "Löschen",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Als Administrator ausführen: startet die App mit erhöhten Rechten neu (für Temperaturen erforderlich)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Zeigt die Bilder pro Sekunde im Gadget, solange ein Spiel (Vollbild oder randlos) im Vordergrund ist. Erfordert Administratorrechte.",

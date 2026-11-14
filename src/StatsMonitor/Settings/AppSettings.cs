@@ -31,6 +31,9 @@ public sealed class AppSettings
     public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
     /// <summary>False = simplified gadget (text only); true = detailed gadget with extra info and mini charts.</summary>
     public bool GadgetDetailed { get; set; }
+
+    /// <summary>With the detailed gadget: hides the mini charts (dashboards), keeping the extra text.</summary>
+    public bool GadgetNoCharts { get; set; }
     public int UpdateIntervalMs { get; set; } = 1000;
     /// <summary>Per-component update interval in ms; 0 follows the general interval.</summary>
     public int CpuIntervalMs { get; set; }

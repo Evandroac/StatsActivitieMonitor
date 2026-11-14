@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 public static partial class LocData
 {
     public static readonly Dictionary<string, string> Ru = new()
@@ -477,6 +477,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "Выделенная память (commit)",
         ["Tipo e velocidade"] = "Тип и скорость",
         ["Módulos instalados"] = "Установленные модули",
+        ["Detalhada sem gráficos"] = "Подробный вид без графиков",
+        ["Mudar para a visão detalhada sem gráficos"] = "Переключить на подробный вид без графиков",
         ["Excluir"] = "Удалить",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Запуск от имени администратора: перезапускает приложение с повышенными правами (нужно для температур)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Показывает кадры в секунду в гаджете, пока игра (полноэкранная или без рамки) на переднем плане. Требуются права администратора.",

@@ -36,6 +36,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
         _gadgetDetailed = s.GadgetDetailed;
+        _gadgetNoCharts = s.GadgetNoCharts;
         _gadgetMode = s.GadgetMode == GadgetDisplayMode.Taskbar ? GadgetDisplayMode.BottomRight : s.GadgetMode;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
@@ -152,11 +153,16 @@ public sealed class SettingsViewModel : ObservableObject
     public bool GadgetTopRight { get => _gadgetMode == GadgetDisplayMode.TopRight; set => SetMode(value, GadgetDisplayMode.TopRight); }
     public bool GadgetBottomLeft { get => _gadgetMode == GadgetDisplayMode.BottomLeft; set => SetMode(value, GadgetDisplayMode.BottomLeft); }
     public bool GadgetBottomRight { get => _gadgetMode == GadgetDisplayMode.BottomRight; set => SetMode(value, GadgetDisplayMode.BottomRight); }
-    private bool _gadgetDetailed;
+    private bool _gadgetDetailed, _gadgetNoCharts;
     public string GadgetViewKey
     {
-        get => _gadgetDetailed ? "Detailed" : "Simple";
-        set { bool d = value == "Detailed"; if (_gadgetDetailed != d) { _gadgetDetailed = d; Raise(); AutoSave(); } }
+        get => !_gadgetDetailed ? "Simple" : _gadgetNoCharts ? "DetailedPlain" : "Detailed";
+        set
+        {
+            bool d = value is "Detailed" or "DetailedPlain", n = value == "DetailedPlain";
+            if (_gadgetDetailed == d && _gadgetNoCharts == n) return;
+            _gadgetDetailed = d; _gadgetNoCharts = n; Raise(); AutoSave();
+        }
     }
     public string GadgetModeKey
     {
@@ -296,6 +302,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = _gadgetMode;
         s.GadgetDetailed = _gadgetDetailed;
+        s.GadgetNoCharts = _gadgetNoCharts;
         s.Language = _language;
  s.FontScalePercent = _fontScale;
         s.TempUnit = _fahrenheit ? "F" : "C";

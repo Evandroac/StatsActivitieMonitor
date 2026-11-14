@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 public static partial class LocData
 {
     public static readonly Dictionary<string, string> ZhTw = new()
@@ -477,6 +477,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "已認可記憶體（commit）",
         ["Tipo e velocidade"] = "類型與速度",
         ["Módulos instalados"] = "已安裝的模組",
+        ["Detalhada sem gráficos"] = "詳細（無圖表）",
+        ["Mudar para a visão detalhada sem gráficos"] = "切換到無圖表的詳細檢視",
         ["Excluir"] = "刪除",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "以系統管理員身分執行：以提升的權限重新開啟應用程式（讀取溫度所需）",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "當遊戲（全螢幕或無邊框）位於前景時，在小工具中顯示每秒畫面數。需要系統管理員權限。",

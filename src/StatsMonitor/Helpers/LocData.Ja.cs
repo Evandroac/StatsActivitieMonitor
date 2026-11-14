@@ -1,4 +1,4 @@
-namespace StatsMonitor.Helpers;
+﻿namespace StatsMonitor.Helpers;
 
 /// <summary>Japanese translations keyed by the original Portuguese text.</summary>
 public static partial class LocData
@@ -480,6 +480,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "コミット済みメモリ",
         ["Tipo e velocidade"] = "種類と速度",
         ["Módulos instalados"] = "搭載モジュール",
+        ["Detalhada sem gráficos"] = "詳細（グラフなし）",
+        ["Mudar para a visão detalhada sem gráficos"] = "グラフなしの詳細表示に切り替え",
         ["Excluir"] = "削除",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "管理者として実行：昇格した権限でアプリを再起動します（温度の取得に必要）",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "ゲーム（フルスクリーンまたはボーダーレス）が前面にあるとき、ガジェットに毎秒フレーム数を表示します。管理者権限が必要です。",

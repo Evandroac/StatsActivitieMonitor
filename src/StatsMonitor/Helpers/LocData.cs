@@ -480,6 +480,8 @@ public static partial class LocData
         ["Memória confirmada (commit)"] = "Committed memory",
         ["Tipo e velocidade"] = "Type and speed",
         ["Módulos instalados"] = "Installed modules",
+        ["Detalhada sem gráficos"] = "Detailed without charts",
+        ["Mudar para a visão detalhada sem gráficos"] = "Switch to the detailed view without charts",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",
