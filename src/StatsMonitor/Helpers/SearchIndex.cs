@@ -96,7 +96,8 @@ public static class SearchIndex
             "Idioma", "Unidade de temperatura", "Visualização simplificada", "Perfis", "Seguir o tema do Windows", "Atalho global",
             "Exportar configurações", "Importar configurações", "Restaurar padrões", "Notificações de alerta", "Tocar som de alerta", "Testar alerta",
             "Sensores (ventiladores, energia, tensões, bateria)", "Pausar a leitura quando oculto e sem gadget",
-            "Ler sensores de disco e placa-mãe com menos frequência");
+            "Ler sensores de disco e placa-mãe com menos frequência", "Modo econômico ao minimizar", "Exibir tela de abertura (splash)",
+            "Geral", "Gadget", "Alertas", "Registro de dados", "Personalização", "Perfis", "Seções", "Ações", "Restaurar cores do tema");
         Add(SearchPage.Settings, "Configurações › Gadget",
             "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar",
             "Sobre a tela (flutuante, arrastável)", "Na barra de tarefas, canto direito (widget)",
@@ -106,7 +107,10 @@ public static class SearchIndex
             "Painéis exibidos", "Janela principal", "Gadget (minimizado)", "CPU", "GPU", "Memória RAM", "Discos", "Rede / Internet", "Bateria (notebooks)", "FPS (em jogos)");
         Add(SearchPage.Settings, "Configurações › Alertas de temperatura", "Alertas de temperatura (°C)", "Atenção", "Crítica");
         Add(SearchPage.Settings, "Configurações › Alertas", "Notificar ao passar do limite crítico", "Uso crítico (%):",
-            "Tempo acima do limite (s):", "Intervalo mínimo entre avisos (min):", "Histórico de alertas", "Limpar", "Nenhum alerta registrado");
+            "Tempo acima do limite (s):", "Intervalo mínimo entre avisos (min):", "Histórico de alertas", "Limpar", "Nenhum alerta registrado",
+            "Níveis de alerta:", "Atenção e críticos", "Somente atenção", "Somente críticos", "Saudações (bom dia, boa tarde, boa noite)",
+            "Alertas inteligentes de rede (sem conexão, sem internet, latência alta)", "Bateria fraca - atenção (%):", "Bateria crítica (%):");
+        Add(SearchPage.Settings, "Configurações › Perfis", "Aplicar", "Excluir", "Salvar atual no perfil", "Nome do perfil", "Perfis de configuração");
         Add(SearchPage.Settings, "Configurações › Registro de dados", "Registro de dados", "Gravar leituras em arquivo CSV", "Intervalo entre registros (s):", "Abrir pasta de registros");
         Add(SearchPage.Settings, "Configurações › Tamanho da fonte", "Tamanho da fonte", "Tamanho dos textos", "Zoom da interface");
         Add(SearchPage.Settings, "Configurações › Atalho global", "Atalho global", "Ativar atalho para mostrar/ocultar o gadget", "Atalho:");
@@ -123,7 +127,7 @@ public static class SearchIndex
         Add(SearchPage.Main, "Principal › GPU", "Uso da VRAM", "Frequência da memória", "Consumo energético", "Ventoinhas");
         Add(SearchPage.Main, "Principal › Discos", "Leitura", "Escrita", "Saúde SMART", "Vida útil", "Tempo de atividade");
         Add(SearchPage.Main, "Principal › Rede", "Download", "Upload", "Latência", "Conexão");
-        Add(SearchPage.Main, "Principal", "Tempo ligado", "Última atualização", "Monitor", "Visualização simplificada");
+        Add(SearchPage.Main, "Principal", "Copiar tudo", "Executar como administrador", "Menu de navegação", "Versão do sistema", "Pesquisa geral", "Tempo ligado", "Última atualização", "Monitor", "Visualização simplificada");
         if (BatteryService.HasBattery)
             Add(SearchPage.Main, "Principal › Bateria", "Bateria", "Nível de carga", "Status da bateria", "Tempo restante", "Tempo para carga completa",
                 "Estado de conservação", "Fonte de alimentação", "Capacidade atual (carga máxima)", "Capacidade original (projeto)", "Ciclos de carga", "Economia de bateria");

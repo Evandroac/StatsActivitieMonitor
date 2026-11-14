@@ -40,7 +40,7 @@ public partial class App : Application
         Loc.SetLanguage(settings.Current.Language);
 
         var splash = new SplashWindow();
-        splash.Show();
+        if (settings.Current.ShowSplash) splash.Show();
         async Task Step(string pt, string en, double pct)
         {
             splash.Log(SplashWindow.Text(pt, en), pct);
@@ -49,6 +49,7 @@ public partial class App : Application
 
         try
         {
+            bool showSplash = settings.Current.ShowSplash;
             await Step("Carregando configurações…", "Loading settings…", 5);
             Units.SetFahrenheit(settings.Current.TempUnit == "F");
             ThemeHelper.Apply(settings.Current);
@@ -92,7 +93,7 @@ public partial class App : Application
 
             MainWindow = main;
             main.Show();
-            await splash.FadeOutAsync();
+            if (showSplash) await splash.FadeOutAsync();
         }
         finally { splash.Close(); }
     }

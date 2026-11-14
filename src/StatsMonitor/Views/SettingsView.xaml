@@ -125,6 +125,7 @@
         <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 10 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
                     <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>
         <CheckBox Content="{h:Tr 'Ler sensores de disco e placa-mãe com menos frequência'}" ToolTip="{h:Tr 'Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais'}" IsChecked="{Binding SlowSensors}"/>
+        <CheckBox Content="{h:Tr 'Exibir tela de abertura (splash)'}" ToolTip="{h:Tr 'Mostra a tela de carregamento ao iniciar o aplicativo'}" IsChecked="{Binding ShowSplash}"/>
         <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
         </StackPanel></Border>
@@ -271,6 +272,14 @@
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Intervalo mínimo entre avisos (min):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0" Maximum="240" Step="1" ToolTip="{h:Tr 'Tempo mínimo entre dois avisos do mesmo tipo'}" Value="{Binding AlertCooldownMinutes}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4" Visibility="{Binding HasBattery, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{h:Tr 'Bateria fraca - atenção (%):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="2" Maximum="90" Step="1" ToolTip="{h:Tr 'Avisa quando a bateria em uso chegar a este nível'}" Value="{Binding BatteryLowPercent}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,4" Visibility="{Binding HasBattery, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{h:Tr 'Bateria crítica (%):'}" VerticalAlignment="Center" Width="200"/>
+            <local:NumericBox Minimum="1" Maximum="89" Step="1" ToolTip="{h:Tr 'Avisa quando a bateria em uso chegar a este nível crítico'}" Value="{Binding BatteryCriticalPercent}"/>
         </StackPanel>
         <TextBlock Style="{StaticResource WarnText}" Text="{Binding AlertWarning}"/>
         <DockPanel Margin="0,14,0,6">

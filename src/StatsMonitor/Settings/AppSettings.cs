@@ -99,6 +99,9 @@ public sealed class AppSettings
 
     public bool ShowSensorsMain { get; set; } = true;
     public bool ShowBatteryMain { get; set; } = true;
+    public bool ShowSplash { get; set; } = true;
+    public int BatteryLowPercent { get; set; } = 20;
+    public int BatteryCriticalPercent { get; set; } = 10;
 
     public string? ActiveProfile { get; set; }
     public List<SettingsProfile> Profiles { get; set; } = new();

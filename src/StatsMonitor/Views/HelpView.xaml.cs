@@ -48,8 +48,8 @@ public partial class HelpView : UserControl
               "📋 Copy: click any value or label to copy it. A short message confirms the copy."),
             L("📈 Páginas de componente: mostram gráficos, detalhes e sensores extras de cada peça.",
               "📈 Component pages: show charts, details and extra sensors for each part."),
-            L("⚙️ Configurações: intervalo de leitura (geral e por componente), painéis visíveis, limites de temperatura, aparência, tamanho da fonte, idioma, unidade °C/°F e perfis (Jogo, Trabalho, Silencioso).",
-              "⚙️ Settings: update interval (general and per component), visible panels, temperature limits, appearance, font size, language, °C/°F unit and profiles (Gaming, Work, Quiet)."),
+            L("⚙️ Configurações (seções Geral, Gadget, Painéis exibidos, Alertas, Registro de dados, Personalização e Perfis): intervalo de leitura (geral e por componente), tela de abertura, modo econômico, painéis visíveis, limites de temperatura e de bateria, alertas, registro CSV, aparência, tamanho da fonte, idioma, unidade °C/°F, atalho global, exportar/importar e perfis (Jogo, Trabalho, Silencioso). Tudo é salvo automaticamente.",
+              "⚙️ Settings (sections General, Gadget, Displayed panels, Alerts, Data logging, Customization and Profiles): update interval (general and per component), startup splash, eco mode, visible panels, temperature and battery limits, alerts, CSV logging, appearance, font size, language, °C/°F unit, global hotkey, export/import and profiles (Gaming, Work, Quiet). Everything is saved automatically."),
             L("🎨 Cores: verde, amarelo e vermelho indicam normal, atenção e crítico, de acordo com os limites que você definiu.",
               "🎨 Colors: green, yellow and red mean normal, attention and critical, based on the limits you set."),
         ]);
@@ -76,8 +76,8 @@ public partial class HelpView : UserControl
               "Time remaining and time to full charge: estimates based on the current charge and the present draw (or charging speed). They vary with usage and show Calculating… until data is available."),
             L("Estado de conservação: compara a capacidade atual (carga máxima) com a capacidade original de fábrica. 80% ou mais é Boa, de 60% a 80% é Desgastada e abaixo de 60% é Ruim. A página também mostra ciclos de carga, fabricante e tecnologia, quando o computador informa.",
               "Battery health: compares the current capacity (full charge) with the original factory capacity. 80% or more is Good, 60% to 80% is Worn and below 60% is Poor. The page also shows charge cycles, manufacturer and chemistry when the computer reports them."),
-            L("Alertas: aviso de bateria fraca (20%, atenção) e crítica (10%) enquanto descarrega, respeitando a sua escolha de alertas. Em modo econômico a bateria é lida a cada 30 s. Nem todo notebook informa capacidade, ciclos ou ritmo de carga; o que faltar aparece como N/D.",
-              "Alerts: low battery (20%, attention) and critical battery (10%) while discharging, following your alert choice. In eco mode the battery is read every 30 s. Not every laptop reports capacity, cycles or charge rate; whatever is missing shows as N/A."),
+            L("Alertas: aviso de bateria fraca (20% por padrão, atenção) e crítica (10%), ajustáveis em Configurações › Alertas, enquanto descarrega, respeitando a sua escolha de alertas. Em modo econômico a bateria é lida a cada 30 s. Nem todo notebook informa capacidade, ciclos ou ritmo de carga; o que faltar aparece como N/D.",
+              "Alerts: low battery (20% by default, attention) and critical battery (10%), adjustable in Settings › Alerts, while discharging, following your alert choice. In eco mode the battery is read every 30 s. Not every laptop reports capacity, cycles or charge rate; whatever is missing shows as N/A."),
         ]);
         Card("🌐", 8, [
             L("Ferramentas de rede para diagnosticar problemas de conexão. Nada é executado até você clicar em Executar/Iniciar, e cada teste pode ser interrompido com Parar.",
@@ -148,6 +148,8 @@ public partial class HelpView : UserControl
               "Why does the app ask for administrator permission? Because reading sensors requires hardware access."),
             L("Como deixar o app mais leve? Aumente o intervalo, use o modo econômico, a visão simplificada ou o perfil Silencioso.",
               "How do I make the app lighter? Increase the interval, use eco mode, the simplified view or the Quiet profile."),
+            L("Ao abrir, uma tela de abertura mostra o progresso e os logs do carregamento; a janela principal só aparece quando CPU, GPU, memória, discos e rede estão carregados. Dá para desligá-la em Configurações › Geral.",
+              "On launch, a splash screen shows loading progress and logs; the main window only appears once CPU, GPU, memory, disks and network are loaded. You can turn it off in Settings › General."),
             L("O app inicia com o Windows? Só se você ativar a opção em Configurações. Ele também pode iniciar minimizado.",
               "Does the app start with Windows? Only if you enable it in Settings. It can also start minimized."),
             L("Como desligar as notificações? Em Configurações, na seção de alertas.",

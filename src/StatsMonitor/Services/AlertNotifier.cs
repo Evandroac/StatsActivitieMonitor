@@ -216,7 +216,7 @@ public sealed class GreetingNotifier
 /// <summary>Battery alerts while discharging: attention at 20% and critical at 10%, once per discharge episode.</summary>
 public sealed class BatteryAlertNotifier
 {
-    public const int LowPercent = 20, CriticalPercent = 10, Rearm = 5;
+    public const int Rearm = 5;
     private bool _lowFired, _criticalFired;
 
     public IReadOnlyList<AlertEvent> Evaluate(BatteryInfo b, AppSettings cfg)
@@ -227,6 +227,7 @@ public sealed class BatteryAlertNotifier
             if (b.Present && b.State != BatteryState.Discharging) { _lowFired = false; _criticalFired = false; }
             return events;
         }
+        int LowPercent = Math.Clamp(cfg.BatteryLowPercent, 2, 90), CriticalPercent = Math.Clamp(cfg.BatteryCriticalPercent, 1, LowPercent - 1);
         if (p > LowPercent + Rearm) { _lowFired = false; _criticalFired = false; }
         if (!cfg.NotifyAlerts) return events;
 
