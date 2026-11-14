@@ -96,11 +96,8 @@ public sealed class ComponentViewModel : ObservableObject
         MinMaxText = _minTemp.HasValue ? Loc.T("mín {0} · máx {1}", Units.Temp(_minTemp!.Value), Units.Temp(_maxTemp!.Value)) : NotAvailable;
         RefreshBrush();
 
-        if (ShowChart)
-        {
-            History.RemoveAt(0);
-            History.Add(load ?? 0);
-        }
+        History.RemoveAt(0);
+        History.Add(load ?? 0);
     }
 
     private int _alertLevel;
