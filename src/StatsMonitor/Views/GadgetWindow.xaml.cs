@@ -32,6 +32,10 @@ public partial class GadgetWindow : Window
         MouseEnter += (_, _) => UpdateTools(true);
         MouseLeave += (_, _) => UpdateTools(false);
         Deactivated += (_, _) => UpdateTools(IsMouseOver);
+        Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
+        Tools.Opacity = BtnLock.Opacity = 0; _toolsScale.ScaleY = 0;
+        Tools.LayoutTransform = _toolsScale;
+        SizeChanged += (_, _) => { if (_toolsAnimating && IsFixedPosition) Reposition(); };
         // Safety net: hide the buttons if the mouse left without a MouseLeave (e.g. after a drag).
         var hoverWatch = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
         hoverWatch.Tick += (_, _) => { if (IsVisible && Tools.Visibility == Visibility.Visible) UpdateTools(IsMouseOver); };
@@ -238,15 +242,51 @@ public partial class GadgetWindow : Window
     {
         // The window lags behind the cursor while resizing/moving; keep the controls alive during a drag.
         hover |= Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging;
-        var want = hover ? Visibility.Visible : Visibility.Collapsed;
-        bool changed = Tools.Visibility != want;
-        Tools.Visibility = BtnLock.Visibility = want;
+        bool dragging = Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
-        // The tools row changes the height; keep pinned layouts anchored to their edge.
-        if (changed && IsVisible && IsFixedPosition && !(Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging))
-            Dispatcher.BeginInvoke(new Action(() => { UpdateLayout(); Reposition(); }), System.Windows.Threading.DispatcherPriority.Loaded);
+        if (hover == _toolsShown) return;
+        _toolsShown = hover;
+        SetToolsAnimated(hover, !dragging && IsVisible && _settings.Current.AnimationsEnabled);
     }
 
+    private bool _toolsShown;
+    private bool _toolsAnimating;
+    private readonly System.Windows.Media.ScaleTransform _toolsScale = new(1, 1);
+
+    // Fades the buttons in/out while the tools row grows/shrinks, so the gadget resizes smoothly.
+    private void SetToolsAnimated(bool show, bool animate)
+    {
+        Tools.LayoutTransform = _toolsScale;
+        Tools.RenderTransformOrigin = new Point(0.5, 0);
+        var fade = new System.Windows.Media.Animation.DoubleAnimation { To = show ? 1 : 0, Duration = TimeSpan.FromMilliseconds(show ? 180 : 140), EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut } };
+        var grow = fade.Clone();
+        if (show) { Tools.Visibility = BtnLock.Visibility = Visibility.Visible; }
+        if (!animate)
+        {
+            _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleYProperty, null);
+            Tools.BeginAnimation(OpacityProperty, null); BtnLock.BeginAnimation(OpacityProperty, null);
+            _toolsScale.ScaleY = show ? 1 : 0; Tools.Opacity = BtnLock.Opacity = show ? 1 : 0;
+            if (!show) Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
+            AfterToolsResize();
+            return;
+        }
+        if (show) { _toolsScale.ScaleY = 0.001; Tools.Opacity = BtnLock.Opacity = 0; }
+        _toolsAnimating = true;
+        grow.Completed += (_, _) =>
+        {
+            _toolsAnimating = false;
+            if (!_toolsShown) Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
+            AfterToolsResize();
+        };
+        _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleYProperty, grow);
+        Tools.BeginAnimation(OpacityProperty, fade);
+        BtnLock.BeginAnimation(OpacityProperty, fade.Clone());
+    }
+
+    private void AfterToolsResize()
+    {
+        if (IsVisible && IsFixedPosition) Dispatcher.BeginInvoke(new Action(() => { UpdateLayout(); Reposition(); }), System.Windows.Threading.DispatcherPriority.Loaded);
+    }
     private void OnToggleLock(object sender, RoutedEventArgs e)
     {
         _settings.Current.GadgetLocked = !_settings.Current.GadgetLocked;
