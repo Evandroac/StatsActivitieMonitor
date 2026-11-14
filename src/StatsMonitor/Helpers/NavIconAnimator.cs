@@ -1,11 +1,11 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace StatsMonitor.Helpers;
 
-/// <summary>Small hover animations for the icons of the side menu (e.g. the settings gear spins).</summary>
+/// <summary>Small click animations for the icons of the side menu (e.g. the settings gear spins).</summary>
 public static class NavIconAnimator
 {
     public enum Kind { Spin, Turn, Wiggle, Pulse, Bounce }
@@ -48,7 +48,7 @@ public static class NavIconAnimator
         switch (kind)
         {
             case Kind.Spin:
-                s.Rot.BeginAnimation(RotateTransform.AngleProperty, Anim(0, 360, 2.2, forever: true));
+                s.Rot.BeginAnimation(RotateTransform.AngleProperty, Anim(0, 720, 1.2, ease: new CubicEase { EasingMode = EasingMode.EaseInOut }));
                 break;
             case Kind.Turn:
                 s.Rot.BeginAnimation(RotateTransform.AngleProperty, Anim(0, 360, 0.7, ease: new CubicEase { EasingMode = EasingMode.EaseInOut }));
@@ -60,12 +60,12 @@ public static class NavIconAnimator
                 s.Rot.BeginAnimation(RotateTransform.AngleProperty, w);
                 break;
             case Kind.Pulse:
-                var pulse = Anim(1, 1.25, 0.45, forever: true, autoReverse: true, ease: new SineEase { EasingMode = EasingMode.EaseInOut });
+                var pulse = Anim(1, 1.3, 0.25, autoReverse: true, ease: new SineEase { EasingMode = EasingMode.EaseInOut });
                 s.Scale.BeginAnimation(ScaleTransform.ScaleXProperty, pulse);
                 s.Scale.BeginAnimation(ScaleTransform.ScaleYProperty, pulse);
                 break;
             case Kind.Bounce:
-                s.Move.BeginAnimation(TranslateTransform.YProperty, Anim(0, -4, 0.3, forever: true, autoReverse: true, ease: new QuadraticEase { EasingMode = EasingMode.EaseOut }));
+                s.Move.BeginAnimation(TranslateTransform.YProperty, Anim(0, -5, 0.2, autoReverse: true, ease: new QuadraticEase { EasingMode = EasingMode.EaseOut }));
                 break;
         }
     }
