@@ -26,7 +26,7 @@
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
-            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Left"/>
         </Style>
     </Window.Resources>
     <Border x:Name="Root" CornerRadius="10" Padding="12,8"
