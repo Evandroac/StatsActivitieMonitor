@@ -143,6 +143,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         {
             Apply(s);
             Services.DataLogger.Write(s);
+            Services.WidgetFeed.Publish(s);
             SnapshotApplied?.Invoke(s);
             foreach (var a in _alerts.Evaluate(s, S)) { Services.AlertHistory.Add(a); AlertRaised?.Invoke(a); }
         });
