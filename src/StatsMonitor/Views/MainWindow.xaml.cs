@@ -202,6 +202,12 @@ public partial class MainWindow : Window
         MinWidth = _baseMinWidth * UiScale.Factor;
         if (WindowState != WindowState.Normal) return;
         Width = first ? Math.Max(MinWidth, Width) : Math.Max(MinWidth, Width * MinWidth / old);
+        if (!first && MainPage.Visibility == Visibility.Visible)
+        {
+            MinHeight = 0;
+            SizeToContent = SizeToContent.Height;
+            Dispatcher.BeginInvoke(FitToContent, System.Windows.Threading.DispatcherPriority.Loaded);
+        }
     }
 
     private string _layoutKey = "";

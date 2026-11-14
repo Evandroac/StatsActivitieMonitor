@@ -272,10 +272,10 @@
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid x:Name="CardsGrid">
-        <ContentControl x:Name="CpuCard" MinHeight="260" Content="{Binding Cpu}" ContentTemplate="{StaticResource ProcessorTemplate}"/>
-        <ContentControl x:Name="GpuCard" MinHeight="260" Content="{Binding Gpu}" ContentTemplate="{StaticResource ProcessorTemplate}"/>
-        <ContentControl x:Name="RamCard" MinHeight="260" Content="{Binding Ram}" ContentTemplate="{StaticResource MemoryTemplate}"/>
-        <Border x:Name="VramCard" Style="{StaticResource Card}" MinHeight="260" DataContext="{Binding Disk}">
+        <ContentControl x:Name="CpuCard" Content="{Binding Cpu}" ContentTemplate="{StaticResource ProcessorTemplate}"/>
+        <ContentControl x:Name="GpuCard" Content="{Binding Gpu}" ContentTemplate="{StaticResource ProcessorTemplate}"/>
+        <ContentControl x:Name="RamCard" Content="{Binding Ram}" ContentTemplate="{StaticResource MemoryTemplate}"/>
+        <Border x:Name="VramCard" Style="{StaticResource Card}" DataContext="{Binding Disk}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><TextBlock Text="💽" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{h:Tr 'Discos (HD/SSD)'}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent2}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" CommandParameter="Disk" Click="OnShortcut"/></StackPanel>
                 <ItemsControl ItemsSource="{Binding Volumes}">
