@@ -35,13 +35,13 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <DockPanel>
-                    <Button DockPanel.Dock="Left" Tag="{Binding CopyText}" Click="OnCopy"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource CopyButton}"><Style.Triggers><DataTrigger Binding="{Binding CopyText}" Value="{x:Null}"><Setter Property="Visibility" Value="Hidden"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="N/D"><Setter Property="Visibility" Value="Hidden"/></DataTrigger><DataTrigger Binding="{Binding Value}" Value="-"><Setter Property="Visibility" Value="Hidden"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
-                    <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="{Binding Label}" h:Copy.Text="{Binding CopyText}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}" VerticalAlignment="Center"/>
                 </DockPanel>
-                <TextBlock Grid.Column="1" Text="{Binding Value}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                <TextBlock Grid.Column="1" Text="{Binding Value}" h:Copy.Text="{Binding CopyText}" ToolTip="{h:Tr 'Clique para copiar'}" VerticalAlignment="Center" TextWrapping="Wrap"/>
             </Grid>
         </DataTemplate>
-        <DataTemplate x:Key="NameLine"><Border Background="{DynamicResource CardBorder}" CornerRadius="6" Padding="8,5" Margin="0,3"><DockPanel><Button DockPanel.Dock="Left" Style="{StaticResource CopyButton}" Tag="{Binding Label}" Click="OnCopy"/><Ellipse DockPanel.Dock="Left" Width="6" Height="6" Fill="{DynamicResource Accent}" Margin="0,0,8,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip="{Binding Label}"/></DockPanel></Border></DataTemplate>
+        <DataTemplate x:Key="NameLine"><Border Background="{DynamicResource CardBorder}" CornerRadius="6" Padding="8,5" Margin="0,3"><DockPanel><Ellipse DockPanel.Dock="Left" Width="6" Height="6" Fill="{DynamicResource Accent}" Margin="0,0,8,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Label}" h:Copy.Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip="{Binding Label}"/></DockPanel></Border></DataTemplate>
     </UserControl.Resources>
     <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>

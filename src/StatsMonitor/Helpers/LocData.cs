@@ -144,6 +144,7 @@ public static class LocData
 ["🔠  Tamanho da fonte:"] = "🔠  Font size:",
 ["Tamanho dos textos de todo o programa (90% a 130%)"] = "Text size across the whole app (90% to 130%)",
 ["Tamanho da fonte"] = "Font size",
+["Clique para copiar"] = "Click to copy",
 ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",

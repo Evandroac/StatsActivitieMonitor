@@ -91,7 +91,7 @@
                 </Border.Style>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Title, Converter={x:Static h:TitleIcon.Instance}}" FontFamily="Segoe UI Emoji" FontSize="15" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Accent}" VerticalAlignment="Center"/><Button Style="{StaticResource CopyButton}" Content="↗" Margin="8,0,0,0" ToolTip="{h:Tr 'Abrir tela detalhada'}" AutomationProperties.Name="{h:Tr 'Abrir tela detalhada'}" Click="OnShortcut"/></StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,2,0,10"><Button Style="{StaticResource CopyButton}" Tag="{Binding Name}" Click="OnCopy"/><TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/></StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,10"><TextBlock Text="{Binding Name}" h:Copy.Text="{Binding Name}" ToolTip="{Binding Name}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/></StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -296,7 +296,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,4,0,6">
-                                <StackPanel Orientation="Horizontal"><Button Style="{StaticResource CopyButton}" Tag="{Binding Name}" Click="OnCopy"/><TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" VerticalAlignment="Center"/></StackPanel>
+                                <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Name}" h:Copy.Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" VerticalAlignment="Center"/></StackPanel>
                                 <WrapPanel>
                                     <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Temperatura'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Temp}"/></StackPanel>
                                     <StackPanel MinWidth="100" Margin="0,0,12,4"><TextBlock Text="{h:Tr 'Leitura'}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Read}"/></StackPanel>
@@ -359,8 +359,8 @@
                     <StackPanel Width="200" Margin="0,0,12,8">
                         <TextBlock Text="{h:Tr 'Conexão'}" Style="{StaticResource Caption}"/>
                         <TextBlock Text="{Binding Adapter}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Adapter}" VerticalAlignment="Center"/>
-                        <StackPanel Orientation="Horizontal"><Button Style="{StaticResource CopyButton}" Tag="{Binding Ip}" Click="OnCopy"/><TextBlock Style="{StaticResource Caption}" Text="{Binding Ip, StringFormat=IP: {0}}" VerticalAlignment="Center"/></StackPanel>
-                        <StackPanel Orientation="Horizontal"><Button Style="{StaticResource CopyButton}" Tag="{Binding Gateway}" Click="OnCopy"/><TextBlock Style="{StaticResource Caption}" Text="{Binding Gateway, StringFormat=Gateway: {0}}" VerticalAlignment="Center"/></StackPanel>
+                        <StackPanel Orientation="Horizontal"><TextBlock h:Copy.Text="{Binding Ip}" ToolTip="{h:Tr 'Clique para copiar'}" Style="{StaticResource Caption}" Text="{Binding Ip, StringFormat=IP: {0}}" VerticalAlignment="Center"/></StackPanel>
+                        <StackPanel Orientation="Horizontal"><TextBlock h:Copy.Text="{Binding Gateway}" ToolTip="{h:Tr 'Clique para copiar'}" Style="{StaticResource Caption}" Text="{Binding Gateway, StringFormat=Gateway: {0}}" VerticalAlignment="Center"/></StackPanel>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
