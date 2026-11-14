@@ -13,6 +13,7 @@
     <SolidColorBrush x:Key="ControlBorderHover" Color="#6B7A96"/>
     <SolidColorBrush x:Key="ScrollThumb" Color="#B0BACC"/>
     <SolidColorBrush x:Key="ScrollThumbHover" Color="#8593AD"/>
-    <SolidColorBrush x:Key="GadgetBg" Color="#E6FFFFFF"/>
+    <SolidColorBrush x:Key="GadgetHoverBg" Color="#FFD6E6FF"/>
+  <SolidColorBrush x:Key="GadgetBg" Color="#E6FFFFFF"/>
     <SolidColorBrush x:Key="GadgetText" Color="#1B1F2A"/>
 </ResourceDictionary>

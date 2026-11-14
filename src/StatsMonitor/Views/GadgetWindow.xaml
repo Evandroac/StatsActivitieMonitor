@@ -10,8 +10,19 @@
             <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
         </Style>
     </Window.Resources>
-    <Border x:Name="Root" Background="{DynamicResource GadgetBg}" CornerRadius="10" Padding="12,8"
+    <Border x:Name="Root" CornerRadius="10" Padding="12,8"
             BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource GadgetBg}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource GadgetHoverBg}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
         <Grid>
             <StackPanel x:Name="FloatingPanel">
                 <TextBlock x:Name="FCpu" FontSize="13">
