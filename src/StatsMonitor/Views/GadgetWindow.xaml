@@ -38,7 +38,7 @@
                     <Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FFps" FontSize="13">
-                    <Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/>
+                    <Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{h:Tr '  Média: '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="FNet" FontSize="13">
                     <Run Text="{h:Tr 'NET: ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
@@ -59,7 +59,7 @@
                     <Run Text="{h:Tr 'Disco '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TFps" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="{h:Tr 'FPS '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/>
+                    <Run Text="{h:Tr 'FPS '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{h:Tr ' · méd '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="TNet" FontSize="12" Margin="12,0,0,0">
                     <Run Text="{h:Tr 'NET ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>

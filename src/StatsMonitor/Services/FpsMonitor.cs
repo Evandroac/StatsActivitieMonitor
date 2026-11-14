@@ -27,6 +27,8 @@ public sealed class FpsMonitor : IDisposable
     private readonly int _ownPid = Environment.ProcessId;
     private TraceEventSession? _session;
     private bool _traceFailed;
+    private int _avgPid, _idleTicks;
+    private double _avgFrames, _avgSeconds;
 
     public FpsMonitor(SettingsService settings, MainViewModel vm)
     {
@@ -42,6 +44,7 @@ public sealed class FpsMonitor : IDisposable
         if (!_settings.Current.ShowFpsGadget || _vm.EcoMode)
         {
             StopTrace();
+            _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--";
             _vm.FpsActive = false;
             return;
         }
@@ -57,11 +60,16 @@ public sealed class FpsMonitor : IDisposable
         int fgPid = ForegroundGamePid();
         if (fgPid > 0 && counts.TryGetValue(fgPid, out int frames) && frames >= 5 && seconds > 0)
         {
+            if (fgPid != _avgPid) { _avgPid = fgPid; _avgFrames = 0; _avgSeconds = 0; }
+            _idleTicks = 0;
+            _avgFrames += frames; _avgSeconds += seconds;
             _vm.FpsText = (frames / seconds).ToString("0");
+            _vm.FpsAvgText = (_avgFrames / _avgSeconds).ToString("0");
             _vm.FpsActive = true;
         }
         else
         {
+            if (++_idleTicks >= 10) { _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--"; }
             _vm.FpsActive = false;
         }
     }

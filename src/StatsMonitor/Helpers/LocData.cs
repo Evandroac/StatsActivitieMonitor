@@ -373,6 +373,8 @@ public static class LocData
         ["Abrir pasta dos diagnósticos"] = "Open diagnostics folder",
         ["Log de auditoria"] = "Audit log",
         ["Histórico"] = "History",
+        ["  Média: "] = "  Average: ",
+        [" · méd "] = " · avg ",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",

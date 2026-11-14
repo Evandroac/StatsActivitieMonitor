@@ -114,7 +114,7 @@ public partial class GadgetWindow : Window
         TGpu.MinWidth = Measure("GPU 100%" + (s.ShowTemperatures ? temp : ""));
         TRam.MinWidth = Measure("RAM 100%");
         TVram.MinWidth = Measure(Loc.T("Disco") + " 100%");
-        TFps.MinWidth = Measure("FPS 999");
+        TFps.MinWidth = Measure("FPS 999 · méd 999");
         TNet.MinWidth = Measure("NET ↓ 999.9 Mbps ↑ 999.9 Mbps");
     }
 

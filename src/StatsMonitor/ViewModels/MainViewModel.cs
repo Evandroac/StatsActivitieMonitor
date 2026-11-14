@@ -95,7 +95,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
  private static Brush Frozen(string hex) { var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex)); b.Freeze(); return b; }
  /// <summary>Below 30 FPS: bad; 30-59: good; 60 and above: excellent.</summary>
  public Brush FpsBrush => double.TryParse(_fpsText, out var f) ? (f < 30 ? FpsBad : f < 60 ? FpsGood : FpsExcellent) : FpsIdle;
-    private string _fpsText = "--";
+    private string _fpsText = "--", _fpsAvgText = "--";
+    public string FpsAvgText { get => _fpsAvgText; set => Set(ref _fpsAvgText, value); }
     private bool _fpsActive;
     public bool FpsActive { get => _fpsActive; set => Set(ref _fpsActive, value); }
     public string SensorNote { get => _sensorNote; private set => Set(ref _sensorNote, value); }
