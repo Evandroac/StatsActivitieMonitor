@@ -463,7 +463,7 @@ public static class LocData
         ["Restaurar a opacidade configurada"] = "Restore the configured opacity",
         ["Deixar o gadget com a opacidade mínima"] = "Set the gadget to minimum opacity",
         ["Arraste para redimensionar · duplo clique para o tamanho padrão"] = "Drag to resize · double-click for the default size",
-        ["Segure para pausar as leituras; arraste para mover na horizontal"] = "Hold to pause readings; drag to move horizontally",
+        ["Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)"] = "Hold to pause readings; drag to move horizontally (works even when pinned)",
         ["Mudar para a visão simplificada"] = "Switch to the simplified view",
         ["Mudar para a visão detalhada"] = "Switch to the detailed view",
         ["Excluir"] = "Delete",

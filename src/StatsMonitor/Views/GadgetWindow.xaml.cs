@@ -164,10 +164,13 @@ public partial class GadgetWindow : Window
         BtnLock.Content = s.GadgetLocked ? "🔒" : "🔓";
         BtnLock.ToolTip = Loc.T(s.GadgetLocked ? "Gadget fixo: clique para liberar posição e tamanho" : "Fixar o gadget (bloqueia posição e tamanho)");
         BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
-        Opacity = s.GadgetFaded ? FadedOpacity : 1;
+        // Only the information fades; the action buttons keep full opacity.
+        Body.Opacity = s.GadgetFaded ? FadedOpacity : 1;
+        if (s.GadgetFaded) { Root.Background = Brushes.Transparent; Root.BorderBrush = Brushes.Transparent; }
+        else { Root.ClearValue(System.Windows.Controls.Border.BackgroundProperty); Root.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardBorder"); }
         BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
         BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
-        MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal");
+        MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
         UpdateTools(IsMouseOver);
     }
@@ -236,7 +239,7 @@ public partial class GadgetWindow : Window
         double x = CursorX();
         double dx = x - _moveLastX;
         _moveLastX = x;
-        if (_settings.Current.GadgetLocked || dx == 0) return;
+        if (dx == 0) return;
         if (IsFixedPosition)
         {
             var work = SystemParameters.WorkArea;
