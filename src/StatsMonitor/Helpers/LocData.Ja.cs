@@ -735,5 +735,6 @@ public static partial class LocData
         ["Maximizar"] = "最大化",
         ["Fechar"] = "閉じる",
         ["Restaurar"] = "元に戻す",
+        ["Configuração salva"] = "設定を保存しました",
     };
 }

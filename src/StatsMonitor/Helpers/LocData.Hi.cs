@@ -724,5 +724,6 @@ public static partial class LocData
         ["Maximizar"] = "बड़ा करें",
         ["Fechar"] = "बंद करें",
         ["Restaurar"] = "पुनर्स्थापित करें",
+        ["Configuração salva"] = "सेटिंग सहेजी गई",
     };
 }

@@ -725,5 +725,6 @@ public static partial class LocData
         ["Maximizar"] = "最大化",
         ["Fechar"] = "关闭",
         ["Restaurar"] = "还原",
+        ["Configuração salva"] = "设置已保存",
     };
 }

@@ -14,6 +14,17 @@ public partial class SettingsView : UserControl
 
     public event Action? CloseRequested;
 
+    private void ShowSavedToast()
+    {
+        if (!IsVisible) return;
+        SavedToastText.Text = Loc.T("Configuração salva");
+        var a = new System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames();
+        a.KeyFrames.Add(new System.Windows.Media.Animation.EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(180)));
+        a.KeyFrames.Add(new System.Windows.Media.Animation.EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(1700)));
+        a.KeyFrames.Add(new System.Windows.Media.Animation.EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(2100)));
+        SavedToast.BeginAnimation(OpacityProperty, a);
+    }
+
     public string CurrentSection { get; private set; } = "general";
 
     public SettingsView(SettingsViewModel vm, AppearanceView? appearance = null)
@@ -21,7 +32,7 @@ public partial class SettingsView : UserControl
         InitializeComponent();
         DataContext = _vm = vm;
         _appearance = appearance;
-        AlertHistoryList.ItemsSource = StatsMonitor.Services.AlertHistory.Entries;
+        vm.ChangesSaved += () => Dispatcher.BeginInvoke(ShowSavedToast);        AlertHistoryList.ItemsSource = StatsMonitor.Services.AlertHistory.Entries;
         StatsMonitor.Services.AlertHistory.Entries.CollectionChanged += (_, _) => UpdateHistoryEmpty();
         UpdateHistoryEmpty();
         if (appearance is not null)

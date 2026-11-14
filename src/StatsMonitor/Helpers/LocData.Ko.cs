@@ -724,5 +724,6 @@ public static partial class LocData
         ["Maximizar"] = "최대화",
         ["Fechar"] = "닫기",
         ["Restaurar"] = "복원",
+        ["Configuração salva"] = "설정이 저장되었습니다",
     };
 }

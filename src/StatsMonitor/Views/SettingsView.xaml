@@ -341,6 +341,12 @@
                     </StackPanel></Border>
     </StackPanel>
     </ScrollViewer>
-            
+    <Border x:Name="SavedToast" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,20" Padding="12,7" CornerRadius="16"
+            Background="{DynamicResource PopupBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" Opacity="0" IsHitTestVisible="False">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets, Segoe Fluent Icons" FontSize="11" Foreground="{DynamicResource Accent}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock x:Name="SavedToastText" FontSize="12" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
+        </StackPanel>
+    </Border>
     </Grid>
 </UserControl>

@@ -723,5 +723,6 @@ public static partial class LocData
         ["Maximizar"] = "Agrandir",
         ["Fechar"] = "Fermer",
         ["Restaurar"] = "Restaurer",
+        ["Configuração salva"] = "Paramètre enregistré",
     };
 }

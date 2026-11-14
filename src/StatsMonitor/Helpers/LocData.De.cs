@@ -724,5 +724,6 @@ public static partial class LocData
         ["Maximizar"] = "Maximieren",
         ["Fechar"] = "Schließen",
         ["Restaurar"] = "Wiederherstellen",
+        ["Configuração salva"] = "Einstellung gespeichert",
     };
 }

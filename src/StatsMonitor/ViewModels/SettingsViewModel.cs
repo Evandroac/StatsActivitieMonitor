@@ -326,5 +326,9 @@ public sealed class SettingsViewModel : ObservableObject
         Apply();
         _service.Save();
         StartupService.SetEnabled(_service.Current.RunAtStartup);
+        ChangesSaved?.Invoke();
     }
+
+    /// <summary>Raised after an edit made in the UI has been applied and persisted.</summary>
+    public event Action? ChangesSaved;
 }
