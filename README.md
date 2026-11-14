@@ -1,6 +1,8 @@
-﻿# Stats Monitor
+# Stats Monitor
 
-Monitor de hardware leve para Windows 10/11 (C#, .NET 8, WPF, MVVM). Exibe em tempo real CPU, GPU, RAM, VRAM, discos, rede, bateria e temperaturas, com painel principal, gadget compacto e telas dedicadas (processos, testes de conexão e diagnóstico do computador). Disponível em português e inglês.
+Monitor de hardware leve para Windows 10/11 (C#, .NET 8, WPF, MVVM). Exibe em tempo real CPU, GPU, RAM, VRAM, discos, rede, bateria e temperaturas, com painel principal, gadget compacto e telas dedicadas (processos, testes de conexão e diagnóstico do computador). Disponível em 16 idiomas (português, inglês, espanhol, francês, alemão, italiano, russo, chinês, japonês, coreano, árabe, hindi e variantes regionais).
+
+> 💡 **Sobre o projeto:** o Stats Monitor é open-source e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas. Sugestões e relatos de problemas são muito bem-vindos em [Evandroac/StatsActivitieMonitor](https://github.com/Evandroac/StatsActivitieMonitor).
 
 ## Arquitetura
 
@@ -25,11 +27,12 @@ src/StatsMonitor
 ## Telas principais
 
 - **Principal / Sistema e periféricos (página unificada com filtro) / CPU / GPU / Memória / Discos / Rede / Sensores:** leituras em tempo real, com intervalo de atualização individual por componente e pesquisa geral.
-- **Bateria (notebooks):** nível, status, tempo restante, tempo para carga completa, saúde e fonte de energia.
-- **Processos:** visão estilo Gerenciador de Tarefas (árvore, CPU/RAM/disco/rede, filtros, ordenação, finalizar/reiniciar, gráfico timeline).
+- **Bateria:** nível, status, tempo restante, tempo para carga completa, saúde e fonte de energia. O item fica sempre no menu; em computadores sem bateria ele aparece esmaecido e a página informa que não há bateria.
+- **Processos:** visão estilo Gerenciador de Tarefas (árvore, CPU/RAM/disco/rede, filtros — padrão: Aplicativos —, ordenação, finalizar/reiniciar, gráfico timeline). As colunas podem ser reordenadas (arrastando o título), ocultadas ou adicionadas (PID, PID pai, Threads, Tipo, Executável, Iniciado em, Caminho), redimensionadas (o botão ↔ ajusta a coluna Nome ao conteúdo) e a escolha fica salva.
 - **Testes de conexão:** diagnóstico, ping, traceroute, DNS, portas, HTTP e velocidade.
 - **Diagnóstico do computador:** veja abaixo.
-- **Ajuda:** tutorial com funcionamento e ressalvas. Há ainda tela de abertura (splash), alertas de atenção/críticos e modo econômico ao minimizar.
+- **Ajuda:** tutorial com funcionamento e ressalvas, menu de tópicos com destaque do painel em foco e links para o código-fonte e o autor.
+- **Outros:** tela de abertura (splash) moderna com botão de minimizar, barra de título personalizada no estilo do tema, gadget com botões que aparecem ao passar o mouse e animações suaves, FPS, mascotes (Pets), pesquisa geral, destaque refinado do painel sob o mouse, alertas de atenção/críticos (padrão: somente críticos), aviso discreto \
 
 ## Diagnóstico do computador
 
@@ -46,7 +49,7 @@ Módulo somente leitura (nenhuma correção automática) com 16 seções: Visão
 
 Requisitos: Windows 10/11, Visual Studio 2022 com a carga de trabalho **Desenvolvimento para desktop com .NET**, SDK .NET 8+. Para ler a temperatura da CPU (ex.: AMD Ryzen) é necessário instalar o driver **PawnIO** (`winget install namazso.PawnIO`), exigido pelo LibreHardwareMonitor. O aplicativo também solicita **privilégios de administrador** (UAC) ao iniciar; sem isso o sensor retorna 0. Abra o Visual Studio como administrador para depurar com F5.
 
-1. Abra `StatsMonitor.sln`.
+1. Abra `StatsMonitor.slnx`.
 2. Restaure os pacotes NuGet (automático) e compile (`Ctrl+Shift+B`).
 3. Execute com `F5`. Para ler todas as temperaturas, execute o Visual Studio / o executável como administrador.
 
@@ -54,7 +57,9 @@ Via CLI: `dotnet run --project src/StatsMonitor`
 
 ## Configurações
 
-Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, visão do gadget (simplificada ou detalhada), posição do gadget (flutuante, cantos, faixa superior ou inferior), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
+Valores padrão: iniciar com o Windows, animações suaves, modo econômico ao minimizar, pausar a leitura (quando aplicável), ler sensores de disco, exibir temperaturas e alertas somente críticos. A tela de abertura (splash) é sempre exibida.
+
+Opções: intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, visão do gadget (simplificada ou detalhada), posição do gadget (flutuante, cantos, faixa superior ou inferior), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
 
 ## Personalização
 
@@ -62,7 +67,9 @@ Botão "Personalização" na janela principal (separado das configurações): te
 
 ## Testes
 
-`dotnet test src\StatsMonitor.Tests` executa os testes xUnit (Loc, Units, alertas, configurações, perfis, atalho, diagnóstico).
+`dotnet test src\StatsMonitor.Tests` executa os testes xUnit (Loc e cobertura de traduções, Units, alertas, configurações, perfis, atalho, diagnóstico).
+
+Release: `dotnet build StatsMonitor.slnx -c Release`.
 
 ## Instalador
 
