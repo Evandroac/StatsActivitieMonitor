@@ -141,7 +141,12 @@
         <CheckBox ToolTip="{h:Tr 'Mostra o gadget quando o app é minimizado'}" Content="{h:Tr 'Exibir gadget'}" IsChecked="{Binding ShowGadget}" x:Name="ShowGadgetBox"/>
         <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
         <CheckBox ToolTip="{h:Tr 'Mantém o gadget na tela mesmo com a janela principal aberta'}" Content="{h:Tr 'Manter gadget sempre visível'}" IsChecked="{Binding AlwaysShowGadget}"/>
-        <TextBlock Text="{h:Tr 'Exibição do gadget ao minimizar'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <TextBlock Text="{h:Tr 'Visão do gadget'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
+        <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" ToolTip="{h:Tr 'Simplificada: apenas texto. Detalhada: mais informações e mini gráfico de uso de cada recurso'}" AutomationProperties.Name="{h:Tr 'Visão do gadget'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetViewKey, Mode=TwoWay}">
+            <ComboBoxItem Tag="Simple" Content="{h:Tr 'Simplificada'}"/>
+            <ComboBoxItem Tag="Detailed" Content="{h:Tr 'Detalhada (mais informações e mini gráficos)'}"/>
+        </ComboBox>
+        <TextBlock Text="{h:Tr 'Posição do gadget'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
         <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" AutomationProperties.Name="{h:Tr 'Exibição do gadget ao minimizar'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetModeKey, Mode=TwoWay}">
             <ComboBoxItem Tag="Floating" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}"/>
             <ComboBoxItem Tag="TopLeft" ToolTip="{h:Tr 'Gadget fixo no canto superior esquerdo da tela'}" Content="{h:Tr 'Canto superior esquerdo'}"/>

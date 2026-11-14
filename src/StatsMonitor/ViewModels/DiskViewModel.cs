@@ -18,6 +18,10 @@ public sealed class DiskViewModel : ObservableObject
 
     /// <summary>Highest activity among the drives, used by the gadget.</summary>
     public string LoadText { get => _loadText; private set => Set(ref _loadText, value); }
+    private string _ioText = NA;
+    /// <summary>Total read/write throughput across drives, used by the detailed gadget.</summary>
+    public string IoText { get => _ioText; private set => Set(ref _ioText, value); }
+    public ObservableCollection<double> History { get; } = new(new double[ComponentViewModel.HistoryLength]);
 
     public void Update(HardwareSnapshot s)
     {
@@ -42,6 +46,9 @@ public sealed class DiskViewModel : ObservableObject
                 d.LifePercent is { } l ? $"{l:0}%" : NA);
             Drives[i].Push(d.Activity, d.ReadBps, d.WriteBps);
         }
+        double? top = s.Disks.Select(d => d.Activity).Where(a => a.HasValue).DefaultIfEmpty(null).Max();
+        History.RemoveAt(0); History.Add(top ?? 0);
+        IoText = s.Disks.Count == 0 ? NA : $"{Loc.T("Leitura")} {Speed(s.Disks.Sum(d => d.ReadBps ?? 0))} · {Loc.T("Escrita")} {Speed(s.Disks.Sum(d => d.WriteBps ?? 0))}";
         LoadText = s.Disks.Select(d => d.Activity).Where(a => a.HasValue).DefaultIfEmpty(null).Max() is { } m ? $"{m:0}%" : NA;
     }
 

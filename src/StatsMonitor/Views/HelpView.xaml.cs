@@ -108,8 +108,8 @@ public partial class HelpView : UserControl
               "Caveats: the speed test consumes data and depends on Cloudflare servers. Diagnostics, speed and public IP contact external services (Cloudflare and Microsoft); the other tools talk only to the target you enter. Firewalls may block ICMP (ping/traceroute)."),
         ]);
         Card("🪟", 2, [
-            L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante e barra flutuante (arrastáveis) ou fixos nos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior.",
-              "When minimized, the app shows a compact gadget with the values you chose. Several layouts exist: floating and floating bar (draggable), or pinned to any of the four screen corners, a strip at the top or a strip at the bottom."),
+            L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante e barra flutuante (arrastáveis) ou fixos nos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. Em Configurações › Gadget, a visão pode ser simplificada (somente texto) ou detalhada (mais informações e um mini gráfico de uso de CPU, RAM, GPU, disco e rede).",
+              "When minimized, the app shows a compact gadget with the values you chose. Several layouts exist: floating and floating bar (draggable), or pinned to any of the four screen corners, a strip at the top or a strip at the bottom. In Settings › Gadget the view can be simplified (text only) or detailed (more information and a mini usage chart for CPU, RAM, GPU, disk and network)."),
             L("Fechar a janela (X) NÃO encerra o app: ele continua na bandeja do sistema, perto do relógio. Para sair de verdade, clique com o botão direito no ícone da bandeja e escolha Sair.",
               "Closing the window (X) does NOT quit the app: it keeps running in the system tray near the clock. To really exit, right-click the tray icon and choose Exit."),
             L("O ícone da bandeja muda de cor conforme o estado do computador. Clique duas vezes nele para abrir o app.",

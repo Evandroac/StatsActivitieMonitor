@@ -57,8 +57,13 @@ public partial class GadgetWindow : Window
     {
         bool taskbar = IsHorizontalRow;
         var mode = Mode;
-        FloatingPanel.Visibility = taskbar ? Visibility.Collapsed : Visibility.Visible;
-        TaskbarPanel.Visibility = taskbar ? Visibility.Visible : Visibility.Collapsed;
+        bool detailed = _settings.Current.GadgetDetailed;
+        FloatingPanel.Visibility = taskbar || detailed ? Visibility.Collapsed : Visibility.Visible;
+        TaskbarPanel.Visibility = taskbar && !detailed ? Visibility.Visible : Visibility.Collapsed;
+        DetailPanel.Visibility = detailed ? Visibility.Visible : Visibility.Collapsed;
+        DetailPanel.Orientation = taskbar ? System.Windows.Controls.Orientation.Horizontal : System.Windows.Controls.Orientation.Vertical;
+        foreach (FrameworkElement block in DetailPanel.Children)
+            block.Margin = taskbar ? new Thickness(0, 0, 14, 0) : new Thickness(0, 0, 0, 8);
         Root.Padding = mode switch
         {
             GadgetDisplayMode.FloatingBar => new Thickness(12, 6, 12, 6),
@@ -81,9 +86,11 @@ public partial class GadgetWindow : Window
         FRam.Visibility = TRam.Visibility = V(s.ShowRamGadget);
         FVram.Visibility = TVram.Visibility = V(s.ShowVramGadget);
         FNet.Visibility = TNet.Visibility = V(s.ShowNetworkGadget);
-        FFps.Visibility = TFps.Visibility = V(s.ShowFpsGadget && _vm.FpsActive);
+        FFps.Visibility = TFps.Visibility = DFps.Visibility = V(s.ShowFpsGadget && _vm.FpsActive);
+        DCpu.Visibility = V(s.ShowCpuGadget); DGpu.Visibility = V(s.ShowGpuGadget); DRam.Visibility = V(s.ShowRamGadget);
+        DDisk.Visibility = V(s.ShowVramGadget); DNet.Visibility = V(s.ShowNetworkGadget);
 
-        if (taskbar) ReserveTaskbarWidths(s);
+        if (taskbar && !detailed) ReserveTaskbarWidths(s);
     }
 
     // Fixed slot per indicator (worst-case text) so the widget doesn't resize on every update.

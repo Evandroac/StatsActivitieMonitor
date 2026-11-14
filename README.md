@@ -19,7 +19,7 @@ src/StatsMonitor
 
 - **Biblioteca de hardware:** [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) atrás de `IHardwareMonitorService`, podendo ser trocada sem alterar UI/ViewModels.
 - **Segundo plano:** a coleta roda em uma `Task` própria (fora da thread de UI) e continua com a janela aberta, minimizada ou oculta. Recursos são liberados ao encerrar.
-- **Gadget:** janela WPF compacta, sem borda, translúcida e *topmost*, que pode ficar flutuante (arrastável) ou fixa em um dos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. Não usa o recurso descontinuado de barras de ferramentas (*appbar/deskband*) e não interfere em outros programas. Aparece ao minimizar a janela principal (ou sempre, se configurado); arraste para mover (posição salva) e dê duplo clique para restaurar a janela principal.
+- **Gadget:** janela WPF compacta, sem borda, translúcida e *topmost*, que pode ficar flutuante (arrastável) ou fixa em um dos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. A visão pode ser **simplificada** (texto) ou **detalhada** (mais informações e mini gráfico de uso de CPU, RAM, GPU, disco e rede). Não usa o recurso descontinuado de barras de ferramentas (*appbar/deskband*) e não interfere em outros programas. Aparece ao minimizar a janela principal (ou sempre, se configurado); arraste para mover (posição salva) e dê duplo clique para restaurar a janela principal.
 - **Sensores:** detectados automaticamente. Nunca são exibidos valores fictícios: sensor indisponível = **N/D**. Alguns sensores de temperatura da CPU exigem privilégios de administrador; o app roda sem elevação e informa isso na interface.
 
 ## Telas principais
@@ -54,7 +54,7 @@ Via CLI: `dotnet run --project src/StatsMonitor`
 
 ## Configurações
 
-Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, posição do gadget (flutuante, cantos, faixa superior ou inferior), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
+Intervalo de atualização, iniciar com o Windows, iniciar minimizado, exibir temperaturas, exibir gadget, gadget sempre visível, visão do gadget (simplificada ou detalhada), posição do gadget (flutuante, cantos, faixa superior ou inferior), painéis exibidos na janela principal e no gadget (CPU, GPU, RAM, VRAM, Rede) e limites de temperatura (atenção/crítica) por CPU e GPU.
 
 ## Personalização
 

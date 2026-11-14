@@ -29,6 +29,8 @@ public sealed class AppSettings
     public List<AppearancePreset> Presets { get; set; } = new();
 
     public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
+    /// <summary>False = simplified gadget (text only); true = detailed gadget with extra info and mini charts.</summary>
+    public bool GadgetDetailed { get; set; }
     public int UpdateIntervalMs { get; set; } = 1000;
     /// <summary>Per-component update interval in ms; 0 follows the general interval.</summary>
     public int CpuIntervalMs { get; set; }

@@ -99,7 +99,7 @@ public static class SearchIndex
             "Ler sensores de disco e placa-mãe com menos frequência", "Modo econômico ao minimizar", "Exibir tela de abertura (splash)",
             "Geral", "Gadget", "Alertas", "Registro de dados", "Personalização", "Perfis", "Seções", "Ações", "Restaurar cores do tema");
         Add(SearchPage.Settings, "Configurações › Gadget",
-            "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar",
+            "Exibir gadget", "Manter gadget sempre visível", "Exibição do gadget ao minimizar", "Visão do gadget", "Simplificada", "Detalhada (mais informações e mini gráficos)", "Posição do gadget",
             "Sobre a tela (flutuante, arrastável)", "Canto superior esquerdo", "Canto superior direito", "Canto inferior esquerdo", "Canto inferior direito", "Faixa fixa na parte inferior da tela",
             "Barra horizontal flutuante (arrastável)", "Faixa fixa no topo da tela", "Não fazer nada (sem gadget)",
             "Pré-visualização do gadget (valores de exemplo)");
