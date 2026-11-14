@@ -62,7 +62,7 @@ public sealed class ProcRowPanel : Grid
                 var img = new Image { Width = 18, Height = 18, Margin = new Thickness(4, 0, 8, 0) };
                 RenderOptions.SetBitmapScalingMode(img, BitmapScalingMode.HighQuality);
                 img.SetBinding(Image.SourceProperty, B("Icon"));
-                var name = new TextBlock { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 360 };
+                var name = new TextBlock { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 700 };
                 name.SetBinding(TextBlock.TextProperty, B("NameText"));
                 sp.Children.Add(btn); sp.Children.Add(bar); sp.Children.Add(img); sp.Children.Add(name);
                 return sp;

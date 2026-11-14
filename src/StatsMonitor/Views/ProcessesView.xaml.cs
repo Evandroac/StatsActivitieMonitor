@@ -180,7 +180,15 @@ public partial class ProcessesView : UserControl
             Grid.SetColumn(b, i);
             HeaderGrid.Children.Add(b);
             _hdr[c.Id] = b;
-            if (!c.Star)
+            if (c.Star)
+            {
+                var fit = new Button { Style = style, Content = "↔", Width = 24, Height = 24, Padding = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 4, 0), Tag = c,
+                    ToolTip = L("Ajustar a largura da coluna Nome ao conteúdo (clique de novo para voltar ao automático)", "Fit the Name column width to its content (click again to return to automatic)") };
+                fit.Click += OnFitName;
+                Grid.SetColumn(fit, i);
+                HeaderGrid.Children.Add(fit);
+            }
+            else
             {
                 var th = new System.Windows.Controls.Primitives.Thumb { Style = split, Tag = c };
                 th.DragDelta += OnSplitDrag;
@@ -270,6 +278,21 @@ public partial class ProcessesView : UserControl
         var menu = new ContextMenu { PlacementTarget = (UIElement)s, Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom };
         FillColumnsMenu(menu);
         menu.IsOpen = true;
+    }
+
+    private void OnFitName(object s, RoutedEventArgs e)
+    {
+        var c = (ColumnDef)((FrameworkElement)s).Tag;
+        if (c.Width > 0) { c.Width = 0; ProcessColumns.Save(); return; }
+        var tf = new System.Windows.Media.Typeface(List.FontFamily, List.FontStyle, List.FontWeight, List.FontStretch);
+        double dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this).PixelsPerDip, max = 0;
+        foreach (var r in _items)
+        {
+            var ft = new System.Windows.Media.FormattedText(r.NameText, System.Globalization.CultureInfo.CurrentCulture, FlowDirection, tf, List.FontSize, System.Windows.Media.Brushes.Black, dpi);
+            max = Math.Max(max, r.Depth * 18 + 62 + Math.Min(ft.WidthIncludingTrailingWhitespace, 700));
+        }
+        c.Width = Math.Clamp(Math.Ceiling(max), 200, 800);
+        ProcessColumns.Save();
     }
 
     private void OnSplitDrag(object s, System.Windows.Controls.Primitives.DragDeltaEventArgs e)

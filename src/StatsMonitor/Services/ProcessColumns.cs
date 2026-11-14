@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using System.Windows;
 using StatsMonitor.Helpers;
@@ -34,7 +34,7 @@ public sealed class ColumnDef : ObservableObject
         set { if (Set(ref _width, value)) Raise(nameof(GridWidth)); }
     }
 
-    public GridLength GridWidth => Star ? new GridLength(1, GridUnitType.Star) : new GridLength(_width);
+    public GridLength GridWidth => Star && _width <= 0 ? new GridLength(1, GridUnitType.Star) : new GridLength(_width);
 }
 
 /// <summary>User-configurable columns (order, visibility, width) shared by the header and every row; persisted to disk.</summary>
@@ -103,7 +103,7 @@ public static class ProcessColumns
             {
                 Order = All.Select(c => c.Id).ToList(),
                 Hidden = All.Where(c => !c.Visible).Select(c => c.Id).ToList(),
-                Widths = All.Where(c => !c.Star).ToDictionary(c => c.Id, c => c.Width),
+                Widths = All.ToDictionary(c => c.Id, c => c.Width),
             };
             File.WriteAllText(FilePath, JsonSerializer.Serialize(data));
         }
@@ -132,7 +132,7 @@ public static class ProcessColumns
             {
                 if (!c.Required && data.Hidden.Contains(c.Id)) c.Visible = false;
                 else if (!c.Required && data.Order.Contains(c.Id)) c.Visible = true;
-                if (data.Widths.TryGetValue(c.Id, out var w)) c.Width = Math.Clamp(w, 50, 800);
+                if (data.Widths.TryGetValue(c.Id, out var w)) c.Width = w <= 0 ? 0 : Math.Clamp(w, 50, 800);
             }
         }
         catch { }
