@@ -8,7 +8,36 @@
         Background="{DynamicResource WindowBg}" FontFamily="{DynamicResource AppFont}"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <Style x:Key="CaptionButton" TargetType="Button">
+        <Style x:Key="UpdateButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" BorderBrush="{DynamicResource Accent}" BorderThickness="1" CornerRadius="14" Padding="12,6">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="Ic" Text="&#xE895;" FontFamily="Segoe MDL2 Assets, Segoe Fluent Icons" FontSize="12" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="{TemplateBinding Content}" FontSize="12" FontWeight="SemiBold" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="Ar" Text="&#xE76C;" FontFamily="Segoe MDL2 Assets, Segoe Fluent Icons" FontSize="9" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="6,1,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TrackBrush}"/>
+                                <Setter TargetName="Ar" Property="Margin" Value="9,1,0,0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>        <Style x:Key="CaptionButton" TargetType="Button">
             <Setter Property="Width" Value="46"/>
             <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets,Segoe Fluent Icons"/>
@@ -545,7 +574,7 @@
                                 <TextBlock Text="{Binding WindowsUpdateText}" FontSize="16" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </StackPanel>
-                        <Button Grid.Column="1" Content="{h:Tr 'Abrir Windows Update'}" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center" Margin="12,0,0,0" Click="OnOpenWindowsUpdate"
+                        <Button Grid.Column="1" Content="{h:Tr 'Abrir Windows Update'}" Style="{StaticResource UpdateButton}" VerticalAlignment="Center" Margin="12,0,0,0" Click="OnOpenWindowsUpdate"
                                 Visibility="{Binding HasPendingUpdates, Converter={StaticResource BoolToVis}}" ToolTip="{h:Tr 'Abre a página do Windows Update nas Configurações do Windows'}"/>
                     </Grid></Border>
                 </WrapPanel>
