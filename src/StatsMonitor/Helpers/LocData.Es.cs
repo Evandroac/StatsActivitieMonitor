@@ -728,5 +728,6 @@ public static partial class LocData
         ["💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial."] = "💡 Proyecto de código abierto: Stats Monitor es de código abierto y fue diseñado, programado y creado íntegramente con la ayuda de inteligencia artificial.",
         ["Código-fonte no GitHub"] = "Código fuente en GitHub",
         ["Autor no GitHub"] = "Autor en GitHub",
+        ["Sem bateria neste computador"] = "Sin batería en este equipo",
     };
 }

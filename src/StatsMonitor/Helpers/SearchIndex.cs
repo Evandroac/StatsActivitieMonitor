@@ -51,7 +51,6 @@ public static class SearchIndex
         AddGroups(await SystemInfoService.GetAsync(), "Sistema", SearchPage.System);
         foreach (var kind in Enum.GetValues<ComponentKind>())
         {
-            if (kind == ComponentKind.Battery && !BatteryService.HasBattery) continue;
             try { AddComponent(kind, await ComponentDetailService.GetAsync(kind, null, null), Loc.T("Exportar gráficos")); }
             catch { /* a failing component must not break the whole index */ }
         }

@@ -368,7 +368,7 @@
             <Button x:Name="NavSensors" Style="{StaticResource NavButton}" CommandParameter="Sensors" ToolTip="{h:Tr 'Sensores'}" AutomationProperties.Name="{h:Tr 'Sensores'}" Click="OnOpenComponent">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="📡" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSensors" Text="{h:Tr 'Sensores'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
-            <Button x:Name="NavBattery" Visibility="Collapsed" Style="{StaticResource NavButton}" CommandParameter="Battery" ToolTip="{h:Tr 'Bateria: carga, tempo restante e saúde'}" AutomationProperties.Name="{h:Tr 'Bateria: carga, tempo restante e saúde'}" Click="OnOpenComponent">
+            <Button x:Name="NavBattery" Style="{StaticResource NavButton}" CommandParameter="Battery" ToolTip="{h:Tr 'Bateria: carga, tempo restante e saúde'}" AutomationProperties.Name="{h:Tr 'Bateria: carga, tempo restante e saúde'}" Click="OnOpenComponent">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="🔋" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblBattery" Text="{h:Tr 'Bateria'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
             </StackPanel>

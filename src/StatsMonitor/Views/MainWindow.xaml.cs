@@ -27,7 +27,11 @@ public partial class MainWindow : Window
         ApplyUiScale();
         UiScale.Changed += ApplyUiScale;
         ChkSimple.IsChecked = settings.Current.SimplifiedView;
-        NavBattery.Visibility = _vm.HasBattery ? Visibility.Visible : Visibility.Collapsed;
+        if (!_vm.HasBattery)
+        {
+            NavBattery.Opacity = 0.55;
+            NavBattery.ToolTip = Loc.T("Sem bateria neste computador");
+        }
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
         AttachNavAnimations();

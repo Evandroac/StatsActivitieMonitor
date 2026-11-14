@@ -84,7 +84,7 @@ public static class ComponentDetailService
     {
         var b = BatteryService.ReadCached(TimeSpan.FromSeconds(3));
         if (!b.Present)
-            return [new(T("Bateria", "Battery"), [new(T("Nenhuma bateria detectada neste computador.", "No battery detected on this computer."), "")])];
+            return [new(T("Bateria", "Battery"), [new("🔌  " + Loc.T("Sem bateria neste computador"), T("Este computador não possui bateria (desktop) ou o Windows não a expõe.", "This computer has no battery (desktop) or Windows does not expose it."))])];
 
         string Dur(TimeSpan? t, string fallback) => t is { } x ? ViewModels.BatteryViewModel.FormatDuration(x) : fallback;
         string calc = T("Calculando…", "Calculating…");
