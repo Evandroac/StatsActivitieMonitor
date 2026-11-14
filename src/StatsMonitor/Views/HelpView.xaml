@@ -8,7 +8,7 @@
             <StackPanel x:Name="NavHost"/>
         </Border>
         <ScrollViewer x:Name="Scroll" Grid.Column="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="Host" Margin="20" MaxWidth="860" HorizontalAlignment="Left"/>
+            <StackPanel x:Name="Host" Margin="20" HorizontalAlignment="Left"/>
         </ScrollViewer>
     </Grid>
 </UserControl>
