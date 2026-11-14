@@ -77,6 +77,7 @@ public sealed class AppSettings
     public double? GadgetTop { get; set; }
     public double GadgetScale { get; set; } = 1;
     public bool GadgetLocked { get; set; }
+    public double GadgetXOffset { get; set; }
     public bool GadgetFaded { get; set; }
 
     public bool SidebarPinned { get; set; }

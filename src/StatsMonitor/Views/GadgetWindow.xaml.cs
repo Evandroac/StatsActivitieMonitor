@@ -121,6 +121,16 @@ public partial class GadgetWindow : Window
 
     private void Reposition()
     {
+        RepositionBase();
+        if (IsFixedPosition && _settings.Current.GadgetXOffset != 0)
+        {
+            var work = SystemParameters.WorkArea;
+            Left = Math.Clamp(Left + _settings.Current.GadgetXOffset, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
+        }
+    }
+
+    private void RepositionBase()
+    {
         var work = SystemParameters.WorkArea;
         const double gap = 12;
         switch (Mode)
@@ -155,6 +165,7 @@ public partial class GadgetWindow : Window
         BtnLock.ToolTip = Loc.T(s.GadgetLocked ? "Gadget fixo: clique para liberar posição e tamanho" : "Fixar o gadget (bloqueia posição e tamanho)");
         BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
         Opacity = s.GadgetFaded ? FadedOpacity : 1;
+        MoveX.ToolTip = Loc.T("Clique e segure para mover o gadget na horizontal");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
         UpdateTools(IsMouseOver);
     }
@@ -163,6 +174,7 @@ public partial class GadgetWindow : Window
     {
         Tools.Visibility = hover ? Visibility.Visible : Visibility.Collapsed;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
+        MoveX.Visibility = Grip.Visibility;
     }
 
     private void OnToggleLock(object sender, RoutedEventArgs e)
@@ -200,6 +212,39 @@ public partial class GadgetWindow : Window
         _settings.Current.GadgetScale = 1;
         _settings.Save();
         ApplyScale();
+        e.Handled = true;
+    }
+
+    // Press and hold the ↔ button to slide the gadget horizontally.
+    private void OnMoveXDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked) return;
+        double dx = e.HorizontalChange * UiScale.Factor;
+        if (IsFixedPosition)
+        {
+            var work = SystemParameters.WorkArea;
+            var before = Left;
+            RepositionBase();
+            var baseLeft = Left;
+            var target = Math.Clamp(before + dx, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
+            _settings.Current.GadgetXOffset = target - baseLeft;
+            Left = target;
+        }
+        else
+        {
+            var min = SystemParameters.VirtualScreenLeft;
+            Left = Math.Clamp(Left + dx, min, min + SystemParameters.VirtualScreenWidth - ActualWidth);
+        }
+    }
+
+    private void OnMoveXDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e) => _settings.Save();
+
+    private void OnMoveXReset(object sender, MouseButtonEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked || !IsFixedPosition) return;
+        _settings.Current.GadgetXOffset = 0;
+        _settings.Save();
+        Reposition();
         e.Handled = true;
     }
 
