@@ -45,7 +45,7 @@
         <Grid>
           <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
           <Grid x:Name="Body" Grid.Row="1">
-            <StackPanel x:Name="FloatingPanel" HorizontalAlignment="Center">
+            <StackPanel x:Name="FloatingPanel" HorizontalAlignment="Left">
                 <TextBlock x:Name="FCpu" FontSize="13">
                     <Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
@@ -65,7 +65,7 @@
                     <Run Text="{h:Tr 'NET: ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
             </StackPanel>
-            <StackPanel x:Name="DetailPanel" Visibility="Collapsed" HorizontalAlignment="Center">
+            <StackPanel x:Name="DetailPanel" Visibility="Collapsed" HorizontalAlignment="Left">
                 <StackPanel x:Name="DCpu" Width="176">
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/></TextBlock>
                     <TextBlock FontSize="10.5" Opacity="0.7" Text="{Binding Cpu.ClockText, Mode=OneWay}"/>
