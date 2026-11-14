@@ -13,6 +13,8 @@ public static class DiskPerfService
     private static Dictionary<string, DiskPerf> _perf = new();
     private static DateTime _perfAt = DateTime.MinValue;
 
+    private static string Norm(string s) => new string(s.Where(char.IsLetterOrDigit).ToArray()).ToUpperInvariant();
+
     public static DiskPerf? Find(string diskName)
     {
         try
@@ -30,7 +32,10 @@ public static class DiskPerfService
             int? index = _models.Where(kv => diskName.Contains(kv.Value, StringComparison.OrdinalIgnoreCase)
                                              || kv.Value.Contains(diskName, StringComparison.OrdinalIgnoreCase))
                                 .Select(kv => (int?)kv.Key).FirstOrDefault();
-            if (index is null) return null;
+            // Names from the hardware library and WMI may differ in spacing/punctuation; fall back to a normalized match, then to the only disk.
+            index ??= _models.Where(kv => Norm(kv.Value).Length > 0 && Norm(diskName).Contains(Norm(kv.Value)) || Norm(kv.Value).Contains(Norm(diskName)))
+                             .Select(kv => (int?)kv.Key).FirstOrDefault();
+            if (index is null && _models.Count == 1) index = _models.Keys.First();
 
             if (DateTime.Now - _perfAt > TimeSpan.FromSeconds(CacheSeconds))
             {
@@ -41,15 +46,15 @@ public static class DiskPerfService
                 foreach (ManagementBaseObject o in q.Get())
                 {
                     string name = o["Name"]?.ToString() ?? "";
-                    if (name == "_Total") continue;
-                    perf[name.Split(' ')[0]] = new DiskPerf(
+                    perf[name == "_Total" ? name : name.Split(' ')[0]] = new DiskPerf(
                         Convert.ToDouble(o["DiskReadBytesPersec"]),
                         Convert.ToDouble(o["DiskWriteBytesPersec"]),
                         Math.Min(100, Convert.ToDouble(o["PercentDiskTime"])));
                 }
                 _perf = perf;
             }
-            return _perf.TryGetValue(index.ToString()!, out var p) ? p : null;
+            if (index is not null && _perf.TryGetValue(index.ToString()!, out var p)) return p;
+            return _models.Count > 0 && _perf.TryGetValue("_Total", out var total) && _models.Count == 1 ? total : null;
         }
         catch { /* counters unavailable */ }
         return null;

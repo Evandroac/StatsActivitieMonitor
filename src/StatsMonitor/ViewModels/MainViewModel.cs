@@ -223,6 +223,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
             if (S.ShowCpuGadget) scope |= HardwareScope.Cpu;
             if (S.ShowGpuGadget || S.ShowVramGadget) scope |= HardwareScope.Gpu;
             if (S.ShowRamGadget) scope |= HardwareScope.Memory;
+            // The gadget's "Disco" entry is controlled by the VRAM toggle and needs the storage readings.
+            if (S.ShowVramGadget) scope |= HardwareScope.Other;
         }
         _monitor.Scope = scope;
     }
