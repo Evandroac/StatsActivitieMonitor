@@ -25,6 +25,19 @@ public static class PetStore
         return [];
     }
 
+    private static readonly string BgPath = Path.Combine(Path.GetDirectoryName(FilePath)!, "pets-bg.txt");
+
+    public static int LoadBackground()
+    {
+        try { if (File.Exists(BgPath) && int.TryParse(File.ReadAllText(BgPath), out int i)) return i; } catch { }
+        return 0;
+    }
+
+    public static void SaveBackground(int i)
+    {
+        try { Directory.CreateDirectory(Path.GetDirectoryName(BgPath)!); File.WriteAllText(BgPath, i.ToString()); } catch { }
+    }
+
     public static void Save(IEnumerable<PetData> pets)
     {
         try
@@ -62,6 +75,27 @@ public sealed class PetsView : UserControl
         public bool Eating;
     }
 
+    private static readonly (string Pt, string En, Color A, Color B)[] Backgrounds =
+    [
+        ("Padrão", "Default", Colors.Transparent, Colors.Transparent),
+        ("Gramado", "Meadow", Color.FromRgb(0xA8, 0xE0, 0xFF), Color.FromRgb(0x5B, 0xB3, 0x4A)),
+        ("Noite estrelada", "Starry night", Color.FromRgb(0x0B, 0x10, 0x2E), Color.FromRgb(0x2B, 0x2F, 0x6B)),
+        ("Praia", "Beach", Color.FromRgb(0x8E, 0xD8, 0xF8), Color.FromRgb(0xF2, 0xD9, 0x9B)),
+        ("Neve", "Snow", Color.FromRgb(0xC9, 0xE4, 0xF5), Color.FromRgb(0xFA, 0xFC, 0xFF)),
+        ("Pôr do sol", "Sunset", Color.FromRgb(0xFF, 0x7E, 0x5F), Color.FromRgb(0x7F, 0x53, 0xAC)),
+    ];
+
+    private void OnBgChanged(object sender, SelectionChangedEventArgs e) { PetStore.SaveBackground(_bg.SelectedIndex); ApplyBackground(); }
+
+    private void ApplyBackground()
+    {
+        if (_frame == null) return;
+        int i = Math.Clamp(_bg.SelectedIndex, 0, Backgrounds.Length - 1);
+        if (i == 0) { _frame.SetResourceReference(Border.BackgroundProperty, "CardBg"); return; }
+        _frame.ClearValue(Border.BackgroundProperty);
+        _frame.Background = new LinearGradientBrush(Backgrounds[i].A, Backgrounds[i].B, 90);
+    }
+
     private static readonly Random Rng = new();
     private readonly List<PetData> _pets = PetStore.Load();
     private readonly List<Sprite> _sprites = [];
@@ -70,6 +104,9 @@ public sealed class PetsView : UserControl
     private readonly ComboBox _species = new() { Width = 56, Margin = new Thickness(4, 0, 0, 0) };
     private readonly TextBlock _status = new() { Opacity = 0.8, FontSize = 11, Margin = new Thickness(0, 0, 0, 4), TextWrapping = TextWrapping.Wrap };
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(40) };
+    private TextBlock? _hint;
+    private Border? _frame;
+    private readonly ComboBox _bg = new() { Margin = new Thickness(0, 0, 0, 4) };
     private Point? _food;
     private TextBlock? _foodVisual;
 
@@ -77,8 +114,9 @@ public sealed class PetsView : UserControl
     {
         Build();
         _timer.Tick += (_, _) => Tick();
-        Loaded += (_, _) => { SyncSprites(); _timer.Start(); };
-        Unloaded += (_, _) => _timer.Stop();
+        Loaded += (_, _) => SyncSprites();
+        IsVisibleChanged += (_, e) => { if ((bool)e.NewValue) { SyncSprites(); _timer.Start(); } else _timer.Stop(); };
+        if (IsVisible) _timer.Start();
         Loc.LanguageChanged += () => { if (IsLoaded) Build(); };
     }
 
@@ -95,25 +133,38 @@ public sealed class PetsView : UserControl
         root.Children.Add(_status);
 
         var frame = new Border { CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1), Child = Detach(_field), Margin = new Thickness(0, 0, 0, 6) };
-        frame.SetResourceReference(Border.BackgroundProperty, "Background");
+        _frame = frame;
         frame.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
         root.Children.Add(frame);
 
         _species.Items.Clear();
-        foreach (var s in Species) _species.Items.Add(new ComboBoxItem { Content = s.Emoji, ToolTip = L(s.Pt, s.En), FontFamily = new FontFamily("Segoe UI Emoji") });
+        foreach (var s in Species) _species.Items.Add(new ComboBoxItem { Content = $"{s.Emoji}  {L(s.Pt, s.En)}", FontFamily = new FontFamily("Segoe UI Emoji,Segoe UI") });
         if (_species.SelectedIndex < 0) _species.SelectedIndex = 0;
         _name.ToolTip = L("Nome do pet (Enter adiciona). Botão direito em um pet o remove.", "Pet name (Enter adds). Right-click a pet to remove it.");
         _name.KeyDown -= OnNameKey; _name.KeyDown += OnNameKey;
+        _bg.Items.Clear();
+        foreach (var b in Backgrounds) _bg.Items.Add(new ComboBoxItem { Content = "🖼  " + L(b.Pt, b.En) });
+        _bg.SelectionChanged -= OnBgChanged;
+        _bg.SelectedIndex = Math.Clamp(PetStore.LoadBackground(), 0, Backgrounds.Length - 1);
+        _bg.SelectionChanged += OnBgChanged;
+        _bg.ToolTip = L("Plano de fundo dos pets", "Pets background");
+        ApplyBackground();
+        root.Children.Add(Detach(_bg));
+        var hint = new TextBlock { Text = L("Nome do pet…", "Pet name…"), Opacity = 0.5, IsHitTestVisible = false, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0, 0, 0) };
+        _name.TextChanged -= OnNameChanged; _name.TextChanged += OnNameChanged;
+        _hint = hint;
+        var nameBox = new Grid { Margin = new Thickness(0, 0, 0, 4) };
+        nameBox.Children.Add(Detach(_name));
+        nameBox.Children.Add(hint);
+        root.Children.Add(nameBox);
         var add = new DockPanel();
         var plus = MakeButton("➕", OnAdd, true);
         plus.ToolTip = L("Adicionar pet", "Add pet");
         plus.Margin = new Thickness(4, 0, 0, 0);
         DockPanel.SetDock(plus, Dock.Right);
-        DockPanel.SetDock(_species, Dock.Right);
+        _species.Width = double.NaN; _species.Margin = new Thickness(0);
         add.Children.Add(plus);
-        add.Children.Add(Detach(_species));
-        add.Children.Add(Detach(_name));
-        root.Children.Add(add);
+        add.Children.Add(Detach(_species));        root.Children.Add(add);
 
         Content = root;
         if (IsLoaded) { _field.Children.Clear(); _sprites.Clear(); SyncSprites(); }
@@ -132,6 +183,8 @@ public sealed class PetsView : UserControl
         b.Click += click;
         return b;
     }
+
+    private void OnNameChanged(object sender, TextChangedEventArgs e) { if (_hint != null) _hint.Visibility = _name.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed; }
 
     private void OnNameKey(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) OnAdd(sender, e); }
 
@@ -188,7 +241,7 @@ public sealed class PetsView : UserControl
         _status.Visibility = st is null ? Visibility.Collapsed : Visibility.Visible;
 
         double w = _field.ActualWidth, h = _field.ActualHeight;
-        if (w < 100 || h < 100) return;
+        if (w < 40 || h < 40) return;
         foreach (var s in _sprites)
         {
             s.Phase += 0.25;
@@ -243,10 +296,10 @@ public sealed class PetsView : UserControl
 
     private void Feed()
     {
-        if (_sprites.Count == 0 || _field.ActualWidth < 100) return;
+        if (_sprites.Count == 0 || _field.ActualWidth < 40) return;
         ClearFood();
         double w = _field.ActualWidth, h = _field.ActualHeight;
-        _food = new Point(40 + Rng.NextDouble() * (w - 120), 40 + Rng.NextDouble() * (h - 120));
+        _food = new Point(Rng.NextDouble() * Math.Max(1, w - 60), 10 + Rng.NextDouble() * Math.Max(1, h - 50));
         _foodVisual = new TextBlock { Text = "🍖", FontSize = 28, FontFamily = new FontFamily("Segoe UI Emoji"), IsHitTestVisible = false };
         Canvas.SetLeft(_foodVisual, _food.Value.X); Canvas.SetTop(_foodVisual, _food.Value.Y);
         _field.Children.Add(_foodVisual);
