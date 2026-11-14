@@ -145,9 +145,9 @@ public sealed class DiagnosticsView : UserControl
         var root = new Grid { Margin = new Thickness(16) };
         root.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        var left = new StackPanel { Margin = new Thickness(0, 0, 12, 0), Width = 210 };
-        left.Children.Add(new TextBlock { Text = "🩺  " + L("Diagnóstico", "Diagnostics"), FontSize = 20, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 6) });
-        left.Children.Add(new TextBlock { Text = L("Escolha uma seção para analisar hardware, software, testes, histórico e relatórios do computador.", "Pick a section to review the computer's hardware, software, tests, history and reports."), TextWrapping = TextWrapping.Wrap, Opacity = 0.7, FontSize = 12, Margin = new Thickness(0, 0, 0, 12) });
+        var left = new StackPanel();
+        left.Children.Add(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) });
+        left.Children.Add(new TextBlock { Text = L("Escolha uma seção para analisar hardware, software, testes, histórico e relatórios do computador.", "Pick a section to review the computer's hardware, software, tests, history and reports."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) });
         for (int i = 0; i < Sections.Length; i++)
         {
             int idx = i;
@@ -155,7 +155,11 @@ public sealed class DiagnosticsView : UserControl
             b.Click += (_, _) => Show(idx);
             _nav.Add(b); left.Children.Add(b);
         }
-        root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = left });
+        foreach (var tb in left.Children.OfType<TextBlock>()) tb.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
+        var panel = new Border { Margin = new Thickness(0, 4, 14, 4), Padding = new Thickness(14), VerticalAlignment = VerticalAlignment.Top, CornerRadius = new CornerRadius(12), Width = 240, BorderThickness = new Thickness(1), Child = left };
+        panel.SetResourceReference(Border.BackgroundProperty, "CardBg");
+        panel.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
+        root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = panel });
         var sv = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _body };
         Grid.SetColumn(sv, 1);
         root.Children.Add(sv);

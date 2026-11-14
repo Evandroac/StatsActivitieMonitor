@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using StatsMonitor.Helpers;
 
 namespace StatsMonitor.Views;
@@ -27,7 +29,15 @@ public partial class HelpView : UserControl
     private void Build()
     {
         Host.Children.Clear();
-        Host.Children.Add(new TextBlock { Text = "📖  " + Loc.T("Ajuda e tutorial"), FontSize = 20, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 4) });
+        NavHost.Children.Clear();
+        _navButtons.Clear();
+        var navTitle = new TextBlock { Text = L("TÓPICOS", "TOPICS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) };
+        navTitle.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
+        var navHint = new TextBlock { Text = L("Clique em um tópico para ir direto até ele.", "Click a topic to jump straight to it."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) };
+        navHint.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
+        NavHost.Children.Add(navTitle);
+        NavHost.Children.Add(navHint);
+        Host.Children.Add(new TextBlock { Text = "📖  " + Loc.T("Ajuda e tutorial"), FontSize = 24, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 4) });
         Host.Children.Add(Caption(L("Leia com calma: aqui está tudo o que o aplicativo faz, como usá-lo e o que esperar dele.",
                                     "Take your time: this explains what the app does, how to use it and what to expect from it.")));
 
@@ -81,7 +91,7 @@ public partial class HelpView : UserControl
             L("Alertas: aviso de bateria fraca (20% por padrão, atenção) e crítica (10%), ajustáveis em Configurações › Alertas, enquanto descarrega, respeitando a sua escolha de alertas. Em modo econômico a bateria é lida a cada 30 s. Nem todo notebook informa capacidade, ciclos ou ritmo de carga; o que faltar aparece como N/D.",
               "Alerts: low battery (20% by default, attention) and critical battery (10%), adjustable in Settings › Alerts, while discharging, following your alert choice. In eco mode the battery is read every 30 s. Not every laptop reports capacity, cycles or charge rate; whatever is missing shows as N/A."),
         ]);
-        Card("🩻", 10, [
+        Card("🩺", 10, [
             L("Menu › Diagnóstico do computador reúne inventário, testes e análise do hardware e do Windows em 16 seções: Visão geral, Hardware, Processador, Memória RAM, Placa de vídeo, Armazenamento, Bateria e energia, Sistema operacional, Drivers e dispositivos, Rede, Segurança, Monitoramento em tempo real, Testes de desempenho, Diagnóstico inteligente, Histórico e Relatórios.",
               "Menu › Computer diagnostic gathers inventory, tests and analysis of the hardware and Windows in 16 sections: Overview, Hardware, Processor, RAM, Graphics card, Storage, Battery and power, Operating system, Drivers and devices, Network, Security, Real-time monitoring, Performance tests, Smart diagnosis, History and Reports."),
             L("Somente leitura: nada é corrigido automaticamente. INICIAR DIAGNÓSTICO COMPLETO coleta o inventário e roda testes de CPU, RAM (256 MB), disco (arquivo temporário de 128 MB, apagado ao final), rede e GPU, com progresso, log e cancelamento. Cada componente também tem o botão Diagnosticar este componente.",
@@ -171,6 +181,8 @@ public partial class HelpView : UserControl
         ]);
     }
 
+    private readonly List<Button> _navButtons = [];
+
     private static TextBlock Caption(string text) => new()
     {
         Text = text, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10), Opacity = 0.8,
@@ -178,13 +190,57 @@ public partial class HelpView : UserControl
 
     private void Card(string icon, int titleIndex, string[] paragraphs)
     {
+        string title = Loc.T(SectionTitles[titleIndex]);
         var stack = new StackPanel();
-        stack.Children.Add(new TextBlock { Text = icon + "  " + Loc.T(SectionTitles[titleIndex]), FontSize = 16, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 6) });
-        foreach (var p in paragraphs)
-            stack.Children.Add(new TextBlock { Text = p, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) });
-        var border = new Border { Padding = new Thickness(14, 10, 14, 10), Margin = new Thickness(0, 0, 0, 10), CornerRadius = new CornerRadius(8), BorderThickness = new Thickness(1), Child = stack };
+        var head = new TextBlock { Text = icon + "  " + title, FontSize = 17, FontWeight = FontWeights.SemiBold };
+        head.SetResourceReference(TextBlock.ForegroundProperty, "Accent");
+        stack.Children.Add(head);
+        var rule = new Border { Height = 1, Margin = new Thickness(0, 6, 0, 8), Opacity = 0.7 };
+        rule.SetResourceReference(Border.BackgroundProperty, "CardBorder");
+        stack.Children.Add(rule);
+        foreach (var p in paragraphs) stack.Children.Add(Paragraph(p));
+        var border = new Border { Padding = new Thickness(16, 12, 16, 12), Margin = new Thickness(0, 0, 0, 12), CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1), Child = stack };
         border.SetResourceReference(Border.BackgroundProperty, "CardBg");
         border.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
         Host.Children.Add(border);
+
+        var btn = new Button { Content = icon + "  " + title, Style = (Style)Application.Current.FindResource("TabButton"), Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(10, 6, 10, 6) };
+        btn.Click += (_, _) =>
+        {
+            foreach (var b in _navButtons) b.Tag = b == btn ? "active" : null;
+            Scroll.ScrollToVerticalOffset(Scroll.VerticalOffset + border.TranslatePoint(new Point(0, 0), Scroll).Y - 8);
+        };
+        _navButtons.Add(btn);
+        NavHost.Children.Add(btn);
+    }
+
+    /// <summary>A bullet row; a short lead-in ("Topic:" or a question) is highlighted so the text can be scanned quickly.</summary>
+    private static UIElement Paragraph(string text)
+    {
+        int lead = -1;
+        int colon = text.IndexOf(": ", StringComparison.Ordinal);
+        int question = text.IndexOf("? ", StringComparison.Ordinal);
+        if (colon is > 0 and <= 60 && !text[..colon].Contains('.')) lead = colon + 1;
+        else if (question is > 0 and <= 140) lead = question + 1;
+
+        var tb = new TextBlock { TextWrapping = TextWrapping.Wrap, LineHeight = 20 };
+        if (lead > 0)
+        {
+            var bold = new Run(text[..lead]) { FontWeight = FontWeights.SemiBold };
+            bold.SetResourceReference(TextElement.ForegroundProperty, "Accent2");
+            tb.Inlines.Add(bold);
+            tb.Inlines.Add(new Run(text[lead..]));
+        }
+        else tb.Inlines.Add(new Run(text));
+
+        var dot = new Ellipse { Width = 6, Height = 6, Margin = new Thickness(0, 7, 10, 0), VerticalAlignment = VerticalAlignment.Top };
+        dot.SetResourceReference(Shape.FillProperty, "Accent");
+        var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        Grid.SetColumn(tb, 1);
+        row.Children.Add(dot);
+        row.Children.Add(tb);
+        return row;
     }
 }

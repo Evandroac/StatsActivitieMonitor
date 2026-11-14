@@ -62,6 +62,8 @@ public sealed class NetworkToolsView : UserControl
         b.Resources[typeof(TextBlock)] = st;
     }
 
+    private static TextBlock Themed(TextBlock tb) { tb.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); return tb; }
+
     private void Build()
     {
         _tabs.Clear();
@@ -84,8 +86,8 @@ public sealed class NetworkToolsView : UserControl
         root.Children.Add(head);
 
         var tabs = new StackPanel();
-        tabs.Children.Add(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Opacity = 0.7, Margin = new Thickness(2, 0, 0, 8) });
-        tabs.Children.Add(new TextBlock { Text = L("Ferramentas de rede para diagnosticar problemas: execute, compare e copie os resultados.", "Network tools to troubleshoot problems: run, compare and copy the results."), TextWrapping = TextWrapping.Wrap, Opacity = 0.7, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) });
+        tabs.Children.Add(Themed(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) }));
+        tabs.Children.Add(Themed(new TextBlock { Text = L("Ferramentas de rede para diagnosticar problemas: execute, compare e copie os resultados.", "Network tools to troubleshoot problems: run, compare and copy the results."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) }));
         string[] names =
         [
             "🩺  " + L("Diagnóstico", "Diagnostics"), "📡  Ping", "🧭  Traceroute", "🔎  DNS", "🔌  " + L("Portas", "Ports"),
