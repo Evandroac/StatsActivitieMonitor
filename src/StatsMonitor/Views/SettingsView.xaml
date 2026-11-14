@@ -142,15 +142,17 @@
         <StackPanel Visibility="{Binding IsChecked, ElementName=ShowGadgetBox, Converter={StaticResource BoolToVis}}">
         <CheckBox ToolTip="{h:Tr 'Mantém o gadget na tela mesmo com a janela principal aberta'}" Content="{h:Tr 'Manter gadget sempre visível'}" IsChecked="{Binding AlwaysShowGadget}"/>
         <TextBlock Text="{h:Tr 'Exibição do gadget ao minimizar'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}" IsChecked="{Binding GadgetFloating}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto superior esquerdo da tela'}" Content="{h:Tr 'Canto superior esquerdo'}" IsChecked="{Binding GadgetTopLeft}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto superior direito da tela'}" Content="{h:Tr 'Canto superior direito'}" IsChecked="{Binding GadgetTopRight}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto inferior esquerdo da tela'}" Content="{h:Tr 'Canto inferior esquerdo'}" IsChecked="{Binding GadgetBottomLeft}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Gadget fixo no canto inferior direito da tela'}" Content="{h:Tr 'Canto inferior direito'}" IsChecked="{Binding GadgetBottomRight}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}" IsChecked="{Binding GadgetFloatingBar}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}" IsChecked="{Binding GadgetDockedTop}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada na parte de baixo da tela'}" Content="{h:Tr 'Faixa fixa na parte inferior da tela'}" IsChecked="{Binding GadgetDockedBottom}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
-        <RadioButton GroupName="GadgetMode" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}" IsChecked="{Binding GadgetNone}" Foreground="{DynamicResource TextPrimary}" Margin="0,2"/>
+        <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" AutomationProperties.Name="{h:Tr 'Exibição do gadget ao minimizar'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetModeKey, Mode=TwoWay}">
+            <ComboBoxItem Tag="Floating" ToolTip="{h:Tr 'Gadget solto sobre a tela, que pode ser arrastado'}" Content="{h:Tr 'Sobre a tela (flutuante, arrastável)'}"/>
+            <ComboBoxItem Tag="TopLeft" ToolTip="{h:Tr 'Gadget fixo no canto superior esquerdo da tela'}" Content="{h:Tr 'Canto superior esquerdo'}"/>
+            <ComboBoxItem Tag="TopRight" ToolTip="{h:Tr 'Gadget fixo no canto superior direito da tela'}" Content="{h:Tr 'Canto superior direito'}"/>
+            <ComboBoxItem Tag="BottomLeft" ToolTip="{h:Tr 'Gadget fixo no canto inferior esquerdo da tela'}" Content="{h:Tr 'Canto inferior esquerdo'}"/>
+            <ComboBoxItem Tag="BottomRight" ToolTip="{h:Tr 'Gadget fixo no canto inferior direito da tela'}" Content="{h:Tr 'Canto inferior direito'}"/>
+            <ComboBoxItem Tag="FloatingBar" ToolTip="{h:Tr 'Barra horizontal de uma linha, solta sobre a tela e arrastável'}" Content="{h:Tr 'Barra horizontal flutuante (arrastável)'}"/>
+            <ComboBoxItem Tag="DockedTop" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada no topo da tela'}" Content="{h:Tr 'Faixa fixa no topo da tela'}"/>
+            <ComboBoxItem Tag="DockedBottom" ToolTip="{h:Tr 'Faixa horizontal fixa, centralizada na parte de baixo da tela'}" Content="{h:Tr 'Faixa fixa na parte inferior da tela'}"/>
+            <ComboBoxItem Tag="None" ToolTip="{h:Tr 'Ao minimizar, o app apenas minimiza, sem exibir gadget'}" Content="{h:Tr 'Não fazer nada (sem gadget)'}"/>
+        </ComboBox>
         <Border Margin="0,10,0,0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" ToolTip="{h:Tr 'Mostra como o gadget ficará no modo escolhido, com os indicadores marcados'}">
             <StackPanel>
                 <DockPanel>

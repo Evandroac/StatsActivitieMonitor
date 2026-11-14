@@ -151,6 +151,11 @@ public sealed class SettingsViewModel : ObservableObject
     public bool GadgetTopRight { get => _gadgetMode == GadgetDisplayMode.TopRight; set => SetMode(value, GadgetDisplayMode.TopRight); }
     public bool GadgetBottomLeft { get => _gadgetMode == GadgetDisplayMode.BottomLeft; set => SetMode(value, GadgetDisplayMode.BottomLeft); }
     public bool GadgetBottomRight { get => _gadgetMode == GadgetDisplayMode.BottomRight; set => SetMode(value, GadgetDisplayMode.BottomRight); }
+    public string GadgetModeKey
+    {
+        get => _gadgetMode.ToString();
+        set { if (Enum.TryParse<GadgetDisplayMode>(value, out var m)) SetMode(true, m); }
+    }
     public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set => SetMode(value, GadgetDisplayMode.None); }
     private bool _showCpuMain; public bool ShowCpuMain { get => _showCpuMain; set { if (_showCpuMain != value) { _showCpuMain = value; AutoSave(); } } }
     private bool _showGpuMain; public bool ShowGpuMain { get => _showGpuMain; set { if (_showGpuMain != value) { _showGpuMain = value; AutoSave(); } } }

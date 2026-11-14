@@ -45,6 +45,7 @@ public partial class SettingsView : UserControl
         RoutedEventHandler refresh = (_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background);
         AddHandler(ToggleButton.CheckedEvent, refresh);
         AddHandler(ToggleButton.UncheckedEvent, refresh);
+        AddHandler(System.Windows.Controls.Primitives.Selector.SelectionChangedEvent, new SelectionChangedEventHandler((_, _) => Dispatcher.BeginInvoke(RefreshPreview, System.Windows.Threading.DispatcherPriority.Background)));
         Action onLang = () => { RefreshPreview(); RefreshTitles(); };
         Loaded += (_, _) => { RefreshPreview(); RefreshTitles(); Loc.LanguageChanged += onLang; Units.Changed += onLang; };
         Unloaded += (_, _) => { Loc.LanguageChanged -= onLang; Units.Changed -= onLang; };
