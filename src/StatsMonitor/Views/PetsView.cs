@@ -89,7 +89,7 @@ public sealed class PetsView : UserControl
         ("Pôr do sol", "Sunset", Color.FromRgb(0xFF, 0x7E, 0x5F), Color.FromRgb(0x7F, 0x53, 0xAC)),
     ];
 
-    private void OnBgChanged(object sender, SelectionChangedEventArgs e) { PetStore.SaveBackground(_bg.SelectedIndex); ApplyBackground(); }
+    private void OnBgChanged(object sender, SelectionChangedEventArgs e) { if (_bg.SelectedIndex < 0) return; PetStore.SaveBackground(_bg.SelectedIndex); ApplyBackground(); }
 
     private void ApplyBackground()
     {
@@ -155,6 +155,7 @@ public sealed class PetsView : UserControl
         if (_species.SelectedIndex < 0) _species.SelectedIndex = 0;
         _name.ToolTip = L("Nome do pet (Enter adiciona). Botão direito em um pet o remove.", "Pet name (Enter adds). Right-click a pet to remove it.");
         _name.KeyDown -= OnNameKey; _name.KeyDown += OnNameKey;
+        _bg.SelectionChanged -= OnBgChanged;
         _bg.Items.Clear();
         foreach (var b in Backgrounds) _bg.Items.Add(new ComboBoxItem { Content = "🖼  " + L(b.Pt, b.En) });
         _bg.SelectionChanged -= OnBgChanged;
