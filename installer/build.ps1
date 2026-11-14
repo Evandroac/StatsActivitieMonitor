@@ -1,4 +1,4 @@
-<#
+﻿<#
 Builds the Stats Monitor installer.
 
   .\installer\build.ps1 [-Version 1.0.0]
@@ -13,7 +13,7 @@ $root = Split-Path -Parent $PSScriptRoot
 $publish = Join-Path $root "artifacts\publish"
 Remove-Item $publish -Recurse -Force -ErrorAction SilentlyContinue
 
-dotnet publish (Join-Path $root "src\StatsMonitor\StatsMonitor.csproj") -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $publish
+dotnet publish (Join-Path $root "src\StatsMonitor\StatsMonitor.csproj") -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:Version=$Version -p:DebugType=None -p:DebugSymbols=false -o $publish
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
 $signing = $env:SM_SIGN_PFX -and (Test-Path $env:SM_SIGN_PFX)
