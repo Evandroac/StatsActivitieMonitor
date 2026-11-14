@@ -90,6 +90,8 @@ public partial class HelpView : UserControl
               "✔ It only READS sensors. It does not change settings, control fans, overclock or touch your files."),
             L("✔ Os dados ficam no seu computador. O app não envia leituras para a internet. A conexão em segundo plano é um ping simples ao DNS 1.1.1.1 para medir a latência e saber se há internet; a tela Testes de conexão só acessa a rede quando você manda executar.",
               "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
+            L("💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial.",
+              "💡 Open-source project: Stats Monitor is open source and was designed, programmed and built entirely with the help of artificial intelligence."),
         ]);
         Card("🧭", 1, [
             L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes; com o menu aberto, arraste a borda direita para ajustar a largura (fica salvo). As páginas são: Principal, Sistema e periféricos (com filtro Tudo/Sistema/Periféricos), CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",

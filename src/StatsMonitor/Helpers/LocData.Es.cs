@@ -725,5 +725,6 @@ public static partial class LocData
         ["Fechar"] = "Cerrar",
         ["Restaurar"] = "Restaurar",
         ["Configuração salva"] = "Configuración guardada",
+        ["💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial."] = "💡 Proyecto de código abierto: Stats Monitor es de código abierto y fue diseñado, programado y creado íntegramente con la ayuda de inteligencia artificial.",
     };
 }

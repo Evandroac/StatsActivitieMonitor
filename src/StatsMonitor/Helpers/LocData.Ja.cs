@@ -736,5 +736,6 @@ public static partial class LocData
         ["Fechar"] = "閉じる",
         ["Restaurar"] = "元に戻す",
         ["Configuração salva"] = "設定を保存しました",
+        ["💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial."] = "💡 オープンソースプロジェクト：Stats Monitor はオープンソースで、設計・プログラミング・制作のすべてを人工知能の支援によって行いました。",
     };
 }
