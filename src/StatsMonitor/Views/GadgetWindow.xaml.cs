@@ -179,6 +179,8 @@ public partial class GadgetWindow : Window
 
     private void UpdateTools(bool hover)
     {
+        // The window lags behind the cursor while resizing/moving; keep the controls alive during a drag.
+        hover |= Grip.IsDragging || MoveX.IsDragging;
         Tools.Visibility = BtnLock.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -213,6 +215,7 @@ public partial class GadgetWindow : Window
         _gripStartX = Grip.PointToScreen(Mouse.GetPosition(Grip)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
         _gripStartScale = _settings.Current.GadgetScale;
         _gripStartWidth = Math.Max(60, ActualWidth);
+        UpdateTools(true);
     }
 
     // Scale is derived from the absolute cursor position, not incremental deltas, so resizing the window cannot feed back into the drag.
@@ -230,6 +233,7 @@ public partial class GadgetWindow : Window
     {
         _settings.Save();
         if (IsFixedPosition) Reposition();
+        UpdateTools(IsMouseOver);
     }
 
     private void OnGripReset(object sender, MouseButtonEventArgs e)
@@ -278,6 +282,7 @@ public partial class GadgetWindow : Window
     {
         _vm.HoldReadings(false);
         _settings.Save();
+        UpdateTools(IsMouseOver);
     }
 
     private void OnMoveXReset(object sender, MouseButtonEventArgs e)
