@@ -261,7 +261,7 @@
                 <StackPanel Orientation="Horizontal"><TextBlock Text="🌐" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblNetTools" Text="{h:Tr 'Testes de conexão'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
                             <Button x:Name="NavDiagnostics" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Diagnóstico do computador: hardware, software, testes, histórico e relatórios'}" AutomationProperties.Name="{h:Tr 'Diagnóstico do computador: hardware, software, testes, histórico e relatórios'}" Click="OnOpenDiagnostics">
-                                <StackPanel Orientation="Horizontal"><TextBlock Text="🩻" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblDiagnostics" Text="{h:Tr 'Diagnóstico do computador'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
+                                <StackPanel Orientation="Horizontal"><TextBlock Text="🩺" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblDiagnostics" Text="{h:Tr 'Diagnóstico do computador'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
                             </Button>
         </StackPanel>
         </DockPanel>

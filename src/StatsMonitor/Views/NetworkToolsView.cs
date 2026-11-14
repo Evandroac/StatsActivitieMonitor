@@ -57,8 +57,11 @@ public sealed class NetworkToolsView : UserControl
     {
         _tabs.Clear();
         _tabButtons.Clear();
+        var outer = new Grid();
+        outer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        outer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         var root = new Grid { Margin = new Thickness(16) };
-        root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        Grid.SetColumn(root, 1);
         root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
@@ -68,7 +71,8 @@ public sealed class NetworkToolsView : UserControl
                                     "Network tools to troubleshoot problems: run, compare and copy the results.")));
         root.Children.Add(head);
 
-        var tabs = new WrapPanel { Margin = new Thickness(0, 0, 0, 8) };
+        var tabs = new StackPanel();
+        tabs.Children.Add(new TextBlock { Text = L("AÇÕES", "ACTIONS"), FontWeight = FontWeights.SemiBold, Opacity = 0.7, Margin = new Thickness(2, 0, 0, 8) });
         string[] names =
         [
             "🩺  " + L("Diagnóstico", "Diagnostics"), "📡  Ping", "🧭  Traceroute", "🔎  DNS", "🔌  " + L("Portas", "Ports"),
@@ -77,18 +81,21 @@ public sealed class NetworkToolsView : UserControl
         for (int i = 0; i < names.Length; i++)
         {
             int idx = i;
-            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("PillButton")!, Margin = new Thickness(0, 0, 6, 6) };
+            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("PillButton")!, Margin = new Thickness(0, 0, 0, 8), HorizontalContentAlignment = HorizontalAlignment.Left };
             b.Click += (_, _) => Select(idx);
             _tabButtons.Add(b);
             tabs.Children.Add(b);
         }
-        Grid.SetRow(tabs, 1);
-        root.Children.Add(tabs);
+        var actions = new Border { Margin = new Thickness(16, 20, 0, 20), Padding = new Thickness(14), VerticalAlignment = VerticalAlignment.Top, CornerRadius = new CornerRadius(12), Width = 240, BorderThickness = new Thickness(1), Child = tabs };
+        actions.SetResourceReference(Border.BackgroundProperty, "CardBg");
+        actions.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
+        outer.Children.Add(actions);
 
         var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _body };
-        Grid.SetRow(scroll, 2);
+        Grid.SetRow(scroll, 1);
         root.Children.Add(scroll);
-        Content = root;
+        outer.Children.Add(root);
+        Content = outer;
         Select(_tab);
     }
 
