@@ -62,7 +62,7 @@ public static class SearchIndex
     {
         var terms = Normalize(query).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (terms.Length == 0) return [];
-        if (_staticLang != Loc.Lang) { _static = null; _staticLang = Loc.Lang; }
+        if (_staticLang != Loc.Code) { _static = null; _staticLang = Loc.Code; }
         _static ??= BuildStatic();
         return _static.Concat(_system)
             .Select(r => (r, key: Normalize(r.Title + " " + r.Location)))
@@ -95,7 +95,7 @@ public static class SearchIndex
             "Intervalo de atualização (s):", "Intervalo por componente", "CPU (s):", "GPU e VRAM (s):", "Memória RAM (s):", "Discos e sensores (s):", "Iniciar com o Windows", "Iniciar minimizado", "Exibir temperaturas",
             "Idioma", "Unidade de temperatura", "Visualização simplificada", "Perfis", "Seguir o tema do Windows", "Atalho global",
             "Exportar configurações", "Importar configurações", "Restaurar padrões", "Notificações de alerta", "Tocar som de alerta", "Testar alerta",
-            "Sensores (ventiladores, energia, tensões, bateria)", "Pausar a leitura quando oculto e sem gadget",
+            "Mostrar painel de Pets no menu", "Animações suaves ao abrir e trocar de tela", "Sensores (ventiladores, energia, tensões, bateria)", "Pausar a leitura quando oculto e sem gadget",
             "Ler sensores de disco e placa-mãe com menos frequência", "Modo econômico ao minimizar", "Exibir tela de abertura (splash)",
             "Geral", "Gadget", "Alertas", "Registro de dados", "Personalização", "Perfis", "Seções", "Ações", "Restaurar cores do tema");
         Add(SearchPage.Settings, "Configurações › Gadget",
@@ -131,13 +131,14 @@ public static class SearchIndex
         if (BatteryService.HasBattery)
             Add(SearchPage.Main, "Principal › Bateria", "Bateria", "Nível de carga", "Status da bateria", "Tempo restante", "Tempo para carga completa",
                 "Estado de conservação", "Fonte de alimentação", "Capacidade atual (carga máxima)", "Capacidade original (projeto)", "Ciclos de carga", "Economia de bateria");
-        Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível");
+        Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível", "Uso da memória", "Memória confirmada (commit)", "Tipo e velocidade", "Módulos instalados");
         Add(SearchPage.System, "Sistema", "Sistema", "Sistema e periféricos");
         Add(SearchPage.Processes, "Processos", [.. StatsMonitor.Views.ProcessesView.Keywords]);
         Add(SearchPage.Diagnostics, "Diagnóstico do computador", [.. StatsMonitor.Views.DiagnosticsView.Keywords]);
         Add(SearchPage.NetTools, "Testes de conexão", [.. StatsMonitor.Views.NetworkToolsView.Keywords]);
         Add(SearchPage.Help, "Ajuda", ["Ajuda e tutorial", .. StatsMonitor.Views.HelpView.SectionTitles]);
         Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Sistema e periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");
+        Add(SearchPage.Settings, "Configurações › Idioma", Loc.Languages.Select(l => l.Name).ToArray());
         Add(SearchPage.Settings, "Configurações", "Configurações");
         Add(SearchPage.Appearance, "Personalização", "Personalização");
         return list;

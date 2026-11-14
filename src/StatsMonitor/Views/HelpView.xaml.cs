@@ -13,7 +13,7 @@ public partial class HelpView : UserControl
     public static readonly string[] SectionTitles =
     [
         "O que é o Stats Monitor", "Como usar", "Gadget e bandeja do sistema", "Alertas", "Economia de recursos",
-        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)", "Diagnóstico do computador",
+        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)", "Diagnóstico do computador", "Pets", "Idioma",
     ];
 
     private int? _initialTopic;
@@ -220,6 +220,26 @@ public partial class HelpView : UserControl
               "Does the app start with Windows? Only if you enable it in Settings. It can also start minimized."),
             L("Como desligar as notificações? Em Configurações, na seção de alertas.",
               "How do I turn notifications off? In Settings, in the alerts section."),
+            L("O app não abre ou não aparece? Ele só permite uma instância: verifique o ícone na bandeja do sistema (perto do relógio) e abra por lá. Se ele fechar com erro, os detalhes ficam em %AppData%\\StatsMonitor\\crash.log.",
+              "The app does not open or show up? Only one instance can run: check the tray icon (near the clock) and open it from there. If it crashes, details are saved in %AppData%\\StatsMonitor\\crash.log."),
+            L("O que mostra o painel de Memória RAM? Uso (usado/total), memória confirmada (commit), tipo e velocidade (ex.: DDR4 3200 MHz) e os módulos instalados, além do gráfico de uso.",
+              "What does the RAM panel show? Usage (used/total), committed memory, type and speed (e.g. DDR4 3200 MHz) and installed modules, plus the usage chart."),
+        ]);
+        Card("🐾", 11, [
+            L("Os Pets são opcionais: ative em Configurações › Geral › Mostrar painel de Pets no menu. O painel aparece no menu lateral (com o menu expandido), acima de Ajuda, e é pensado para distrair enquanto um diagnóstico demora.",
+              "Pets are optional: enable them in Settings › General › Show Pets panel in the menu. The panel appears in the side menu (when expanded), above Help, and is meant to keep you entertained while a diagnostic runs."),
+            L("Adicionar: digite um nome, escolha o tipo e clique em ➕ (até 12 pets). Clique em um pet para fazer carinho, clique com o botão direito para remover e use 🍖 para alimentar todos. Eles são salvos entre sessões.",
+              "Add: type a name, choose the type and click ➕ (up to 12 pets). Click a pet to cuddle it, right-click to remove it and use 🍖 to feed them all. They are saved between sessions."),
+            L("Fundo: escolha o cenário na lista (gramado, noite estrelada, praia, neve, pôr do sol). Use ▾/▸ no cabeçalho para recolher ou expandir o painel; as duas escolhas ficam salvas.",
+              "Background: pick the scenery from the list (grass, starry night, beach, snow, sunset). Use ▾/▸ in the header to collapse or expand the panel; both choices are saved."),
+        ]);
+        Card("🌐", 12, [
+            L("Em Configurações › Geral › Idioma há 16 opções: Português (Brasil e Portugal), English (US e UK), Español (e México), Français, Deutsch, Italiano, 简体中文, 繁體中文, 日本語, 한국어, العربية, हिन्दी e Русский. A troca é imediata e fica salva.",
+              "Settings › General › Language offers 16 options: Portuguese (Brazil and Portugal), English (US and UK), Spanish (and Mexico), French, German, Italian, Simplified and Traditional Chinese, Japanese, Korean, Arabic, Hindi and Russian. Switching is instant and saved."),
+            L("Na primeira execução o idioma é escolhido pelo idioma do Windows; se não houver tradução, usa inglês.",
+              "On first launch the language follows Windows; if there is no translation, English is used."),
+            L("Ressalva: algumas telas avançadas (Diagnóstico, Processos, Testes de conexão e esta Ajuda) estão disponíveis apenas em português e inglês; nos demais idiomas elas aparecem em inglês.",
+              "Caveat: some advanced screens (Diagnostics, Processes, Connection tests and this Help) are only available in Portuguese and English; other languages show them in English."),
         ]);
         if (_navButtons.Count > 0) _navButtons[0].Tag = "active";
     }
