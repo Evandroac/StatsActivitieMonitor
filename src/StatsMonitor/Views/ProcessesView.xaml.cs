@@ -35,6 +35,7 @@ public partial class ProcessesView : UserControl
         PreviewMouseLeftButtonDown += OnClickOutside;
         _timer.Tick += async (_, _) => await TickAsync();
         FillCombos();
+        _query.Type = ProcType.App;
         ApplyTexts();
         _ready = true;
         Loaded += (_, _) => UpdateRunning();
@@ -70,6 +71,7 @@ public partial class ProcessesView : UserControl
         Fill(StatusBox, L("Todos os status", "All statuses"), L("Em execução", "Running"), L("Não está respondendo", "Not responding"));
         Fill(SortBox, L("Nome", "Name"), "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"), "PID");
         if (SortBox.SelectedIndex < 0 || !_ready) SortBox.SelectedIndex = 1;
+        if (!_ready) TypeBox.SelectedIndex = 1;
         Fill(MetricBox, "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"));
         Fill(RefreshBox, L("1 segundo", "1 second"), L("2 segundos", "2 seconds"), L("5 segundos", "5 seconds"), L("Pausado", "Paused"));
         if (RefreshBox.SelectedIndex < 0 || !_ready) RefreshBox.SelectedIndex = 1;
