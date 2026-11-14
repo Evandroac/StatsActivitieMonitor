@@ -78,7 +78,7 @@ public static class NavIconAnimator
         switch (kind)
         {
             case Kind.Spin:
-                s.Rot.BeginAnimation(RotateTransform.AngleProperty, Anim(0, 720, 1.2, ease: new CubicEase { EasingMode = EasingMode.EaseInOut }));
+                s.Rot.BeginAnimation(RotateTransform.AngleProperty, Anim(0, 360, 1.4, ease: new CubicEase { EasingMode = EasingMode.EaseInOut }));
                 break;
             case Kind.Turn:
                 s.Rot.BeginAnimation(RotateTransform.AngleProperty, Anim(0, 360, 0.7, ease: new CubicEase { EasingMode = EasingMode.EaseInOut }));
