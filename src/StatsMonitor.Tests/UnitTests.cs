@@ -124,7 +124,7 @@ public class AlertNotifierTests : IDisposable
     [Fact]
     public void Attention_level_fires_before_critical_and_yields_to_it()
     {
-        var cfg = new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0 };
+        var cfg = new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0, AlertLevel = "both" };
         var n = new AlertNotifier();
         Assert.Equal(AlertKind.CpuTempWarn, Assert.Single(n.Evaluate(Snap(cpuTemp: 75), cfg)).Kind);
         Assert.Equal(AlertKind.CpuTemp, Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg)).Kind);
@@ -481,7 +481,7 @@ public class BatteryTests
     public void BatteryAlerts_FireOncePerDischargeAndRearm()
     {
         var n = new BatteryAlertNotifier();
-        var cfg = new AppSettings();
+        var cfg = new AppSettings { AlertLevel = "both" };
         BatteryInfo B(int p, BatteryState s) => BatteryInfo.None with { Present = true, Percent = p, State = s, PluggedIn = s != BatteryState.Discharging };
         Assert.Empty(n.Evaluate(B(50, BatteryState.Discharging), cfg));
         Assert.Equal(AlertKind.BatteryLow, Assert.Single(n.Evaluate(B(19, BatteryState.Discharging), cfg)).Kind);

@@ -104,7 +104,7 @@ public sealed class AppSettings
     public bool NotifyNetworkAlerts { get; set; } = true;
     public bool NotifyGreetings { get; set; } = true;
     /// <summary>Which hardware alert levels notify: "both", "attention" or "critical".</summary>
-    public string AlertLevel { get; set; } = "both";
+    public string AlertLevel { get; set; } = "critical";
     public double AlertLoadPercent { get; set; } = 95;
     public int AlertSustainSeconds { get; set; } = 10;
     public int AlertCooldownMinutes { get; set; } = 2;

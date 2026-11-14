@@ -44,7 +44,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
-        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; NotifyGreetings = s.NotifyGreetings; AlertLevel = s.AlertLevel is "attention" or "critical" ? s.AlertLevel : "both"; AlertSound = s.AlertSound;
+        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; NotifyGreetings = s.NotifyGreetings; AlertLevel = s.AlertLevel is "attention" or "critical" ? s.AlertLevel : "critical"; AlertSound = s.AlertSound;
         AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; BatteryLowPercent = s.BatteryLowPercent; BatteryCriticalPercent = s.BatteryCriticalPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
         ShowSensorsMain = s.ShowSensorsMain; ShowBatteryMain = s.ShowBatteryMain; PauseWhenHidden = s.PauseWhenHidden; EcoWhenMinimized = s.EcoWhenMinimized; AnimationsEnabled = s.AnimationsEnabled; PetsEnabled = s.PetsEnabled; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
     }
@@ -189,7 +189,7 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; Raise(); AutoSave(); } } }
     private bool _notifyNetworkAlerts; public bool NotifyNetworkAlerts { get => _notifyNetworkAlerts; set { if (_notifyNetworkAlerts != value) { _notifyNetworkAlerts = value; AutoSave(); } } }
     private bool _notifyGreetings; public bool NotifyGreetings { get => _notifyGreetings; set { if (_notifyGreetings != value) { _notifyGreetings = value; AutoSave(); } } }
-    private string _alertLevel = "both"; public string AlertLevel { get => _alertLevel; set { if (value != null && _alertLevel != value) { _alertLevel = value; AutoSave(); } } }
+    private string _alertLevel = "critical"; public string AlertLevel { get => _alertLevel; set { if (value != null && _alertLevel != value) { _alertLevel = value; AutoSave(); } } }
     private bool _notifyAlerts; public bool NotifyAlerts { get => _notifyAlerts; set { if (_notifyAlerts != value) { _notifyAlerts = value; AutoSave(); } } }
     private bool _alertSound; public bool AlertSound { get => _alertSound; set { if (_alertSound != value) { _alertSound = value; AutoSave(); } } }
     private double _alertSustainSeconds; public double AlertSustainSeconds { get => _alertSustainSeconds; set { if (_alertSustainSeconds != value) { _alertSustainSeconds = value; AutoSave(); } } }
