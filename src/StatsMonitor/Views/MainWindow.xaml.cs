@@ -29,6 +29,7 @@ public partial class MainWindow : Window
         NavBattery.Visibility = _vm.HasBattery ? Visibility.Visible : Visibility.Collapsed;
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
+        AttachNavAnimations();
         settings.Saved += () => Dispatcher.BeginInvoke(ApplyPets);
         Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); PageAnimator.Play(MainPage, settings.Current.AnimationsEnabled); };
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
@@ -556,6 +557,28 @@ public partial class MainWindow : Window
             StatsMonitor.Services.ComponentKind.Network => NavNet, StatsMonitor.Services.ComponentKind.Battery => NavBattery, _ => NavSensors,
         };
         OnOpenComponent(nav, new RoutedEventArgs());
+    }
+
+    private void AttachNavAnimations()
+    {
+        Func<bool> on = () => _settings.Current.AnimationsEnabled;
+        void A(Button b, NavIconAnimator.Kind k) => NavIconAnimator.Attach(b, k, on);
+        A(NavSettings, NavIconAnimator.Kind.Spin);
+        A(NavProcesses, NavIconAnimator.Kind.Spin);
+        A(NavMenu, NavIconAnimator.Kind.Turn);
+        A(NavDisk, NavIconAnimator.Kind.Turn);
+        A(NavNetTools, NavIconAnimator.Kind.Turn);
+        A(NavNet, NavIconAnimator.Kind.Turn);
+        A(SearchIcon, NavIconAnimator.Kind.Wiggle);
+        A(NavHelp, NavIconAnimator.Kind.Wiggle);
+        A(NavGpu, NavIconAnimator.Kind.Wiggle);
+        A(NavMain, NavIconAnimator.Kind.Bounce);
+        A(NavRam, NavIconAnimator.Kind.Bounce);
+        A(NavSystem, NavIconAnimator.Kind.Bounce);
+        A(NavCpu, NavIconAnimator.Kind.Pulse);
+        A(NavSensors, NavIconAnimator.Kind.Pulse);
+        A(NavBattery, NavIconAnimator.Kind.Pulse);
+        A(NavDiagnostics, NavIconAnimator.Kind.Pulse);
     }
 
     private void OnShortcut(object sender, RoutedEventArgs e)
