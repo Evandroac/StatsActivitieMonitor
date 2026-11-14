@@ -442,6 +442,15 @@
                             <TextBlock Text="{Binding StatusText}" FontSize="16"/>
                         </StackPanel>
                     </StackPanel></Border>
+                    <Border Style="{StaticResource Tile}" Width="220"><StackPanel>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="🪟" FontFamily="Segoe UI Emoji" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Windows Update" Style="{StaticResource Caption}" VerticalAlignment="Center"/></StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12" Fill="{Binding WindowsUpdateBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding WindowsUpdateText}" FontSize="16" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Button Content="{h:Tr 'Abrir Windows Update'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,8,0,0" Click="OnOpenWindowsUpdate"
+                                Visibility="{Binding HasPendingUpdates, Converter={StaticResource BoolToVis}}" ToolTip="{h:Tr 'Abre a página do Windows Update nas Configurações do Windows'}"/>
+                    </StackPanel></Border>
                 </WrapPanel>
                 <TextBlock Text="{Binding SensorNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,8,0,0"
                            Foreground="{DynamicResource TextSecondary}"/>

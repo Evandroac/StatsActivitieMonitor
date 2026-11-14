@@ -522,6 +522,8 @@ public partial class MainWindow : Window
         NavTreeToggle.Content = _treeOpen ? "▾" : "▸";
     }
 
+    private void OnOpenWindowsUpdate(object sender, RoutedEventArgs e) => StatsMonitor.Services.WindowsUpdateChecker.OpenWindowsUpdate();
+
     private void OnToggleTree(object sender, RoutedEventArgs e)
     {
         _treeOpen = !_treeOpen;
