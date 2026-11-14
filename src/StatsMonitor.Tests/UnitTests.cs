@@ -308,3 +308,60 @@ public class ProfileAndHotkeyTests
         if (valid) { Assert.NotEqual(0u, mod); Assert.NotEqual(0u, vk); }
     }
 }
+
+public class ProcessTreeTests
+{
+    private static ProcessRow R(int pid, int parent, string name, double cpu, long created) =>
+        new(new ProcSample(pid, parent, created, name, "", "", null, false, false, 1, cpu, 1000, 0, 0));
+
+    [Fact]
+    public void Parents_aggregate_children_and_children_show_only_when_expanded()
+    {
+        var p = R(10, 1, "a.exe", 5, 100); var c1 = R(11, 10, "a.exe", 20, 200); var c2 = R(12, 10, "a.exe", 10, 300);
+        var all = new[] { p, c1, c2 };
+        var q = new ProcessQuery();
+        var collapsed = ProcessTree.Arrange(all, q);
+        Assert.Single(collapsed);
+        Assert.Equal(35, collapsed[0].Cpu);
+        Assert.Equal(2, collapsed[0].ChildCount);
+
+        p.IsExpanded = true;
+        var open = ProcessTree.Arrange(all, q);
+        Assert.Equal([10, 11, 12], open.Select(r => r.Pid).ToArray());
+        Assert.Equal(1, open[1].Depth);
+    }
+
+    [Fact]
+    public void Search_flattens_and_sort_orders_by_value()
+    {
+        var all = new[] { R(1, 0, "x.exe", 1, 1), R(2, 1, "chrome.exe", 30, 2), R(3, 1, "chrome.exe", 60, 3) };
+        var list = ProcessTree.Arrange(all, new ProcessQuery { Search = "chrome" });
+        Assert.Equal([3, 2], list.Select(r => r.Pid).ToArray());
+        Assert.All(list, r => Assert.Equal(0, r.Depth));
+    }
+
+    [Fact]
+    public void Parent_cycles_do_not_hang_or_lose_rows()
+    {
+        var a = R(1, 2, "a", 0, 0); var b = R(2, 1, "b", 0, 0);
+        Assert.NotEmpty(ProcessTree.Arrange(new[] { a, b }, new ProcessQuery()));
+    }
+
+    [Fact]
+    public void Sampler_lists_the_current_process()
+    {
+        var s = new ProcessSampler();
+        s.Sample();
+        var me = s.Sample().FirstOrDefault(p => p.Pid == Environment.ProcessId);
+        Assert.NotNull(me);
+        Assert.True(me!.WorkingSet > 0);
+        Assert.True(me.Path.Length > 0);
+    }
+
+    [Theory]
+    [InlineData("\"C:\\Program Files\\a b\\app.exe\" --x \"y z\"", "C:\\Program Files\\a b\\app.exe", "--x \"y z\"")]
+    [InlineData("C:\\tools\\app.exe -v", "C:\\tools\\app.exe", "-v")]
+    [InlineData("app.exe", "C:\\tools\\app.exe", "")]
+    public void Command_line_arguments_are_extracted(string cmd, string path, string expected) =>
+        Assert.Equal(expected, ProcessTree.StripExecutable(cmd, path));
+}
