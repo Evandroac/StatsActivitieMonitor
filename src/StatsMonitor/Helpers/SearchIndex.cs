@@ -4,7 +4,7 @@ using StatsMonitor.Services;
 
 namespace StatsMonitor.Helpers;
 
-public enum SearchPage { Main, System, Settings, Appearance, Peripherals, Component, Help, Processes, NetTools }
+public enum SearchPage { Main, System, Settings, Appearance, Peripherals, Component, Help, Processes, NetTools, Diagnostics }
 
 /// <summary>A searchable item: <paramref name="Match"/> is the text rendered on screen that gets highlighted.</summary>
 public sealed record SearchResult(string Match, string Title, string Location, SearchPage Page, ComponentKind? Kind = null);
@@ -134,6 +134,7 @@ public static class SearchIndex
         Add(SearchPage.Main, "Principal › Memória", "Memória RAM", "Em uso", "Disponível");
         Add(SearchPage.System, "Sistema", "Sistema");
         Add(SearchPage.Processes, "Processos", [.. StatsMonitor.Views.ProcessesView.Keywords]);
+        Add(SearchPage.Diagnostics, "Diagnóstico do computador", [.. StatsMonitor.Views.DiagnosticsView.Keywords]);
         Add(SearchPage.NetTools, "Testes de conexão", [.. StatsMonitor.Views.NetworkToolsView.Keywords]);
         Add(SearchPage.Help, "Ajuda", ["Ajuda e tutorial", .. StatsMonitor.Views.HelpView.SectionTitles]);
         Add(SearchPage.Peripherals, "Periféricos", "Periféricos", "Monitores", "Teclados", "Mouses e apontadores", "Áudio", "Câmeras", "Impressoras", "Bluetooth", "Armazenamento externo (USB)", "Outros dispositivos USB");

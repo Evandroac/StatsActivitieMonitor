@@ -11,7 +11,7 @@ public partial class HelpView : UserControl
     public static readonly string[] SectionTitles =
     [
         "O que é o Stats Monitor", "Como usar", "Gadget e bandeja do sistema", "Alertas", "Economia de recursos",
-        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)",
+        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)", "Diagnóstico do computador",
     ];
 
     public HelpView()
@@ -40,8 +40,8 @@ public partial class HelpView : UserControl
               "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
         ]);
         Card("🧭", 1, [
-            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Periféricos, Processos, Testes de conexão e Configurações. A versão do app aparece abaixo do botão de Configurações.",
-              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Peripherals, Processes, Connection tests and Settings. The app version is shown below the Settings button."),
+            L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes. As páginas são: Principal, Sistema, CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Periféricos, Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",
+              "☰ Side menu: click ☰ to show or hide the names. Pages are: Main, System, CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Peripherals, Processes, Connection tests, Computer diagnostic and Settings. The app version is shown below the Settings button."),
             L("🔍 Pesquisa: digite um termo para ir direto à informação ou à opção desejada.",
               "🔍 Search: type a term to jump straight to the information or option you want."),
             L("📋 Copiar: clique em qualquer valor ou rótulo para copiá-lo. Uma mensagem rápida confirma a cópia.",
@@ -78,6 +78,18 @@ public partial class HelpView : UserControl
               "Battery health: compares the current capacity (full charge) with the original factory capacity. 80% or more is Good, 60% to 80% is Worn and below 60% is Poor. The page also shows charge cycles, manufacturer and chemistry when the computer reports them."),
             L("Alertas: aviso de bateria fraca (20% por padrão, atenção) e crítica (10%), ajustáveis em Configurações › Alertas, enquanto descarrega, respeitando a sua escolha de alertas. Em modo econômico a bateria é lida a cada 30 s. Nem todo notebook informa capacidade, ciclos ou ritmo de carga; o que faltar aparece como N/D.",
               "Alerts: low battery (20% by default, attention) and critical battery (10%), adjustable in Settings › Alerts, while discharging, following your alert choice. In eco mode the battery is read every 30 s. Not every laptop reports capacity, cycles or charge rate; whatever is missing shows as N/A."),
+        ]);
+        Card("🩻", 10, [
+            L("Menu › Diagnóstico do computador reúne inventário, testes e análise do hardware e do Windows em 16 seções: Visão geral, Hardware, Processador, Memória RAM, Placa de vídeo, Armazenamento, Bateria e energia, Sistema operacional, Drivers e dispositivos, Rede, Segurança, Monitoramento em tempo real, Testes de desempenho, Diagnóstico inteligente, Histórico e Relatórios.",
+              "Menu › Computer diagnostic gathers inventory, tests and analysis of the hardware and Windows in 16 sections: Overview, Hardware, Processor, RAM, Graphics card, Storage, Battery and power, Operating system, Drivers and devices, Network, Security, Real-time monitoring, Performance tests, Smart diagnosis, History and Reports."),
+            L("Somente leitura: nada é corrigido automaticamente. INICIAR DIAGNÓSTICO COMPLETO coleta o inventário e roda testes de CPU, RAM (256 MB), disco (arquivo temporário de 128 MB, apagado ao final), rede e GPU, com progresso, log e cancelamento. Cada componente também tem o botão Diagnosticar este componente.",
+              "Read-only: nothing is fixed automatically. START FULL DIAGNOSTIC collects the inventory and runs CPU, RAM (256 MB), disk (128 MB temp file, deleted afterwards), network and GPU tests with progress, log and cancellation. Each component also has a Diagnose this component button."),
+            L("Gravidades: NORMAL, INFORMATIVO, ATENÇÃO, CRÍTICO e INDETERMINADO. Dado que não pôde ser lido aparece como Indisponível e nunca conta como saudável. Cada achado traz evidência, causa provável e recomendação; são probabilidades, não prova de defeito físico.",
+              "Severities: NORMAL, INFORMATIONAL, WARNING, CRITICAL and UNDETERMINED. Data that could not be read shows as Unavailable and never counts as healthy. Each finding has evidence, probable cause and recommendation; they are likelihoods, not proof of a physical defect."),
+            L("Histórico: cada diagnóstico completo é salvo (até 100) e pode ser aberto, excluído e comparado. Relatórios: exporte em PDF, HTML, CSV ou JSON. Monitoramento: gráficos de 1, 5, 15 e 60 min e alertas configuráveis enquanto a tela está aberta.",
+              "History: every full diagnostic is saved (up to 100) and can be opened, deleted and compared. Reports: export to PDF, HTML, CSV or JSON. Monitoring: 1, 5, 15 and 60 min charts and configurable alerts while the page is open."),
+            L("Limitações: SMART, TPM e BitLocker normalmente exigem administrador; driver antigo é só uma heurística por data; o teste de RAM não substitui o MemTest86; não há teste de estresse 3D da GPU; o SFC é opcional e exige administrador; o PDF é apenas texto.",
+              "Limitations: SMART, TPM and BitLocker usually require administrator; old driver is only a date-based heuristic; the RAM test does not replace MemTest86; there is no 3D GPU stress test; SFC is optional and needs administrator; the PDF is text only."),
         ]);
         Card("🌐", 8, [
             L("Ferramentas de rede para diagnosticar problemas de conexão. Nada é executado até você clicar em Executar/Iniciar, e cada teste pode ser interrompido com Parar.",

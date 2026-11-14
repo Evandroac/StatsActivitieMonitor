@@ -463,3 +463,73 @@ public class BatteryTests
         Assert.Single(n.Evaluate(B(15, BatteryState.Discharging), cfg));
     }
 }
+public class DiagnosticsTests : IDisposable
+{
+    private readonly string _dir = Path.Combine(Path.GetTempPath(), "sm-diag-" + Guid.NewGuid().ToString("N"));
+    public void Dispose() { try { Directory.Delete(_dir, true); } catch { } }
+
+    private static StatsMonitor.Diagnostics.DiagnosticSession Sample(string id, int? score = 90)
+    {
+        var s = new StatsMonitor.Diagnostics.DiagnosticSession { Id = id, Computer = "PC", Full = true, Score = score };
+        s.Findings.Add(new StatsMonitor.Diagnostics.Finding { Component = "cpu", Problem = "x,\"y\"<script>", Level = StatsMonitor.Diagnostics.Severity.Warning, Evidence = "e" });
+        return s;
+    }
+
+    [Fact]
+    public void ScoreAndRoll()
+    {
+        var D = typeof(StatsMonitor.Diagnostics.DiagnosticEngine);
+        var f = new[] { new StatsMonitor.Diagnostics.Finding { Component = "cpu", Level = StatsMonitor.Diagnostics.Severity.Critical },
+                        new StatsMonitor.Diagnostics.Finding { Component = "cpu", Level = StatsMonitor.Diagnostics.Severity.Warning } };
+        Assert.Equal(65, StatsMonitor.Diagnostics.DiagnosticEngine.Score(f));
+        Assert.Equal(100, StatsMonitor.Diagnostics.DiagnosticEngine.Score(Array.Empty<StatsMonitor.Diagnostics.Finding>()));
+    }
+
+    [Fact]
+    public void MissingDataIsNeverNormal()
+    {
+        var s = new StatsMonitor.Diagnostics.DiagnosticSession();
+        StatsMonitor.Diagnostics.DiagnosticEngine.Analyze(s, null, new StatsMonitor.Diagnostics.Thresholds());
+        Assert.DoesNotContain(s.Health, h => h.Value == StatsMonitor.Diagnostics.Severity.Normal && !s.Inventory.Collected.Contains(h.Key));
+    }
+
+    [Fact]
+    public void VariationOfConstantIsZero()
+    {
+        Assert.Equal(0, StatsMonitor.Diagnostics.PerformanceTests.Variation([5.0, 5.0, 5.0]), 6);
+        Assert.True(StatsMonitor.Diagnostics.PerformanceTests.Variation([1.0, 9.0]) > 0);
+    }
+
+    [Fact]
+    public void StoreRoundTripCompareAndLimit()
+    {
+        var st = new StatsMonitor.Diagnostics.DiagnosticStore(_dir);
+        st.Save(Sample("20240101-000001", 80));
+        st.Save(Sample("20240102-000001", 95));
+        Assert.Equal("PC", st.Load("20240101-000001")!.Computer);
+        Assert.Equal(2, st.List().Count);
+        var c = StatsMonitor.Diagnostics.DiagnosticStore.Compare(st.Load("20240101-000001")!, st.Load("20240102-000001")!);
+        Assert.Equal(15, c.ScoreDelta);
+        st.Audit("teste");
+        Assert.True(File.Exists(Path.Combine(_dir, "audit.log")));
+    }
+
+    [Fact]
+    public void ReportsAreSafeAndValid()
+    {
+        var s = Sample("1");
+        Assert.DoesNotContain("<script>", StatsMonitor.Diagnostics.ReportExporter.ToHtml(s));
+        Assert.Contains("\"\"y\"\"", StatsMonitor.Diagnostics.ReportExporter.ToCsv(s));
+        var pdf = StatsMonitor.Diagnostics.ReportExporter.ToPdf(s);
+        Assert.StartsWith("%PDF", System.Text.Encoding.ASCII.GetString(pdf, 0, 4));
+        Assert.Contains("%%EOF", System.Text.Encoding.ASCII.GetString(pdf, pdf.Length - 10, 10));
+        Assert.Contains("PC", StatsMonitor.Diagnostics.ReportExporter.ToJson(s));
+    }
+
+    [Fact]
+    public void DownsampleCapsPoints()
+    {
+        var raw = Enumerable.Range(0, 1000).Select(i => new StatsMonitor.Diagnostics.LiveSample(DateTime.Now, i, null, null, null, null, null, null)).ToList();
+        Assert.True(StatsMonitor.Diagnostics.LiveMonitor.Downsample(raw, 120).Count <= 120);
+    }
+}
