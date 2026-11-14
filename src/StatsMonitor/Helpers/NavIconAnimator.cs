@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace StatsMonitor.Helpers;
 
@@ -10,8 +11,10 @@ public static class NavIconAnimator
 {
     public enum Kind { Spin, Turn, Wiggle, Pulse, Bounce }
 
-    private sealed class State(RotateTransform rot, ScaleTransform scale, TranslateTransform move)
+    private sealed class State(TextBlock icon, RotateTransform rot, ScaleTransform scale, TranslateTransform move)
     {
+        public TextBlock Icon = icon;
+        public bool Centered;
         public RotateTransform Rot = rot;
         public ScaleTransform Scale = scale;
         public TranslateTransform Move = move;
@@ -20,13 +23,12 @@ public static class NavIconAnimator
     public static void Attach(Button button, Kind kind, Func<bool> enabled)
     {
         if (FindIcon(button) is not { } icon) return;
-        var st = new State(new RotateTransform(), new ScaleTransform(1, 1), new TranslateTransform());
+        var st = new State(icon, new RotateTransform(), new ScaleTransform(1, 1), new TranslateTransform());
         var group = new TransformGroup();
         group.Children.Add(st.Scale);
         group.Children.Add(st.Rot);
         group.Children.Add(st.Move);
         icon.RenderTransform = group;
-        icon.RenderTransformOrigin = new Point(0.5, 0.5);
 
         button.Click += (_, _) => { if (enabled()) Start(st, kind); };
     }
@@ -41,8 +43,37 @@ public static class NavIconAnimator
         EasingFunction = ease,
     };
 
+    // Emoji glyphs are not centred in their layout box, so rotate/scale around the glyph's real visual centre.
+    private static void Center(State s)
+    {
+        var tb = s.Icon;
+        int w = (int)Math.Ceiling(tb.ActualWidth), h = (int)Math.Ceiling(tb.ActualHeight);
+        if (w <= 0 || h <= 0) return;
+        s.Centered = true;
+        double cx = w / 2.0, cy = h / 2.0;
+        try
+        {
+            var saved = tb.RenderTransform;
+            tb.RenderTransform = Transform.Identity;
+            var bmp = new RenderTargetBitmap(w, h, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(tb);
+            tb.RenderTransform = saved;
+            var px = new byte[w * h * 4];
+            bmp.CopyPixels(px, w * 4, 0);
+            int minX = w, maxX = -1, minY = h, maxY = -1;
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                    if (px[(y * w + x) * 4 + 3] > 16) { minX = Math.Min(minX, x); maxX = Math.Max(maxX, x); minY = Math.Min(minY, y); maxY = Math.Max(maxY, y); }
+            if (maxX >= 0) { cx = (minX + maxX + 1) / 2.0; cy = (minY + maxY + 1) / 2.0; }
+        }
+        catch { }
+        s.Rot.CenterX = s.Scale.CenterX = cx;
+        s.Rot.CenterY = s.Scale.CenterY = cy;
+    }
+
     private static void Start(State s, Kind kind)
     {
+        if (!s.Centered) Center(s);
         Stop(s, immediate: true);
         switch (kind)
         {
