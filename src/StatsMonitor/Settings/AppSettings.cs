@@ -78,6 +78,7 @@ public sealed class AppSettings
     public double GadgetScale { get; set; } = 1;
     public bool GadgetLocked { get; set; }
     public bool AnimationsEnabled { get; set; } = true;
+    public bool PetsEnabled { get; set; }
     public double GadgetXOffset { get; set; }
     public double GadgetYOffset { get; set; }
     public bool GadgetFaded { get; set; }
@@ -164,6 +165,8 @@ public sealed class SettingsService
             p.SetValue(Current, p.GetValue(old));
     }
 
+    public event Action? Saved;
+
     public void Save()
     {
         try
@@ -175,6 +178,7 @@ public sealed class SettingsService
         {
             // Settings are non-critical; ignore IO failures.
         }
+        Saved?.Invoke();
     }
 
     /// <summary>Writes the current settings to a user-chosen file.</summary>

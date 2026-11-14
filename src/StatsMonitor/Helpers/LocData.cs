@@ -474,6 +474,8 @@ public static class LocData
         ["Efeito de transição (esmaecer e deslizar) ao abrir o app e ao navegar entre as telas"] = "Transition effect (fade and slide) when opening the app and navigating between screens",
         ["Pets: passe o tempo com bichinhos enquanto aguarda um diagnóstico"] = "Pets: pass the time with pets while a diagnostic runs",
         ["Pets"] = "Pets",
+        ["Mostrar painel de Pets no menu"] = "Show Pets panel in the menu",
+        ["Exibe no menu lateral um painel com bichinhos para se divertir enquanto aguarda um diagnóstico"] = "Shows a panel with pets in the side menu to have fun while waiting for a diagnostic",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",

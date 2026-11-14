@@ -45,7 +45,7 @@ public sealed class SettingsViewModel : ObservableObject
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; NotifyGreetings = s.NotifyGreetings; AlertLevel = s.AlertLevel is "attention" or "critical" ? s.AlertLevel : "both"; AlertSound = s.AlertSound;
         AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; ShowSplash = s.ShowSplash; BatteryLowPercent = s.BatteryLowPercent; BatteryCriticalPercent = s.BatteryCriticalPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
-        ShowSensorsMain = s.ShowSensorsMain; ShowBatteryMain = s.ShowBatteryMain; PauseWhenHidden = s.PauseWhenHidden; EcoWhenMinimized = s.EcoWhenMinimized; AnimationsEnabled = s.AnimationsEnabled; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
+        ShowSensorsMain = s.ShowSensorsMain; ShowBatteryMain = s.ShowBatteryMain; PauseWhenHidden = s.PauseWhenHidden; EcoWhenMinimized = s.EcoWhenMinimized; AnimationsEnabled = s.AnimationsEnabled; PetsEnabled = s.PetsEnabled; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
     }
 
     /// <summary>Restores every option on this page to its default value and saves.</summary>
@@ -194,6 +194,7 @@ public sealed class SettingsViewModel : ObservableObject
     private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }
     private bool _hotkeyEnabled; public bool HotkeyEnabled { get => _hotkeyEnabled; set { if (_hotkeyEnabled != value) { _hotkeyEnabled = value; AutoSave(); } } }
     private string _gadgetHotkey = "Ctrl+Alt+G"; public string GadgetHotkey { get => _gadgetHotkey; set { if (_gadgetHotkey != value && value is not null) { _gadgetHotkey = value; AutoSave(); } } }
+    private bool _petsEnabled; public bool PetsEnabled { get => _petsEnabled; set { if (_petsEnabled != value) { _petsEnabled = value; AutoSave(); } } }
     private bool _animationsEnabled; public bool AnimationsEnabled { get => _animationsEnabled; set { if (_animationsEnabled != value) { _animationsEnabled = value; AutoSave(); } } }
     private bool _ecoWhenMinimized; public bool EcoWhenMinimized { get => _ecoWhenMinimized; set { if (_ecoWhenMinimized != value) { _ecoWhenMinimized = value; AutoSave(); } } }
     private bool _pauseWhenHidden; public bool PauseWhenHidden { get => _pauseWhenHidden; set { if (_pauseWhenHidden != value) { _pauseWhenHidden = value; AutoSave(); } } }
@@ -308,7 +309,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.NotifyNetworkAlerts = NotifyNetworkAlerts; s.NotifyGreetings = NotifyGreetings; s.AlertLevel = AlertLevel; s.AlertSound = AlertSound;
         s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.AlertSustainSeconds = (int)Math.Clamp(AlertSustainSeconds, 0, 600); s.AlertCooldownMinutes = (int)Math.Clamp(AlertCooldownMinutes, 0, 240); s.ShowSplash = ShowSplash; s.BatteryLowPercent = (int)Math.Clamp(BatteryLowPercent, 2, 90); s.BatteryCriticalPercent = (int)Math.Clamp(BatteryCriticalPercent, 1, Math.Max(1, s.BatteryLowPercent - 1)); s.HotkeyEnabled = HotkeyEnabled;
         s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
-        s.ShowSensorsMain = ShowSensorsMain; s.ShowBatteryMain = ShowBatteryMain; s.PauseWhenHidden = PauseWhenHidden; s.EcoWhenMinimized = EcoWhenMinimized; s.AnimationsEnabled = AnimationsEnabled; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);
+        s.ShowSensorsMain = ShowSensorsMain; s.ShowBatteryMain = ShowBatteryMain; s.PauseWhenHidden = PauseWhenHidden; s.EcoWhenMinimized = EcoWhenMinimized; s.AnimationsEnabled = AnimationsEnabled; s.PetsEnabled = PetsEnabled; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);
         ThemeHelper.Apply(s);
 
         _onApplied();

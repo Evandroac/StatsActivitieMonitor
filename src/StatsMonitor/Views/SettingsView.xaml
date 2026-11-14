@@ -129,6 +129,7 @@
         </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox Content="{h:Tr 'Mostrar painel de Pets no menu'}" ToolTip="{h:Tr 'Exibe no menu lateral um painel com bichinhos para se divertir enquanto aguarda um diagnóstico'}" IsChecked="{Binding PetsEnabled}"/>
         <CheckBox Content="{h:Tr 'Animações suaves ao abrir e trocar de tela'}" ToolTip="{h:Tr 'Efeito de transição (esmaecer e deslizar) ao abrir o app e ao navegar entre as telas'}" IsChecked="{Binding AnimationsEnabled}"/>
         <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 10 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
                     <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>

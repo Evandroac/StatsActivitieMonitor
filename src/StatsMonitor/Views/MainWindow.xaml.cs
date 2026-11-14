@@ -29,6 +29,7 @@ public partial class MainWindow : Window
         NavBattery.Visibility = _vm.HasBattery ? Visibility.Visible : Visibility.Collapsed;
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
+        settings.Saved += () => Dispatcher.BeginInvoke(ApplyPets);
         Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); PageAnimator.Play(MainPage, settings.Current.AnimationsEnabled); };
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
         ContentRendered += (_, _) => FitToContent();
@@ -505,12 +506,19 @@ public partial class MainWindow : Window
         var v = open ? Visibility.Visible : Visibility.Collapsed;
         LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
-        if (open && PetsHost.Child == null) PetsHost.Child = new PetsView();
-        PetsHost.Visibility = v;
+        ApplyPets();
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
         ApplyTree();
         if (!open) SearchPopup.IsOpen = false;
+    }
+
+    private void ApplyPets()
+    {
+        bool show = _menuOpen && _settings.Current.PetsEnabled;
+        if (show && PetsHost.Child == null) PetsHost.Child = new PetsView();
+        else if (!show) PetsHost.Child = null;
+        PetsHost.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void OnNavResize(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
