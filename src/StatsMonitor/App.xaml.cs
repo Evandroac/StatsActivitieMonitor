@@ -53,7 +53,10 @@ public partial class App : Application
 
         try
         {
+            var boot = DateTime.UtcNow;
             await Step("Carregando configurações…", "Loading settings…", 5);
+            await Step($"Sistema: {Environment.OSVersion.VersionString} ({(Environment.Is64BitOperatingSystem ? "64" : "32")} bits) · {Environment.ProcessorCount} threads",
+                       $"System: {Environment.OSVersion.VersionString} ({(Environment.Is64BitOperatingSystem ? "64" : "32")}-bit) · {Environment.ProcessorCount} threads", 8);
             Units.SetFahrenheit(settings.Current.TempUnit == "F");
             ThemeHelper.Apply(settings.Current);
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += (_, _) => Dispatcher.BeginInvoke(() => ThemeHelper.Apply(settings.Current));
@@ -71,30 +74,37 @@ public partial class App : Application
             _viewModel.Start();
 
             var vm = _viewModel;
-            var checks = new List<(string pt, string en, double pct, Func<bool> ready)>
+            static string Gb(double? v) => v is { } g ? $"{g:0.#} GB" : "N/D";
+            var checks = new List<(Func<(string pt, string en)> msg, double pct, Func<bool> ready)>
             {
-                ("CPU, GPU, memória e discos carregados", "CPU, GPU, memory and disks loaded", 75, () => vm.LastSnapshot is not null),
-                ("Rede carregada", "Network loaded", 88, () => vm.LastNetwork is not null),
+                (() => { var s = vm.LastSnapshot!; return ($"Processador: {s.CpuName}", $"Processor: {s.CpuName}"); }, 62, () => vm.LastSnapshot is not null),
+                (() => { var s = vm.LastSnapshot!; return ($"Memória: {Gb(s.RamTotalGb)} instalada", $"Memory: {Gb(s.RamTotalGb)} installed"); }, 68, () => vm.LastSnapshot is not null),
+                (() => { var s = vm.LastSnapshot!; string g = s.GpuName ?? "N/D"; string v = s.VramTotalGb is { } x ? $" · {x:0.#} GB VRAM" : ""; return ($"Placa de vídeo: {g}{v}", $"Graphics: {g}{v}"); }, 74, () => vm.LastSnapshot is not null),
+                (() => { var s = vm.LastSnapshot!; double tot = s.Volumes.Sum(x => x.TotalGb); return ($"Armazenamento: {s.Disks.Count} disco(s), {s.Volumes.Count} volume(s), {Gb(tot)}", $"Storage: {s.Disks.Count} drive(s), {s.Volumes.Count} volume(s), {Gb(tot)}"); }, 80, () => vm.LastSnapshot is not null),
+                (() => { var s = vm.LastSnapshot!; return s.IsElevated ? ("Permissão de administrador: sensores completos", "Administrator rights: full sensors") : ("Sem permissão de administrador: alguns sensores ficam N/D", "No administrator rights: some sensors will be N/A"); }, 84, () => vm.LastSnapshot is not null),
+                (() => { var n = vm.LastNetwork!; string a = n.Connected ? $"{n.AdapterName} ({n.ConnectionType}) {n.LocalIp}" : "sem conexão"; string e = n.Connected ? a : "no connection"; return ($"Rede: {a}", $"Network: {e}"); }, 90, () => vm.LastNetwork is not null),
             };
-            if (vm.HasBattery) checks.Add(("Bateria carregada", "Battery loaded", 94, () => vm.Battery.Present));
+            if (vm.HasBattery) checks.Add((() => ("Bateria detectada e carregada", "Battery detected and loaded"), 94, () => vm.Battery.Present));
+            else checks.Add((() => ("Bateria: este computador não possui bateria", "Battery: this computer has no battery"), 94, () => true));
 
             var started = DateTime.UtcNow;
             foreach (var c in checks)
             {
-                await Step("Aguardando leitura dos dados…", "Waiting for the first readings…", c.pct - 10);
+                if (!c.ready()) await Step("Aguardando leitura dos dados…", "Waiting for the first readings…", c.pct - 5);
                 while (!c.ready() && DateTime.UtcNow - started < TimeSpan.FromSeconds(20))
                 {
                     await Task.Delay(100);
                     if (splash.CancelRequested) throw new OperationCanceledException();
                 }
-                if (c.ready()) await Step(c.pt, c.en, c.pct);
-                else await Step(SplashWindow.Text("Sem resposta (seguindo): ", "No response (continuing): ") + c.pt, c.en, c.pct);
+                if (c.ready()) { var (pt, en) = c.msg(); await Step(pt, en, c.pct); }
+                else await Step("Sem resposta (seguindo)", "No response (continuing)", c.pct);
             }
 
             await Step("Preparando a tela inicial…", "Preparing the home screen…", 98);
             _fps = new FpsMonitor(settings, _viewModel);
             _fps.Start();
-            await Step("Tudo pronto!", "All set!", 100);
+            double secs = (DateTime.UtcNow - boot).TotalSeconds;
+            await Step($"Tudo pronto! Iniciado em {secs:0.0} s", $"All set! Started in {secs:0.0} s", 100);
             await Task.Delay(250);
 
             MainWindow = main;
