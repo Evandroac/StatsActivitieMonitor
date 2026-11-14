@@ -147,6 +147,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         _pendingUpdates = await Services.WindowsUpdateChecker.CountPendingAsync();
         _updateChecked = true;
+        // Up to date: next check in 1 h; pending or unavailable: re-check sooner.
+        if (_updateTimer is not null) _updateTimer.Interval = TimeSpan.FromMinutes(_pendingUpdates == 0 ? 60 : 30);
         Raise(nameof(HasPendingUpdates)); Raise(nameof(WindowsUpdateText)); Raise(nameof(WindowsUpdateBrush));
     }
 
