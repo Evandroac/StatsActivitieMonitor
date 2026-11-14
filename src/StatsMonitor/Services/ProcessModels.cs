@@ -21,6 +21,18 @@ public sealed class ProcessQuery
     public bool Flat => Search.Trim().Length > 0 || Type != null || Hung != null;
 }
 
+/// <summary>User-adjustable column widths shared by the header and every row.</summary>
+public sealed class ColWidths : ObservableObject
+{
+    public static readonly ColWidths I = new();
+    private double _status = 140, _cpu = 84, _mem = 84, _disk = 84, _net = 84;
+    public double Status { get => _status; set => Set(ref _status, value); }
+    public double Cpu { get => _cpu; set => Set(ref _cpu, value); }
+    public double Mem { get => _mem; set => Set(ref _mem, value); }
+    public double Disk { get => _disk; set => Set(ref _disk, value); }
+    public double Net { get => _net; set => Set(ref _net, value); }
+}
+
 public sealed class ProcessRow : ObservableObject
 {
     public static long TotalRam = 16L << 30;
@@ -74,7 +86,38 @@ public sealed class ProcessRow : ObservableObject
     public int ChildCount => _children;
     public bool ShowExpander => _expander;
 
-    public ProcessRow(ProcSample s) { Pid = s.Pid; Created = s.Created; Update(s); }
+    public const int HistoryLength = 60;
+    public readonly List<float>[] Hist = [[], [], [], []];
+    public Color Color { get; }
+    public Brush ColorBrush { get; }
+
+    public ProcessRow(ProcSample s)
+    {
+        Pid = s.Pid; Created = s.Created;
+        Color = FromHue(s.Pid * 0.61803398875 % 1.0 * 360);
+        var b = new SolidColorBrush(Color); b.Freeze(); ColorBrush = b;
+        Update(s);
+    }
+
+    private static Color FromHue(double h)
+    {
+        const double sat = 0.7, val = 0.95;
+        double c = val * sat, x = c * (1 - Math.Abs(h / 60 % 2 - 1)), m = val - c;
+        var (r, g, bl) = (int)(h / 60) switch { 0 => (c, x, 0d), 1 => (x, c, 0d), 2 => (0d, c, x), 3 => (0d, x, c), 4 => (x, 0d, c), _ => (c, 0d, x) };
+        return Color.FromRgb((byte)((r + m) * 255), (byte)((g + m) * 255), (byte)((bl + m) * 255));
+    }
+
+    /// <summary>Appends the process' own CPU/memory/disk/network percentages (chart order) to its rolling history.</summary>
+    public void Record()
+    {
+        float[] v = [(float)OwnCpu, (float)(TotalRam > 0 ? OwnMem * 100.0 / TotalRam : 0),
+                     (float)Math.Min(100, OwnDisk / DiskRefBps * 100), (float)Math.Min(100, OwnNet / LinkBytesPerSec * 100)];
+        for (int i = 0; i < 4; i++)
+        {
+            Hist[i].Add(v[i]);
+            if (Hist[i].Count > HistoryLength) Hist[i].RemoveAt(0);
+        }
+    }
 
     public void Update(ProcSample s)
     {

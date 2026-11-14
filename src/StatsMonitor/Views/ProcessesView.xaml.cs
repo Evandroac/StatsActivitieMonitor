@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -69,6 +69,7 @@ public partial class ProcessesView : UserControl
         Fill(StatusBox, L("Todos os status", "All statuses"), L("Em execução", "Running"), L("Não está respondendo", "Not responding"));
         Fill(SortBox, L("Nome", "Name"), "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"), "PID");
         if (SortBox.SelectedIndex < 0 || !_ready) SortBox.SelectedIndex = 1;
+        Fill(MetricBox, "CPU", L("Memória", "Memory"), L("Disco", "Disk"), L("Rede", "Network"));
         Fill(RefreshBox, L("1 segundo", "1 second"), L("2 segundos", "2 seconds"), L("5 segundos", "5 seconds"), L("Pausado", "Paused"));
         if (RefreshBox.SelectedIndex < 0 || !_ready) RefreshBox.SelectedIndex = 1;
     }
@@ -81,26 +82,63 @@ public partial class ProcessesView : UserControl
         RefreshBox.ToolTip = L("Velocidade de atualização", "Refresh rate");
         DirButton.Content = _query.Descending ? "▼" : "▲";
         DirButton.ToolTip = _query.Descending ? L("Decrescente (maior primeiro)", "Descending (highest first)") : L("Crescente (menor primeiro)", "Ascending (lowest first)");
+        SearchHint.Text = "🔍  " + L("Pesquisar processo (nome, PID ou caminho)...", "Search process (name, PID or path)...");
+        ActionsHint.Text = L("Selecione um processo na lista para usar as ações", "Select a process in the list to use the actions");
         ExpandButton.Content = L("➕  Expandir tudo", "➕  Expand all");
         CollapseButton.Content = L("➖  Recolher tudo", "➖  Collapse all");
         EndButton.Content = L("⛔  Finalizar tarefa", "⛔  End task");
+        EndTreeButton.Content = L("🌳  Finalizar árvore", "🌳  End process tree");
         RestartButton.Content = L("🔄  Reiniciar", "🔄  Restart");
+        PriorityButton.Content = L("⚡  Prioridade", "⚡  Priority");
+        LocationButton.Content = L("📂  Abrir local do arquivo", "📂  Open file location");
+        CopyButton.Content = L("📋  Copiar caminho", "📋  Copy path");
+        ChartTitle.Text = "📈  " + L("Linha do tempo", "Timeline");
         UpdateHeaders();
         UpdateButtons();
+    }
+
+    private double _totCpu, _totMem, _totDisk, _totNet;
+
+    private static string Pct(double v) => v < 0.05 ? "0%" : v < 10 ? $"{v:0.0}%" : $"{v:0}%";
+
+    private static void SetHeader(Button b, string title, string total, TextAlignment align)
+    {
+        var sp = new StackPanel();
+        sp.Children.Add(new TextBlock { Text = title, TextAlignment = align, TextTrimming = TextTrimming.CharacterEllipsis });
+        sp.Children.Add(new TextBlock { Text = total, TextAlignment = align, FontSize = 15, Margin = new Thickness(0, 2, 0, 0), Foreground = (System.Windows.Media.Brush)Application.Current.FindResource("TextPrimary") });
+        b.Content = sp;
     }
 
     private void UpdateHeaders()
     {
         string Arrow(ProcSort s) => _query.Sort == s ? (_query.Descending ? " ▼" : " ▲") : "";
-        HName.Content = L("Nome", "Name") + Arrow(ProcSort.Name);
-        HStatus.Content = L("Status", "Status");
-        HCpu.Content = "CPU" + Arrow(ProcSort.Cpu);
-        HMem.Content = L("Memória", "Memory") + Arrow(ProcSort.Memory);
-        HDisk.Content = L("Disco", "Disk") + Arrow(ProcSort.Disk);
-        HNet.Content = L("Rede", "Network") + Arrow(ProcSort.Network);
+        SetHeader(HName, L("Nome", "Name") + Arrow(ProcSort.Name), L($"{_rows.Count} processos", $"{_rows.Count} processes"), TextAlignment.Left);
+        SetHeader(HStatus, L("Status", "Status"), " ", TextAlignment.Left);
+        SetHeader(HCpu, "CPU" + Arrow(ProcSort.Cpu), Pct(_totCpu), TextAlignment.Right);
+        SetHeader(HMem, L("Memória", "Memory") + Arrow(ProcSort.Memory), Pct(_totMem), TextAlignment.Right);
+        SetHeader(HDisk, L("Disco", "Disk") + Arrow(ProcSort.Disk), Pct(_totDisk), TextAlignment.Right);
+        SetHeader(HNet, L("Rede", "Network") + Arrow(ProcSort.Network), ProcessRow.NetAvailable ? Pct(_totNet) : "—", TextAlignment.Right);
         DirButton.Content = _query.Descending ? "▼" : "▲";
     }
 
+    private void OnSplitDrag(object s, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        var w = ColWidths.I;
+        double Clamp(double v) => Math.Clamp(v, 60, 400);
+        if (s == Split0) w.Status = Clamp(w.Status - e.HorizontalChange);
+        else if (s == Split1) w.Status = Clamp(w.Status + e.HorizontalChange);
+        else if (s == Split2) w.Cpu = Clamp(w.Cpu + e.HorizontalChange);
+        else if (s == Split3) w.Mem = Clamp(w.Mem + e.HorizontalChange);
+        else if (s == Split4) w.Disk = Clamp(w.Disk + e.HorizontalChange);
+    }
+
+    private void OnMetricChanged(object s, SelectionChangedEventArgs e) { if (_ready) UpdateChart(); }
+
+    private void UpdateChart()
+    {
+        Chart.SetData(_items, Math.Max(0, MetricBox.SelectedIndex), Selected);
+        ChartHint.Text = Selected is { } r ? $"{r.NameText} (PID {r.Pid})" : L("Clique em um processo para destacá-lo", "Click a process to highlight it");
+    }
     private void UpdateRunning()
     {
         if (IsLoaded && IsVisible) Start(); else Stop();
@@ -161,6 +199,12 @@ public partial class ProcessesView : UserControl
             else _rows[key] = new ProcessRow(s);
         }
         foreach (var k in _rows.Keys.Where(k => !keep.Contains(k)).ToList()) _rows.Remove(k);
+        foreach (var r in _rows.Values) r.Record();
+        _totCpu = Math.Min(100, _rows.Values.Sum(r => r.OwnCpu));
+        _totMem = _rows.Values.Sum(r => r.OwnMem) * 100.0 / Math.Max(1, ProcessRow.TotalRam);
+        _totDisk = Math.Min(100, _rows.Values.Sum(r => r.OwnDisk) / ProcessRow.DiskRefBps * 100);
+        _totNet = Math.Min(100, _rows.Values.Sum(r => r.OwnNet) / ProcessRow.LinkBytesPerSec * 100);
+        UpdateHeaders();
         Rebuild();
         var apps = _rows.Values.Count(r => r.Type == ProcType.App);
         SummaryText.Text = L($"{_rows.Count} processos  •  {apps} aplicativos", $"{_rows.Count} processes  •  {apps} apps");
@@ -177,12 +221,14 @@ public partial class ProcessesView : UserControl
             if (at >= 0) _items.Move(at, i); else _items.Insert(i, list[i]);
         }
         while (_items.Count > list.Count) _items.RemoveAt(_items.Count - 1);
+        UpdateChart();
     }
 
     private void OnQueryChanged(object s, EventArgs e)
     {
         if (!_ready) return;
         _query.Search = SearchBox.Text;
+        SearchHint.Visibility = SearchBox.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
         _query.Type = TypeBox.SelectedIndex switch { 1 => ProcType.App, 2 => ProcType.Background, 3 => ProcType.Windows, _ => null };
         _query.Hung = StatusBox.SelectedIndex switch { 1 => false, 2 => true, _ => null };
         var sort = (ProcSort)Math.Max(0, SortBox.SelectedIndex);
@@ -246,6 +292,7 @@ public partial class ProcessesView : UserControl
     private void OnSelectionChanged(object s, SelectionChangedEventArgs e)
     {
         UpdateButtons();
+        UpdateChart();
         _ = ShowDetailsAsync(Selected);
     }
 
@@ -253,7 +300,10 @@ public partial class ProcessesView : UserControl
     {
         var r = Selected;
         EndButton.IsEnabled = r != null && !IsProtected(r);
+        EndTreeButton.IsEnabled = EndButton.IsEnabled;
         RestartButton.IsEnabled = r != null && !IsProtected(r) && r.Path.Length > 0;
+        PriorityButton.IsEnabled = EndButton.IsEnabled;
+        LocationButton.IsEnabled = CopyButton.IsEnabled = r != null && r.Path.Length > 0;
     }
 
     private static bool IsProtected(ProcessRow r) =>
@@ -295,6 +345,40 @@ public partial class ProcessesView : UserControl
         tb.Inlines.Remove(tb.Inlines.LastInline);
     }
 
+    private void OnRowRightClick(object s, MouseButtonEventArgs e)
+    {
+        var el = e.OriginalSource as DependencyObject;
+        while (el != null && el is not ListBoxItem) el = System.Windows.Media.VisualTreeHelper.GetParent(el);
+        if (el is ListBoxItem item) item.IsSelected = true;
+    }
+
+    private void OnEndTree(object s, RoutedEventArgs e) { if (Selected is { } r && !IsProtected(r)) EndTree(r); }
+    private void OnOpenLocationButton(object s, RoutedEventArgs e) { if (Selected is { } r) OpenLocation(r); }
+    private void OnCopyPathButton(object s, RoutedEventArgs e) { if (Selected is { } r) Clipboard.SetText(r.Path); }
+
+    private void OnPriorityButton(object s, RoutedEventArgs e)
+    {
+        if (Selected is not { } r) return;
+        var menu = new ContextMenu { PlacementTarget = (UIElement)s, Placement = System.Windows.Controls.Primitives.PlacementMode.Right };
+        AddPriorityItems(menu.Items, r);
+        menu.IsOpen = true;
+    }
+
+    private static void AddPriorityItems(ItemCollection items, ProcessRow r)
+    {
+        foreach (var (pc, pt, en) in new[]
+        {
+            (ProcessPriorityClass.High, "Alta", "High"), (ProcessPriorityClass.AboveNormal, "Acima do normal", "Above normal"),
+            (ProcessPriorityClass.Normal, "Normal", "Normal"), (ProcessPriorityClass.BelowNormal, "Abaixo do normal", "Below normal"),
+            (ProcessPriorityClass.Idle, "Baixa", "Low"),
+        })
+        {
+            var mi = new MenuItem { Header = L(pt, en) };
+            mi.Click += (_, _) => SetPriority(r, pc);
+            items.Add(mi);
+        }
+    }
+
     private void OnContextMenuOpening(object s, ContextMenuEventArgs e)
     {
         var r = Selected;
@@ -315,13 +399,7 @@ public partial class ProcessesView : UserControl
         menu.Items.Add(Item(L("🔄  Reiniciar", "🔄  Restart"), () => OnRestart(this, new RoutedEventArgs()), !prot && r.Path.Length > 0));
         menu.Items.Add(new Separator());
         var prio = new MenuItem { Header = L("⚡  Prioridade", "⚡  Priority"), IsEnabled = !prot };
-        foreach (var (pc, pt, en) in new[]
-        {
-            (ProcessPriorityClass.High, "Alta", "High"), (ProcessPriorityClass.AboveNormal, "Acima do normal", "Above normal"),
-            (ProcessPriorityClass.Normal, "Normal", "Normal"), (ProcessPriorityClass.BelowNormal, "Abaixo do normal", "Below normal"),
-            (ProcessPriorityClass.Idle, "Baixa", "Low"),
-        })
-            prio.Items.Add(Item(L(pt, en), () => SetPriority(r, pc)));
+        AddPriorityItems(prio.Items, r);
         menu.Items.Add(prio);
         menu.Items.Add(new Separator());
         menu.Items.Add(Item(L("📂  Abrir local do arquivo", "📂  Open file location"), () => OpenLocation(r), r.Path.Length > 0));
