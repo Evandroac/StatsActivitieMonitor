@@ -106,16 +106,16 @@ public partial class HelpView : UserControl
               "Caveats: the speed test consumes data and depends on Cloudflare servers. Diagnostics, speed and public IP contact external services (Cloudflare and Microsoft); the other tools talk only to the target you enter. Firewalls may block ICMP (ping/traceroute)."),
         ]);
         Card("🪟", 2, [
-            L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante, na barra de tarefas, barra flutuante e acoplado ao topo.",
-              "When minimized, the app shows a compact gadget with the values you chose. Several layouts exist: floating, taskbar, floating bar and docked to the top."),
+            L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante e barra flutuante (arrastáveis) ou fixos nos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior.",
+              "When minimized, the app shows a compact gadget with the values you chose. Several layouts exist: floating and floating bar (draggable), or pinned to any of the four screen corners, a strip at the top or a strip at the bottom."),
             L("Fechar a janela (X) NÃO encerra o app: ele continua na bandeja do sistema, perto do relógio. Para sair de verdade, clique com o botão direito no ícone da bandeja e escolha Sair.",
               "Closing the window (X) does NOT quit the app: it keeps running in the system tray near the clock. To really exit, right-click the tray icon and choose Exit."),
             L("O ícone da bandeja muda de cor conforme o estado do computador. Clique duas vezes nele para abrir o app.",
               "The tray icon changes color with your computer's state. Double-click it to open the app."),
             L("Atalho Ctrl+Alt+G (configurável) mostra ou esconde o gadget.",
               "Ctrl+Alt+G (configurable) shows or hides the gadget."),
-            L("Com a opção de FPS ligada, o gadget mostra os quadros por segundo do jogo em primeiro plano: vermelho abaixo de 30, verde a partir de 30 e azul a partir de 60.",
-              "With FPS enabled, the gadget shows the frames per second of the foreground game: red below 30, green from 30 and cyan from 60."),
+            L("Com a opção de FPS ligada, o gadget mostra os quadros por segundo do jogo em primeiro plano: vermelho abaixo de 30, verde a partir de 30 e azul a partir de 60. Ao lado aparece a média (Média/méd) do jogo atual, calculada desde que ele entrou em primeiro plano, para comparar com o valor instantâneo.",
+              "With FPS enabled, the gadget shows the frames per second of the foreground game: red below 30, green from 30 and cyan from 60. Next to it, the average (Average/avg) of the current game is shown, computed since it came to the foreground, to compare with the instant value."),
         ]);
         Card("🔔", 3, [
             L("Atenção: avisa antes do problema, quando a temperatura passa do limite de atenção ou o uso fica 10 pontos abaixo do limite crítico.",

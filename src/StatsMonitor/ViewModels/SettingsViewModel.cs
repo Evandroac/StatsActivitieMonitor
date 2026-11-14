@@ -35,7 +35,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowTemperatures = s.ShowTemperatures;
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
-        _gadgetMode = s.GadgetMode;
+        _gadgetMode = s.GadgetMode == GadgetDisplayMode.Taskbar ? GadgetDisplayMode.BottomRight : s.GadgetMode;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
         ShowCpuGadget = s.ShowCpuGadget; ShowGpuGadget = s.ShowGpuGadget; ShowRamGadget = s.ShowRamGadget;
@@ -144,9 +144,13 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _alwaysShowGadget; public bool AlwaysShowGadget { get => _alwaysShowGadget; set { if (_alwaysShowGadget != value) { _alwaysShowGadget = value; AutoSave(); } } }
     private GadgetDisplayMode _gadgetMode;
     public bool GadgetFloating { get => _gadgetMode == GadgetDisplayMode.Floating; set => SetMode(value, GadgetDisplayMode.Floating); }
-    public bool GadgetOnTaskbar { get => _gadgetMode == GadgetDisplayMode.Taskbar; set => SetMode(value, GadgetDisplayMode.Taskbar); }
     public bool GadgetFloatingBar { get => _gadgetMode == GadgetDisplayMode.FloatingBar; set => SetMode(value, GadgetDisplayMode.FloatingBar); }
     public bool GadgetDockedTop { get => _gadgetMode == GadgetDisplayMode.DockedTop; set => SetMode(value, GadgetDisplayMode.DockedTop); }
+    public bool GadgetDockedBottom { get => _gadgetMode == GadgetDisplayMode.DockedBottom; set => SetMode(value, GadgetDisplayMode.DockedBottom); }
+    public bool GadgetTopLeft { get => _gadgetMode == GadgetDisplayMode.TopLeft; set => SetMode(value, GadgetDisplayMode.TopLeft); }
+    public bool GadgetTopRight { get => _gadgetMode == GadgetDisplayMode.TopRight; set => SetMode(value, GadgetDisplayMode.TopRight); }
+    public bool GadgetBottomLeft { get => _gadgetMode == GadgetDisplayMode.BottomLeft; set => SetMode(value, GadgetDisplayMode.BottomLeft); }
+    public bool GadgetBottomRight { get => _gadgetMode == GadgetDisplayMode.BottomRight; set => SetMode(value, GadgetDisplayMode.BottomRight); }
     public bool GadgetNone { get => _gadgetMode == GadgetDisplayMode.None; set => SetMode(value, GadgetDisplayMode.None); }
     private bool _showCpuMain; public bool ShowCpuMain { get => _showCpuMain; set { if (_showCpuMain != value) { _showCpuMain = value; AutoSave(); } } }
     private bool _showGpuMain; public bool ShowGpuMain { get => _showGpuMain; set { if (_showGpuMain != value) { _showGpuMain = value; AutoSave(); } } }

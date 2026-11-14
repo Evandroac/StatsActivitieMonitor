@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace StatsMonitor.Settings;
 
-public enum GadgetDisplayMode { Floating, Taskbar, None, FloatingBar, DockedTop }
+public enum GadgetDisplayMode { Floating, Taskbar, None, FloatingBar, DockedTop, DockedBottom, TopLeft, TopRight, BottomLeft, BottomRight }
 
 public sealed class AppearancePreset
 {
@@ -133,6 +133,8 @@ public sealed class SettingsService
         {
             if (!IsFirstRun)
                 Current = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_path)) ?? new AppSettings();
+            // The taskbar mode was removed; its closest equivalent is the bottom-right corner.
+            if (Current.GadgetMode == GadgetDisplayMode.Taskbar) Current.GadgetMode = GadgetDisplayMode.BottomRight;
         }
         catch
         {
