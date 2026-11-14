@@ -15,7 +15,7 @@ public sealed class SettingsViewModel : ObservableObject
         _service = service;
         _onApplied = onApplied;
         Load(service.Current);
-        _language = service.Current.Language == "en" ? "en" : "pt";
+        _language = Loc.Normalize(service.Current.Language);
  _fontScale = UiScale.Clamp(service.Current.FontScalePercent);
         _fahrenheit = service.Current.TempUnit == "F";
         _loading = false;
@@ -26,6 +26,8 @@ public sealed class SettingsViewModel : ObservableObject
     private void Load(AppSettings s)
     {
         IntervalSeconds = s.UpdateIntervalMs / 1000.0;
+        bool perComponent = s.CpuIntervalMs + s.GpuIntervalMs + s.RamIntervalMs + s.OtherIntervalMs > 0;
+        _speedMode = s.UpdatePaused ? "paused" : perComponent ? "custom" : s.UpdateIntervalMs switch { 1000 => "normal", 10000 => "low", 250 => "high", _ => "custom" };
         CpuIntervalSeconds = s.CpuIntervalMs / 1000.0;
         GpuIntervalSeconds = s.GpuIntervalMs / 1000.0;
         RamIntervalSeconds = s.RamIntervalMs / 1000.0;
@@ -36,6 +38,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowGadget = s.ShowGadget;
         AlwaysShowGadget = s.AlwaysShowGadget;
         _gadgetDetailed = s.GadgetDetailed;
+        _gadgetNoCharts = s.GadgetNoCharts;
         _gadgetMode = s.GadgetMode == GadgetDisplayMode.Taskbar ? GadgetDisplayMode.BottomRight : s.GadgetMode;
         ShowCpuMain = s.ShowCpuMain; ShowGpuMain = s.ShowGpuMain; ShowRamMain = s.ShowRamMain;
         ShowVramMain = s.ShowVramMain; ShowNetworkMain = s.ShowNetworkMain;
@@ -43,9 +46,9 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
-        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; NotifyGreetings = s.NotifyGreetings; AlertLevel = s.AlertLevel is "attention" or "critical" ? s.AlertLevel : "both"; AlertSound = s.AlertSound;
-        AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; ShowSplash = s.ShowSplash; BatteryLowPercent = s.BatteryLowPercent; BatteryCriticalPercent = s.BatteryCriticalPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
-        ShowSensorsMain = s.ShowSensorsMain; ShowBatteryMain = s.ShowBatteryMain; PauseWhenHidden = s.PauseWhenHidden; EcoWhenMinimized = s.EcoWhenMinimized; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
+        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; NotifyGreetings = s.NotifyGreetings; AlertLevel = s.AlertLevel is "attention" or "critical" ? s.AlertLevel : "critical"; AlertSound = s.AlertSound;
+        AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; BatteryLowPercent = s.BatteryLowPercent; BatteryCriticalPercent = s.BatteryCriticalPercent; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
+        ShowSensorsMain = s.ShowSensorsMain; ShowBatteryMain = s.ShowBatteryMain; PauseWhenHidden = s.PauseWhenHidden; EcoWhenMinimized = s.EcoWhenMinimized; AnimationsEnabled = s.AnimationsEnabled; PetsEnabled = s.PetsEnabled; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
     }
 
     /// <summary>Restores every option on this page to its default value and saves.</summary>
@@ -68,7 +71,7 @@ public sealed class SettingsViewModel : ObservableObject
     // The language switches instantly; persistence follows the usual debounce.
     private void SetLanguage(string? lang)
     {
-        if (lang is not ("pt" or "en") || _language == lang) return;
+        if (!Loc.IsSupported(lang) || _language == lang) return;
         _language = lang;
         Loc.SetLanguage(lang);
         AutoSave();
@@ -131,6 +134,22 @@ public sealed class SettingsViewModel : ObservableObject
         Persist();
     }
 
+    // normal (1 s), low (10 s), high (0.25 s), paused or custom (manual general and per-component intervals).
+    private string _speedMode = "normal";
+    public string SpeedMode
+    {
+        get => _speedMode;
+        set
+        {
+            if (_speedMode == value || value is null) return;
+            _speedMode = value;
+            double? preset = value switch { "normal" => 1.0, "low" => 10.0, "high" => 0.25, _ => null };
+            if (preset is { } p) _intervalSeconds = p;
+            Raise(nameof(SpeedMode)); Raise(nameof(IsCustomSpeed)); Raise(nameof(IntervalSeconds)); Raise(nameof(IntervalWarning));
+            AutoSave();
+        }
+    }
+    public bool IsCustomSpeed => _speedMode == "custom";
     private double _cpuIntervalSeconds; public double CpuIntervalSeconds { get => _cpuIntervalSeconds; set { if (_cpuIntervalSeconds != value) { _cpuIntervalSeconds = value; AutoSave(); } } }
     private double _gpuIntervalSeconds; public double GpuIntervalSeconds { get => _gpuIntervalSeconds; set { if (_gpuIntervalSeconds != value) { _gpuIntervalSeconds = value; AutoSave(); } } }
     private double _ramIntervalSeconds; public double RamIntervalSeconds { get => _ramIntervalSeconds; set { if (_ramIntervalSeconds != value) { _ramIntervalSeconds = value; AutoSave(); } } }
@@ -152,11 +171,16 @@ public sealed class SettingsViewModel : ObservableObject
     public bool GadgetTopRight { get => _gadgetMode == GadgetDisplayMode.TopRight; set => SetMode(value, GadgetDisplayMode.TopRight); }
     public bool GadgetBottomLeft { get => _gadgetMode == GadgetDisplayMode.BottomLeft; set => SetMode(value, GadgetDisplayMode.BottomLeft); }
     public bool GadgetBottomRight { get => _gadgetMode == GadgetDisplayMode.BottomRight; set => SetMode(value, GadgetDisplayMode.BottomRight); }
-    private bool _gadgetDetailed;
+    private bool _gadgetDetailed, _gadgetNoCharts;
     public string GadgetViewKey
     {
-        get => _gadgetDetailed ? "Detailed" : "Simple";
-        set { bool d = value == "Detailed"; if (_gadgetDetailed != d) { _gadgetDetailed = d; Raise(); AutoSave(); } }
+        get => !_gadgetDetailed ? "Simple" : _gadgetNoCharts ? "DetailedPlain" : "Detailed";
+        set
+        {
+            bool d = value is "Detailed" or "DetailedPlain", n = value == "DetailedPlain";
+            if (_gadgetDetailed == d && _gadgetNoCharts == n) return;
+            _gadgetDetailed = d; _gadgetNoCharts = n; Raise(); AutoSave();
+        }
     }
     public string GadgetModeKey
     {
@@ -183,17 +207,18 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; Raise(); AutoSave(); } } }
     private bool _notifyNetworkAlerts; public bool NotifyNetworkAlerts { get => _notifyNetworkAlerts; set { if (_notifyNetworkAlerts != value) { _notifyNetworkAlerts = value; AutoSave(); } } }
     private bool _notifyGreetings; public bool NotifyGreetings { get => _notifyGreetings; set { if (_notifyGreetings != value) { _notifyGreetings = value; AutoSave(); } } }
-    private string _alertLevel = "both"; public string AlertLevel { get => _alertLevel; set { if (value != null && _alertLevel != value) { _alertLevel = value; AutoSave(); } } }
+    private string _alertLevel = "critical"; public string AlertLevel { get => _alertLevel; set { if (value != null && _alertLevel != value) { _alertLevel = value; AutoSave(); } } }
     private bool _notifyAlerts; public bool NotifyAlerts { get => _notifyAlerts; set { if (_notifyAlerts != value) { _notifyAlerts = value; AutoSave(); } } }
     private bool _alertSound; public bool AlertSound { get => _alertSound; set { if (_alertSound != value) { _alertSound = value; AutoSave(); } } }
     private double _alertSustainSeconds; public double AlertSustainSeconds { get => _alertSustainSeconds; set { if (_alertSustainSeconds != value) { _alertSustainSeconds = value; AutoSave(); } } }
-    private bool _showSplash; public bool ShowSplash { get => _showSplash; set { if (_showSplash != value) { _showSplash = value; AutoSave(); } } }
     private double _batteryLowPercent; public double BatteryLowPercent { get => _batteryLowPercent; set { if (_batteryLowPercent != value) { _batteryLowPercent = value; AutoSave(); } } }
     private double _batteryCriticalPercent; public double BatteryCriticalPercent { get => _batteryCriticalPercent; set { if (_batteryCriticalPercent != value) { _batteryCriticalPercent = value; AutoSave(); } } }
     private double _alertCooldownMinutes; public double AlertCooldownMinutes { get => _alertCooldownMinutes; set { if (_alertCooldownMinutes != value) { _alertCooldownMinutes = value; AutoSave(); } } }
     private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }
     private bool _hotkeyEnabled; public bool HotkeyEnabled { get => _hotkeyEnabled; set { if (_hotkeyEnabled != value) { _hotkeyEnabled = value; AutoSave(); } } }
     private string _gadgetHotkey = "Ctrl+Alt+G"; public string GadgetHotkey { get => _gadgetHotkey; set { if (_gadgetHotkey != value && value is not null) { _gadgetHotkey = value; AutoSave(); } } }
+    private bool _petsEnabled; public bool PetsEnabled { get => _petsEnabled; set { if (_petsEnabled != value) { _petsEnabled = value; AutoSave(); } } }
+    private bool _animationsEnabled; public bool AnimationsEnabled { get => _animationsEnabled; set { if (_animationsEnabled != value) { _animationsEnabled = value; AutoSave(); } } }
     private bool _ecoWhenMinimized; public bool EcoWhenMinimized { get => _ecoWhenMinimized; set { if (_ecoWhenMinimized != value) { _ecoWhenMinimized = value; AutoSave(); } } }
     private bool _pauseWhenHidden; public bool PauseWhenHidden { get => _pauseWhenHidden; set { if (_pauseWhenHidden != value) { _pauseWhenHidden = value; AutoSave(); } } }
     private bool _logEnabled; public bool LogEnabled { get => _logEnabled; set { if (_logEnabled != value) { _logEnabled = value; AutoSave(); } } }
@@ -265,7 +290,7 @@ public sealed class SettingsViewModel : ObservableObject
         var s = _service.Current;
         _loading = true;
         Load(s);
-        _language = s.Language == "en" ? "en" : "pt";
+        _language = Loc.Normalize(s.Language);
  _fontScale = UiScale.Clamp(s.FontScalePercent); UiScale.Set(_fontScale);
         _fahrenheit = s.TempUnit == "F";
         _loading = false;
@@ -282,11 +307,16 @@ public sealed class SettingsViewModel : ObservableObject
     private void Apply()
     {
         var s = _service.Current;
-        s.UpdateIntervalMs = (int)Math.Clamp(IntervalSeconds * 1000, 250, 60000);
-        s.CpuIntervalMs = PerComponentMs(CpuIntervalSeconds);
-        s.GpuIntervalMs = PerComponentMs(GpuIntervalSeconds);
-        s.RamIntervalMs = PerComponentMs(RamIntervalSeconds);
-        s.OtherIntervalMs = PerComponentMs(OtherIntervalSeconds);
+        s.UpdatePaused = _speedMode == "paused";
+        if (_speedMode != "paused")
+        {
+            bool custom = IsCustomSpeed;
+            s.UpdateIntervalMs = (int)Math.Clamp(IntervalSeconds * 1000, 250, 60000);
+            s.CpuIntervalMs = custom ? PerComponentMs(CpuIntervalSeconds) : 0;
+            s.GpuIntervalMs = custom ? PerComponentMs(GpuIntervalSeconds) : 0;
+            s.RamIntervalMs = custom ? PerComponentMs(RamIntervalSeconds) : 0;
+            s.OtherIntervalMs = custom ? PerComponentMs(OtherIntervalSeconds) : 0;
+        }
         s.RunAtStartup = RunAtStartup;
         s.StartMinimized = StartMinimized;
         s.ShowTemperatures = ShowTemperatures;
@@ -294,6 +324,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.AlwaysShowGadget = AlwaysShowGadget;
         s.GadgetMode = _gadgetMode;
         s.GadgetDetailed = _gadgetDetailed;
+        s.GadgetNoCharts = _gadgetNoCharts;
         s.Language = _language;
  s.FontScalePercent = _fontScale;
         s.TempUnit = _fahrenheit ? "F" : "C";
@@ -305,9 +336,9 @@ public sealed class SettingsViewModel : ObservableObject
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
 
         s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.NotifyNetworkAlerts = NotifyNetworkAlerts; s.NotifyGreetings = NotifyGreetings; s.AlertLevel = AlertLevel; s.AlertSound = AlertSound;
-        s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.AlertSustainSeconds = (int)Math.Clamp(AlertSustainSeconds, 0, 600); s.AlertCooldownMinutes = (int)Math.Clamp(AlertCooldownMinutes, 0, 240); s.ShowSplash = ShowSplash; s.BatteryLowPercent = (int)Math.Clamp(BatteryLowPercent, 2, 90); s.BatteryCriticalPercent = (int)Math.Clamp(BatteryCriticalPercent, 1, Math.Max(1, s.BatteryLowPercent - 1)); s.HotkeyEnabled = HotkeyEnabled;
+        s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.AlertSustainSeconds = (int)Math.Clamp(AlertSustainSeconds, 0, 600); s.AlertCooldownMinutes = (int)Math.Clamp(AlertCooldownMinutes, 0, 240); s.BatteryLowPercent = (int)Math.Clamp(BatteryLowPercent, 2, 90); s.BatteryCriticalPercent = (int)Math.Clamp(BatteryCriticalPercent, 1, Math.Max(1, s.BatteryLowPercent - 1)); s.HotkeyEnabled = HotkeyEnabled;
         s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
-        s.ShowSensorsMain = ShowSensorsMain; s.ShowBatteryMain = ShowBatteryMain; s.PauseWhenHidden = PauseWhenHidden; s.EcoWhenMinimized = EcoWhenMinimized; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);
+        s.ShowSensorsMain = ShowSensorsMain; s.ShowBatteryMain = ShowBatteryMain; s.PauseWhenHidden = PauseWhenHidden; s.EcoWhenMinimized = EcoWhenMinimized; s.AnimationsEnabled = AnimationsEnabled; s.PetsEnabled = PetsEnabled; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);
         ThemeHelper.Apply(s);
 
         _onApplied();
@@ -318,5 +349,9 @@ public sealed class SettingsViewModel : ObservableObject
         Apply();
         _service.Save();
         StartupService.SetEnabled(_service.Current.RunAtStartup);
+        ChangesSaved?.Invoke();
     }
+
+    /// <summary>Raised after an edit made in the UI has been applied and persisted.</summary>
+    public event Action? ChangesSaved;
 }

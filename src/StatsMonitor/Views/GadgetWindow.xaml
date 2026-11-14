@@ -26,7 +26,7 @@
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource GadgetText}"/>
-            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Left"/>
         </Style>
     </Window.Resources>
     <Border x:Name="Root" CornerRadius="10" Padding="12,8"
@@ -45,7 +45,7 @@
         <Grid>
           <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
           <Grid x:Name="Body" Grid.Row="1">
-            <StackPanel x:Name="FloatingPanel" HorizontalAlignment="Center">
+            <StackPanel x:Name="FloatingPanel" HorizontalAlignment="Left">
                 <TextBlock x:Name="FCpu" FontSize="13">
                     <Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
@@ -56,7 +56,7 @@
                     <Run Text="{h:Tr 'GPU: '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}" Foreground="{Binding Gpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="FVram" FontSize="13">
-                    <Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" Foreground="{Binding Disk.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/>
+                    <Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="FFps" FontSize="13">
                     <Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{h:Tr '  Média: '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}" FontWeight="SemiBold"/>
@@ -65,7 +65,7 @@
                     <Run Text="{h:Tr 'NET: ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
             </StackPanel>
-            <StackPanel x:Name="DetailPanel" Visibility="Collapsed" HorizontalAlignment="Center">
+            <StackPanel x:Name="DetailPanel" Visibility="Collapsed" HorizontalAlignment="Left">
                 <StackPanel x:Name="DCpu" Width="176">
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/></TextBlock>
                     <TextBlock FontSize="10.5" Opacity="0.7" Text="{Binding Cpu.ClockText, Mode=OneWay}"/>
@@ -80,8 +80,8 @@
                     <TextBlock FontSize="10.5" Opacity="0.7" Text="{Binding Gpu.ClockText, Mode=OneWay}"/>
                     <c:Sparkline Height="26" Margin="0,3,0,0" Values="{Binding Gpu.History}" Stroke="{DynamicResource Accent2}"/>
                 </StackPanel>
-                <StackPanel x:Name="DDisk" Width="176">
-                    <TextBlock FontSize="13"><Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" Foreground="{Binding Disk.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
+                <StackPanel x:Name="DDisk" Width="240">
+                    <TextBlock FontSize="13"><Run Text="{h:Tr 'Disco: '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
                     <TextBlock FontSize="10.5" Opacity="0.7" Text="{Binding Disk.IoText, Mode=OneWay}"/>
                     <c:Sparkline Height="26" Margin="0,3,0,0" Values="{Binding Disk.History}" Stroke="{DynamicResource Accent}"/>
                 </StackPanel>
@@ -92,6 +92,7 @@
                 </StackPanel>                <StackPanel x:Name="DFps" Width="176">
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
                     <TextBlock FontSize="10.5" Opacity="0.7"><Run Text="{h:Tr 'Média: '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}"/></TextBlock>
+                    <c:Sparkline Height="26" Margin="0,3,0,0" Values="{Binding FpsHistory}" Maximum="{Binding FpsMax}" Unit="FPS" Stroke="{DynamicResource Accent}"/>
                 </StackPanel>            </StackPanel>
             <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" Margin="-12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock x:Name="TCpu" FontSize="12" Margin="12,0,0,0">
@@ -104,7 +105,7 @@
                     <Run Text="{h:Tr 'GPU '}"/><Run Text="{Binding Gpu.LoadText, Mode=OneWay}" Foreground="{Binding Gpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Gpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Gpu.TempBrush, Mode=OneWay}"/>
                 </TextBlock>
                 <TextBlock x:Name="TVram" FontSize="12" Margin="12,0,0,0">
-                    <Run Text="{h:Tr 'Disco '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" Foreground="{Binding Disk.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/>
+                    <Run Text="{h:Tr 'Disco '}"/><Run Text="{Binding Disk.LoadText, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
                 <TextBlock x:Name="TFps" FontSize="12" Margin="12,0,0,0">
                     <Run Text="{h:Tr 'FPS '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{h:Tr ' · méd '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}" FontWeight="SemiBold"/>
@@ -120,6 +121,19 @@
                       <ControlTemplate TargetType="Thumb">
                           <Border x:Name="B" CornerRadius="5" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
                               <TextBlock Text="↔" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          </Border>
+                          <ControlTemplate.Triggers>
+                              <Trigger Property="IsDragging" Value="True"><Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource Accent}"/></Trigger>
+                              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource Accent}"/></Trigger>
+                          </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                  </Thumb.Template>
+              </Thumb>
+          <Thumb x:Name="MoveY" Width="20" Height="20" Margin="2,0" Cursor="Arrow" DragStarted="OnMoveYStart" DragDelta="OnMoveYDelta" DragCompleted="OnMoveYDone" MouseDoubleClick="OnMoveYReset">
+                  <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                          <Border x:Name="B" CornerRadius="5" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
+                              <TextBlock Text="↕" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                           </Border>
                           <ControlTemplate.Triggers>
                               <Trigger Property="IsDragging" Value="True"><Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource Accent}"/></Trigger>

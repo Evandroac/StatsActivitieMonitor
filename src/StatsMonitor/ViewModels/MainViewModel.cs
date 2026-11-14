@@ -28,6 +28,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush) { HasTemperature = false };
 
         InitCpuDetails();
+        InitRamDetails();
         ApplySettings();
         _monitor.SnapshotUpdated += OnSnapshot;
         _monitor.ErrorOccurred += OnError;
@@ -59,6 +60,30 @@ public sealed class MainViewModel : ObservableObject, IDisposable
             new DetailItem("Cache", info.Cache),
             _procItem, _threadItem, _handleItem,
         }) Cpu.Details.Add(d);
+    }
+
+    private DetailItem? _ramUsage, _ramCommit, _ramModules, _ramType;
+
+    private void InitRamDetails()
+    {
+        _ramUsage = new DetailItem("Uso da memória", "--");
+        _ramCommit = new DetailItem("Memória confirmada (commit)", "--");
+        _ramType = new DetailItem("Tipo e velocidade", "--");
+        _ramModules = new DetailItem("Módulos instalados", "--");
+        foreach (var d in new[] { _ramUsage, _ramCommit, _ramType, _ramModules }) Ram.Details.Add(d);
+        Task.Run(MemoryInfoService.ReadModules).ContinueWith(t =>
+        {
+            var (mods, ts) = t.Result;
+            System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => { _ramModules.Value = mods; _ramType.Value = ts; });
+        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+    }
+
+    private void UpdateRamDetails(HardwareSnapshot s)
+    {
+        _ramUsage!.Value = s.RamUsedGb.HasValue && s.RamTotalGb.HasValue && s.RamTotalGb > 0
+            ? $"{s.RamUsedGb:0.0} / {s.RamTotalGb:0.0} GB ({s.RamUsedGb / s.RamTotalGb * 100:0}%)" : ComponentViewModel.NotAvailable;
+        _ramCommit!.Value = MemoryInfoService.ReadCommit() is { } c && c.Limit > 0
+            ? $"{c.Used:0.0} / {c.Limit:0.0} GB ({c.Used / c.Limit * 100:0}%)" : ComponentViewModel.NotAvailable;
     }
 
     private void UpdateCounts()
@@ -97,6 +122,14 @@ public sealed class MainViewModel : ObservableObject, IDisposable
  public Brush FpsBrush => double.TryParse(_fpsText, out var f) ? (f < 30 ? FpsBad : f < 60 ? FpsGood : FpsExcellent) : FpsIdle;
     private string _fpsText = "--", _fpsAvgText = "--";
     public string FpsAvgText { get => _fpsAvgText; set => Set(ref _fpsAvgText, value); }
+    public System.Collections.ObjectModel.ObservableCollection<double> FpsHistory { get; } = new(new double[ComponentViewModel.HistoryLength]);
+    private double _fpsMax = 60;
+    public double FpsMax { get => _fpsMax; private set => Set(ref _fpsMax, value); }
+    public void PushFps(double fps)
+    {
+        FpsHistory.RemoveAt(0); FpsHistory.Add(fps);
+        FpsMax = Math.Max(60, FpsHistory.Max() * 1.2);
+    }
     private bool _fpsActive;
     public bool FpsActive { get => _fpsActive; set => Set(ref _fpsActive, value); }
     public string SensorNote { get => _sensorNote; private set => Set(ref _sensorNote, value); }
@@ -114,6 +147,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         _pendingUpdates = await Services.WindowsUpdateChecker.CountPendingAsync();
         _updateChecked = true;
+        // Up to date: next check in 1 h; pending or unavailable: re-check sooner.
+        if (_updateTimer is not null) _updateTimer.Interval = TimeSpan.FromMinutes(_pendingUpdates == 0 ? 60 : 30);
         Raise(nameof(HasPendingUpdates)); Raise(nameof(WindowsUpdateText)); Raise(nameof(WindowsUpdateBrush));
     }
 
@@ -161,7 +196,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void OnNetwork(object? sender, NetworkSnapshot s)
     {
-        if (_held) return;
+        if (_held || S.UpdatePaused) return;
         _lastNet = s;
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
@@ -171,9 +206,10 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     }
 
     private bool _autoPaused, _held;
-    public void SetPaused(bool paused) { _autoPaused = paused; _monitor.Paused = _autoPaused || _held; }
+    public void SetPaused(bool paused) { _autoPaused = paused; RefreshPaused(); }
+    private void RefreshPaused() => _monitor.Paused = _autoPaused || _held || S.UpdatePaused;
     /// <summary>Freezes all readings (hardware and network) while the user holds the gadget button.</summary>
-    public void HoldReadings(bool hold) { _held = hold; _monitor.Paused = _autoPaused || _held; }
+    public void HoldReadings(bool hold) { _held = hold; RefreshPaused(); }
 
     private bool _gadgetOnly;
 
@@ -189,6 +225,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
             if (S.ShowCpuGadget) scope |= HardwareScope.Cpu;
             if (S.ShowGpuGadget || S.ShowVramGadget) scope |= HardwareScope.Gpu;
             if (S.ShowRamGadget) scope |= HardwareScope.Memory;
+            // The gadget's "Disco" entry is controlled by the VRAM toggle and needs the storage readings.
+            if (S.ShowVramGadget) scope |= HardwareScope.Other;
         }
         _monitor.Scope = scope;
     }
@@ -228,6 +266,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         (_normal, _warn, _crit) = ThemeHelper.AlertBrushes(S);
         UpdateInterval();
         UpdateScope();
+        RefreshPaused();
         _monitor.SlowSensors = S.SlowSensors;
         Services.DataLogger.Configure(S.LogEnabled, S.LogIntervalSeconds);
         foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;
@@ -306,6 +345,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
         Ram.Update(Loc.T("Memória RAM"), s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
+        UpdateRamDetails(s);
         Disk.Update(s);
         UpdateSensors(s);
 
@@ -327,6 +367,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         var notes = new List<string>();
         if (!s.CpuTemp.HasValue && !s.IsElevated)
             notes.Add(Loc.T("Temperatura da CPU indisponível: execute como administrador para acessar este sensor."));
+        else if (!s.CpuTemp.HasValue && !Services.LibreHardwareMonitorService.PawnIoInstalled())
+            notes.Add(Loc.T("Temperatura da CPU indisponível: instale o driver PawnIO (winget install namazso.PawnIO) e reinicie o aplicativo."));
         if (s.GpuName is null) notes.Add(Loc.T("Nenhuma GPU compatível detectada."));
         SensorNote = string.Join(" ", notes);
     }

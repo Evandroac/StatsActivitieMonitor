@@ -31,9 +31,30 @@ public partial class GadgetWindow : Window
         MouseLeftButtonDown += OnMouseDown;
         MouseEnter += (_, _) => UpdateTools(true);
         MouseLeave += (_, _) => UpdateTools(false);
+        Deactivated += (_, _) => UpdateTools(IsMouseOver);
+        Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
+        Tools.Opacity = BtnLock.Opacity = 0; _toolsScale.ScaleY = 0;
+        Tools.LayoutTransform = _toolsScale;
+        SizeChanged += (_, _) => { if (_toolsAnimating && IsFixedPosition) Reposition(); };
+        // Safety net: hide the buttons if the mouse left without a MouseLeave (e.g. after a drag).
+        var hoverWatch = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+        hoverWatch.Tick += (_, _) => { if (IsVisible && Tools.Visibility == Visibility.Visible) UpdateTools(IsMouseOver); };
+        hoverWatch.Start();
         ApplyScale();
         ApplyLockAndFade();
         LocationChanged += (_, _) => SavePosition();
+        // Games that go borderless-fullscreen can end up above us; re-assert topmost without activating.
+        var keepTop = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        keepTop.Tick += (_, _) =>
+        {
+            if (!IsVisible) return;
+            bool exclusive = SHQueryUserNotificationState(out int qs) == 0 && qs == 3;
+            if (exclusive && !_exclusiveWarned) ExclusiveFullscreenDetected?.Invoke(this, EventArgs.Empty);
+            _exclusiveWarned = exclusive;
+            var h = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            if (h != IntPtr.Zero) SetWindowPos(h, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010 | 0x0040);
+        };
+        keepTop.Start();
         SizeChanged += (_, _) => { if (IsVisible && IsFixedPosition) Reposition(); };
 
     }
@@ -43,6 +64,13 @@ public partial class GadgetWindow : Window
     private bool IsCorner => Mode is GadgetDisplayMode.TopLeft or GadgetDisplayMode.TopRight or GadgetDisplayMode.BottomLeft or GadgetDisplayMode.BottomRight;
     private bool IsHorizontalRow => Mode == GadgetDisplayMode.FloatingBar || IsEdge;
     private bool IsFixedPosition => IsEdge || IsCorner;
+
+    private bool _exclusiveWarned;
+    /// <summary>Raised once per episode when a game runs in exclusive fullscreen, where no window can be drawn above it.</summary>
+    public event EventHandler? ExclusiveFullscreenDetected;
+
+    [DllImport("shell32.dll")]
+    private static extern int SHQueryUserNotificationState(out int state);
 
     public void ShowGadget()
     {
@@ -66,8 +94,12 @@ public partial class GadgetWindow : Window
         TaskbarPanel.Visibility = taskbar && !detailed ? Visibility.Visible : Visibility.Collapsed;
         DetailPanel.Visibility = detailed ? Visibility.Visible : Visibility.Collapsed;
         DetailPanel.Orientation = taskbar ? System.Windows.Controls.Orientation.Horizontal : System.Windows.Controls.Orientation.Vertical;
-        foreach (FrameworkElement block in DetailPanel.Children)
+        foreach (System.Windows.Controls.Panel block in DetailPanel.Children)
+        {
             block.Margin = taskbar ? new Thickness(0, 0, 14, 0) : new Thickness(0, 0, 0, 8);
+            foreach (var child in block.Children)
+                if (child is StatsMonitor.Controls.Sparkline sl) sl.Visibility = _settings.Current.GadgetNoCharts ? Visibility.Collapsed : Visibility.Visible;
+        }
         Root.Padding = mode switch
         {
             GadgetDisplayMode.FloatingBar => new Thickness(12, 6, 12, 6),
@@ -95,6 +127,29 @@ public partial class GadgetWindow : Window
         DDisk.Visibility = V(s.ShowVramGadget); DNet.Visibility = V(s.ShowNetworkGadget);
 
         if (taskbar && !detailed) ReserveTaskbarWidths(s);
+        FloatingPanel.MinWidth = !taskbar && !detailed ? FloatingWidth(s) : 0;
+    }
+
+    // Fixed width for the floating panel (worst-case text) so it doesn't resize on every reading.
+    private double FloatingWidth(Settings.AppSettings s)
+    {
+        double Measure(string text)
+        {
+            var ft = new System.Windows.Media.FormattedText(text, System.Globalization.CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new System.Windows.Media.Typeface(FCpu.FontFamily, FCpu.FontStyle, FontWeights.SemiBold, FCpu.FontStretch),
+                FCpu.FontSize, System.Windows.Media.Brushes.Black,
+                System.Windows.Media.VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            return Math.Ceiling(ft.WidthIncludingTrailingWhitespace);
+        }
+
+        double w = Measure("CPU: 100%" + (s.ShowTemperatures ? " | 100°C" : ""));
+        w = Math.Max(w, Measure("GPU: 100%" + (s.ShowTemperatures ? " | 100°C" : "")));
+        w = Math.Max(w, Measure("RAM: 100% | 99.9 GB"));
+        w = Math.Max(w, Measure(Loc.T("Disco: ") + "100%"));
+        w = Math.Max(w, Measure(Loc.T("FPS: ") + "999" + Loc.T("  Média: ") + "999"));
+        w = Math.Max(w, Measure(Loc.T("NET: ↓ ") + "999.9 Mbps ↑ 999.9 Mbps"));
+        return w;
     }
 
     // Fixed slot per indicator (worst-case text) so the widget doesn't resize on every update.
@@ -126,6 +181,11 @@ public partial class GadgetWindow : Window
         {
             var work = SystemParameters.WorkArea;
             Left = Math.Clamp(Left + _settings.Current.GadgetXOffset, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
+        }
+        if (IsFixedPosition && _settings.Current.GadgetYOffset != 0)
+        {
+            var work = SystemParameters.WorkArea;
+            Top = Math.Clamp(Top + _settings.Current.GadgetYOffset, work.Top, Math.Max(work.Top, work.Bottom - ActualHeight));
         }
     }
 
@@ -170,9 +230,10 @@ public partial class GadgetWindow : Window
         Body.Opacity = s.GadgetFaded ? FadedOpacity : 1;
         if (s.GadgetFaded) { Root.Background = HitBrush; Root.BorderBrush = Brushes.Transparent; }
         else { Root.ClearValue(System.Windows.Controls.Border.BackgroundProperty); Root.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardBorder"); }
-        BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
-        BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
+        BtnView.Content = !s.GadgetDetailed ? "▤" : s.GadgetNoCharts ? "▢" : "▣";
+        BtnView.ToolTip = Loc.T(!s.GadgetDetailed ? "Mudar para a visão detalhada" : s.GadgetNoCharts ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada sem gráficos");
         MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)");
+        MoveY.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na vertical (funciona mesmo com o gadget fixo)");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
         UpdateTools(IsMouseOver);
     }
@@ -180,11 +241,54 @@ public partial class GadgetWindow : Window
     private void UpdateTools(bool hover)
     {
         // The window lags behind the cursor while resizing/moving; keep the controls alive during a drag.
-        hover |= Grip.IsDragging || MoveX.IsDragging;
-        Tools.Visibility = BtnLock.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Hidden;
+        hover |= Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging;
+        bool dragging = Grip.IsDragging || MoveX.IsDragging || MoveY.IsDragging;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
+        if (hover == _toolsShown) return;
+        _toolsShown = hover;
+        SetToolsAnimated(hover, !dragging && IsVisible && _settings.Current.AnimationsEnabled);
     }
 
+    private bool _toolsShown;
+    private bool _toolsAnimating;
+    private readonly System.Windows.Media.ScaleTransform _toolsScale = new(1, 1);
+
+    // Fades the buttons in/out while the tools row grows/shrinks, so the gadget resizes smoothly.
+    private void SetToolsAnimated(bool show, bool animate)
+    {
+        Tools.LayoutTransform = _toolsScale;
+        Tools.RenderTransformOrigin = new Point(0.5, 0);
+        var fade = new System.Windows.Media.Animation.DoubleAnimation { To = show ? 1 : 0, Duration = TimeSpan.FromMilliseconds(show ? 180 : 140), EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut } };
+        var grow = fade.Clone();
+        if (show) { Tools.Visibility = BtnLock.Visibility = Visibility.Visible; }
+        if (!animate)
+        {
+            _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleYProperty, null);
+            Tools.BeginAnimation(OpacityProperty, null); BtnLock.BeginAnimation(OpacityProperty, null);
+            _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleXProperty, null); _toolsScale.ScaleX = show ? 1 : 0.6; _toolsScale.ScaleY = show ? 1 : 0; Tools.Opacity = BtnLock.Opacity = show ? 1 : 0;
+            if (!show) Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
+            AfterToolsResize();
+            return;
+        }
+        var widen = grow.Clone(); widen.To = show ? 1 : 0.6;
+        if (show) { _toolsScale.ScaleX = 0.6; _toolsScale.ScaleY = 0.001; Tools.Opacity = BtnLock.Opacity = 0; }
+        _toolsAnimating = true;
+        grow.Completed += (_, _) =>
+        {
+            _toolsAnimating = false;
+            if (!_toolsShown) Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
+            AfterToolsResize();
+        };
+        _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleXProperty, widen);
+        _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleYProperty, grow);
+        Tools.BeginAnimation(OpacityProperty, fade);
+        BtnLock.BeginAnimation(OpacityProperty, fade.Clone());
+    }
+
+    private void AfterToolsResize()
+    {
+        if (IsVisible && IsFixedPosition) Dispatcher.BeginInvoke(new Action(() => { UpdateLayout(); Reposition(); }), System.Windows.Threading.DispatcherPriority.Loaded);
+    }
     private void OnToggleLock(object sender, RoutedEventArgs e)
     {
         _settings.Current.GadgetLocked = !_settings.Current.GadgetLocked;
@@ -194,7 +298,10 @@ public partial class GadgetWindow : Window
 
     private void OnToggleView(object sender, RoutedEventArgs e)
     {
-        _settings.Current.GadgetDetailed = !_settings.Current.GadgetDetailed;
+        var c = _settings.Current;
+        if (!c.GadgetDetailed) { c.GadgetDetailed = true; c.GadgetNoCharts = false; }
+        else if (!c.GadgetNoCharts) c.GadgetNoCharts = true;
+        else { c.GadgetDetailed = false; c.GadgetNoCharts = false; }
         _settings.Save();
         ApplyLockAndFade();
         ApplyMode();
@@ -289,6 +396,54 @@ public partial class GadgetWindow : Window
     {
         if (_settings.Current.GadgetLocked || !IsFixedPosition) return;
         _settings.Current.GadgetXOffset = 0;
+        _settings.Save();
+        Reposition();
+        e.Handled = true;
+    }
+
+    // Press and hold the ↕ button to slide the gadget vertically.
+    private double _moveLastY;
+
+    private double CursorY() => MoveY.PointToScreen(Mouse.GetPosition(MoveY)).Y / VisualTreeHelper.GetDpi(this).DpiScaleY;
+
+    private void OnMoveYDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        double y = CursorY();
+        double dy = y - _moveLastY;
+        _moveLastY = y;
+        if (dy == 0) return;
+        if (IsFixedPosition)
+        {
+            var work = SystemParameters.WorkArea;
+            var baseTop = Top - _settings.Current.GadgetYOffset;
+            var target = Math.Clamp(Top + dy, work.Top, Math.Max(work.Top, work.Bottom - ActualHeight));
+            _settings.Current.GadgetYOffset = target - baseTop;
+            Top = target;
+        }
+        else
+        {
+            var min = SystemParameters.VirtualScreenTop;
+            Top = Math.Clamp(Top + dy, min, min + SystemParameters.VirtualScreenHeight - ActualHeight);
+        }
+    }
+
+    private void OnMoveYStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+    {
+        _moveLastY = CursorY();
+        _vm.HoldReadings(true);
+    }
+
+    private void OnMoveYDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+    {
+        _vm.HoldReadings(false);
+        _settings.Save();
+        UpdateTools(IsMouseOver);
+    }
+
+    private void OnMoveYReset(object sender, MouseButtonEventArgs e)
+    {
+        if (_settings.Current.GadgetLocked || !IsFixedPosition) return;
+        _settings.Current.GadgetYOffset = 0;
         _settings.Save();
         Reposition();
         e.Handled = true;

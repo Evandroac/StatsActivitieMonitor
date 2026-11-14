@@ -124,7 +124,7 @@ public class AlertNotifierTests : IDisposable
     [Fact]
     public void Attention_level_fires_before_critical_and_yields_to_it()
     {
-        var cfg = new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0 };
+        var cfg = new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0, AlertLevel = "both" };
         var n = new AlertNotifier();
         Assert.Equal(AlertKind.CpuTempWarn, Assert.Single(n.Evaluate(Snap(cpuTemp: 75), cfg)).Kind);
         Assert.Equal(AlertKind.CpuTemp, Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg)).Kind);
@@ -250,12 +250,41 @@ public class SettingsServiceTests : IDisposable
 
     [Theory]
     [InlineData("pt-BR", "pt")]
-    [InlineData("pt-PT", "pt")]
+    [InlineData("pt-PT", "pt-PT")]
     [InlineData("en-US", "en")]
-    [InlineData("de-DE", "en")]
+    [InlineData("en-GB", "en-GB")]
+    [InlineData("es-MX", "es-MX")]
+    [InlineData("es-ES", "es")]
+    [InlineData("zh-TW", "zh-TW")]
+    [InlineData("zh-CN", "zh-CN")]
+    [InlineData("de-DE", "de")]
+    [InlineData("sv-SE", "en")]
     public void System_language_is_detected(string culture, string expected)
     {
         Assert.Equal(expected, SettingsService.DetectLanguage(new CultureInfo(culture)));
+    }
+}
+
+public class TranslationCoverageTests
+{
+    [Fact]
+    public void Every_language_covers_all_keys_and_keeps_placeholders()
+    {
+        var langs = new Dictionary<string, Dictionary<string, string>>
+        {
+            ["es"] = LocData.Es, ["fr"] = LocData.Fr, ["de"] = LocData.De, ["it"] = LocData.It, ["ru"] = LocData.Ru,
+            ["zh-CN"] = LocData.ZhCn, ["zh-TW"] = LocData.ZhTw, ["ja"] = LocData.Ja, ["ko"] = LocData.Ko, ["ar"] = LocData.Ar, ["hi"] = LocData.Hi,
+        };
+        var problems = new List<string>();
+        foreach (var (code, d) in langs)
+            foreach (var (key, en) in LocData.En)
+            {
+                if (!d.TryGetValue(key, out var v)) { problems.Add($"{code}: missing '{key}'"); continue; }
+                var ph = System.Text.RegularExpressions.Regex.Matches(en, @"\{\d+[^}]*\}").Select(m => m.Value).OrderBy(x => x);
+                var ph2 = System.Text.RegularExpressions.Regex.Matches(v, @"\{\d+[^}]*\}").Select(m => m.Value).OrderBy(x => x);
+                if (!ph.SequenceEqual(ph2)) problems.Add($"{code}: placeholders differ for '{key}'");
+            }
+        Assert.True(problems.Count == 0, string.Join("\n", problems.Take(30)) + $"\n({problems.Count} total)");
     }
 }
 
@@ -452,7 +481,7 @@ public class BatteryTests
     public void BatteryAlerts_FireOncePerDischargeAndRearm()
     {
         var n = new BatteryAlertNotifier();
-        var cfg = new AppSettings();
+        var cfg = new AppSettings { AlertLevel = "both" };
         BatteryInfo B(int p, BatteryState s) => BatteryInfo.None with { Present = true, Percent = p, State = s, PluggedIn = s != BatteryState.Discharging };
         Assert.Empty(n.Evaluate(B(50, BatteryState.Discharging), cfg));
         Assert.Equal(AlertKind.BatteryLow, Assert.Single(n.Evaluate(B(19, BatteryState.Discharging), cfg)).Kind);

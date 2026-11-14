@@ -78,7 +78,6 @@ public sealed class DiagnosticsView : UserControl
         _vm.SnapshotApplied -= OnSnapshot;
         Live.Alert -= OnAlert;
         Loc.LanguageChanged -= OnLanguage;
-        _cts?.Cancel();
     }
 
     private void OnLanguage() { Build(); }
@@ -127,6 +126,8 @@ public sealed class DiagnosticsView : UserControl
     }
 
     private bool _running => _cts != null;
+    public bool IsBusy => _running;
+    public static string? Status { get; private set; }
 
     // ---------- layout ----------
 
@@ -337,6 +338,7 @@ public sealed class DiagnosticsView : UserControl
         run.ToolTip = L("Executa o diagnóstico completo do computador", "Runs the full computer diagnostic");
         _body.Children.Add(run);
         _body.Children.Add(Cap(L("Executa inventário, testes de CPU, RAM (256 MB), disco (arquivo temporário de 128 MB), rede e análise. Leva cerca de 30 s. O computador pode ficar mais lento durante o teste de CPU.", "Runs inventory, CPU, RAM (256 MB), disk (128 MB temp file) and network tests plus analysis. Takes about 30 s. The computer may slow down during the CPU test.")));
+        _body.Children.Add(CheckedTopics());
         _bar = new ProgressBar { Height = 10, Maximum = 100, Value = _progress, Margin = new Thickness(0, 8, 0, 2), MaxWidth = 760, HorizontalAlignment = HorizontalAlignment.Left, Width = 760 };
         _barText = Cap(_progressText);
         _logBox = new TextBox { IsReadOnly = true, AcceptsReturn = true, Height = 150, MaxWidth = 760, Width = 760, HorizontalAlignment = HorizontalAlignment.Left, FontFamily = new FontFamily("Cascadia Mono,Consolas"), FontSize = 12, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Text = string.Join("\n", _log) };
@@ -348,6 +350,29 @@ public sealed class DiagnosticsView : UserControl
             _body.Children.Add(new TextBlock { Text = L("Principais pontos de atenção", "Top attention points"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 8, 0, 6) });
             foreach (var f in top) _body.Children.Add(FindingCard(f));
         }
+    }
+
+    private UIElement CheckedTopics()
+    {
+        var chips = new WrapPanel();
+        void Chip(string icon, string text)
+        {
+            var c = new Border { CornerRadius = new CornerRadius(8), Padding = new Thickness(10, 5, 10, 5), Margin = new Thickness(0, 0, 8, 8), BorderThickness = new Thickness(1), Child = new TextBlock { Text = $"{icon}  {text}" } };
+            c.SetResourceReference(Border.BackgroundProperty, "InputBg");
+            c.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
+            chips.Children.Add(c);
+        }
+        for (int i = 1; i <= 10; i++) Chip(Sections[i].Icon, L(Sections[i].Pt, Sections[i].En));
+        Chip("🧪", L("Teste de CPU", "CPU test"));
+        Chip("🧪", L("Teste de memória", "Memory test"));
+        Chip("🧪", L("Teste de disco", "Disk test"));
+        Chip("🧪", L("Teste de rede", "Network test"));
+        Chip("🧪", L("Avaliação da GPU", "GPU assessment"));
+        Chip("🩺", L("Análise e recomendações", "Analysis and recommendations"));
+        var p = new StackPanel();
+        p.Children.Add(new TextBlock { Text = L("O que será verificado", "What will be checked"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 8) });
+        p.Children.Add(chips);
+        return Card(p);
     }
 
     private void UpdateLiveTiles(HardwareSnapshot s)
@@ -371,7 +396,7 @@ public sealed class DiagnosticsView : UserControl
     {
         Dispatcher.BeginInvoke(() =>
         {
-            if (pct >= 0) { _progress = pct; _progressText = text; if (_bar != null) _bar.Value = pct; if (_barText != null) _barText.Text = $"{pct}% — {text}"; }
+            if (pct >= 0) { Status = $"{pct}% — {text}"; _progress = pct; _progressText = text; if (_bar != null) _bar.Value = pct; if (_barText != null) _barText.Text = $"{pct}% — {text}"; }
             Log(text);
         });
     }
@@ -389,7 +414,7 @@ public sealed class DiagnosticsView : UserControl
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { Log("✖ " + ex.Message); Store.Audit("diagnostic error: " + ex.Message); }
-        finally { _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); PowerSaver.TrimSoon(); }
+        finally { Status = null; _cts?.Dispose(); _cts = null; Show(_sec == 0 ? 0 : _sec); PowerSaver.TrimSoon(); }
     }
 
     // ---------- component pages ----------

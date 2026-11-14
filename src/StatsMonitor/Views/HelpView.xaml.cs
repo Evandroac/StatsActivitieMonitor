@@ -13,7 +13,7 @@ public partial class HelpView : UserControl
     public static readonly string[] SectionTitles =
     [
         "O que é o Stats Monitor", "Como usar", "Gadget e bandeja do sistema", "Alertas", "Economia de recursos",
-        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)", "Diagnóstico do computador",
+        "Ressalvas importantes", "Perguntas frequentes", "Tela de Processos", "Testes de conexão", "Bateria (notebooks)", "Diagnóstico do computador", "Pets", "Idioma",
     ];
 
     private int? _initialTopic;
@@ -46,6 +46,7 @@ public partial class HelpView : UserControl
     public HelpView(int? topic)
     {
         InitializeComponent();
+        Scroll.ScrollChanged += OnScrollChanged;
         _initialTopic = topic;
         Loaded += (_, _) =>
         {
@@ -62,13 +63,14 @@ public partial class HelpView : UserControl
         Unloaded += (_, _) => Loc.LanguageChanged -= Build;
     }
 
-    private static string L(string pt, string en) => Loc.Lang == "en" ? en : pt;
+    private static string L(string pt, string en) => Loc.Lang == "en" ? en : Loc.T(pt);
 
     private void Build()
     {
         Host.Children.Clear();
         NavHost.Children.Clear();
         _navButtons.Clear();
+        _navCards.Clear();
         _jumps.Clear();
         _cards.Clear();
         var navTitle = new TextBlock { Text = L("TÓPICOS", "TOPICS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) };
@@ -88,7 +90,10 @@ public partial class HelpView : UserControl
               "✔ It only READS sensors. It does not change settings, control fans, overclock or touch your files."),
             L("✔ Os dados ficam no seu computador. O app não envia leituras para a internet. A conexão em segundo plano é um ping simples ao DNS 1.1.1.1 para medir a latência e saber se há internet; a tela Testes de conexão só acessa a rede quando você manda executar.",
               "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
+            L("💡 Sobre o projeto: o Stats Monitor é open-source (código aberto) e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Ele foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas: sugestões e relatos de problemas são muito bem-vindos.",
+              "💡 About the project: Stats Monitor is open source and is part of a study on developing software with artificial intelligence. It was designed, programmed and built entirely with the help of AI, so it may contain flaws: suggestions and bug reports are very welcome."),
         ]);
+        ((StackPanel)_cards[0].Child).Children.Add(LinkRow());
         Card("🧭", 1, [
             L("☰ Menu lateral: clique no ☰ para mostrar ou esconder os nomes; com o menu aberto, arraste a borda direita para ajustar a largura (fica salvo). As páginas são: Principal, Sistema e periféricos (com filtro Tudo/Sistema/Periféricos), CPU, GPU, Memória, Discos, Rede, Sensores, Bateria (só em notebooks), Processos, Testes de conexão, Diagnóstico do computador e Configurações. A versão do app aparece abaixo do botão de Configurações.",
               "☰ Side menu: click ☰ to show or hide the names; with the menu open, drag its right edge to resize it (saved). Pages are: Main, System and peripherals (with an All/System/Peripherals filter), CPU, GPU, Memory, Disks, Network, Sensors, Battery (laptops only), Processes, Connection tests, Computer diagnostic and Settings. The app version is shown below the Settings button."),
@@ -98,8 +103,8 @@ public partial class HelpView : UserControl
               "📋 Copy: click any value or label to copy it. A short message confirms the copy."),
             L("📈 Páginas de componente: mostram gráficos, detalhes e sensores extras de cada peça.",
               "📈 Component pages: show charts, details and extra sensors for each part."),
-            L("⚙️ Configurações (seções Geral, Gadget, Painéis exibidos, Alertas, Registro de dados, Personalização e Perfis): intervalo de leitura (geral e por componente), tela de abertura, modo econômico, painéis visíveis, limites de temperatura e de bateria, alertas, registro CSV, aparência, tamanho da fonte, idioma, unidade °C/°F, atalho global, exportar/importar e perfis (Jogo, Trabalho, Silencioso). Tudo é salvo automaticamente.",
-              "⚙️ Settings (sections General, Gadget, Displayed panels, Alerts, Data logging, Customization and Profiles): update interval (general and per component), startup splash, eco mode, visible panels, temperature and battery limits, alerts, CSV logging, appearance, font size, language, °C/°F unit, global hotkey, export/import and profiles (Gaming, Work, Quiet). Everything is saved automatically."),
+            L("⚙️ Configurações (seções Geral, Gadget, Painéis exibidos, Alertas, Registro de dados, Personalização e Perfis): intervalo de leitura (geral e por componente), modo econômico, painéis visíveis, limites de temperatura e de bateria, alertas, registro CSV, aparência, tamanho da fonte, idioma, unidade °C/°F, atalho global, exportar/importar e perfis (Jogo, Trabalho, Silencioso). Tudo é salvo automaticamente.",
+              "⚙️ Settings (sections General, Gadget, Displayed panels, Alerts, Data logging, Customization and Profiles): update interval (general and per component), eco mode, visible panels, temperature and battery limits, alerts, CSV logging, appearance, font size, language, °C/°F unit, global hotkey, export/import and profiles (Gaming, Work, Quiet). Everything is saved automatically."),
             L("🖌️ Personalização › Temas visuais: além dos temas Escuro e Claro, há quadros de seleção com estilos completos (cores, fonte e clima): Windows XP e clássicos, Cyberpunk e futurismo, Retrô anos 80/90, Vaporwave, Arcade 8-bit, CRT/Terminal, Moderno, Minimalista, Anime/kawaii e artísticos. Escolher um tema substitui as cores personalizadas; depois você pode ajustar cada cor. Os menus de seleção de cores têm fundo sólido.",
                 "🖌️ Customization › Visual themes: besides Dark and Light, there are selection cards with complete styles (colors, font and mood): Windows XP and classics, Cyberpunk and futurism, 80s/90s retro, Vaporwave, 8-bit arcade, CRT/Terminal, Modern, Minimalist, Anime/kawaii and artistic. Picking a theme replaces custom colors; you can then tweak each color. Color pickers have a solid background."),
             L("🎨 Cores: verde, amarelo e vermelho indicam normal, atenção e crítico, de acordo com os limites que você definiu.",
@@ -110,8 +115,8 @@ public partial class HelpView : UserControl
               "Works like Task Manager: lists processes with icon, name, status and CPU, memory, disk and network usage. Processes with child processes appear as a tree."),
             L("Pesquisa e filtros: busque por nome, PID ou caminho e filtre por tipo e status. Ordene por qualquer coluna (clique no cabeçalho) ou pelo seletor, por exemplo do maior para o menor uso de CPU.",
               "Search and filters: search by name, PID or path and filter by type and status. Sort by any column (click the header) or with the selector, for example highest CPU first."),
-            L("Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias entre os cabeçalhos para ajustar a largura das colunas.",
-              "Headers: show the total % used in each column. Drag the dividers between headers to resize columns."),
+            L("Cabeçalhos: mostram o total de % utilizado em cada coluna. Arraste as divisórias para ajustar a largura use o botão ↔ ao lado de Nome para ajustar a largura dessa coluna ao conteúdo, arraste o título de uma coluna para outra posição para reordená-la. Use o botão Colunas (ou o botão direito no cabeçalho) para ocultar ou adicionar colunas como PID, Threads, Tipo, Executável, Iniciado em e Caminho; a escolha fica salva.",
+              "Headers: show the total % used in each column. Drag the dividers to resize and use the ↔ button next to Name to fit that column to its content, drag a column title to another position to reorder it. Use the Columns button (or right-click the header) to hide or add columns such as PID, Threads, Type, Executable, Started and Path; your choice is saved."),
             L("Painel de ações (à esquerda): expandir/recolher tudo, finalizar tarefa, finalizar árvore, reiniciar, alterar prioridade, abrir o local do arquivo e copiar o caminho. O menu do botão direito também funciona. Clicar em área vazia remove a seleção.",
               "Actions panel (left): expand/collapse all, end task, end tree, restart, change priority, open file location and copy path. The right-click menu also works. Clicking an empty area clears the selection."),
             L("Gráfico de linha do tempo: abaixo da lista, mostra o histórico recente de cada processo, cada um com uma cor própria (a mesma barra colorida da linha). Escolha a métrica (CPU, memória, disco ou rede). Ao selecionar um processo, a linha dele é destacada.",
@@ -158,18 +163,18 @@ public partial class HelpView : UserControl
               "Caveats: the speed test consumes data and depends on Cloudflare servers. Diagnostics, speed and public IP contact external services (Cloudflare and Microsoft); the other tools talk only to the target you enter. Firewalls may block ICMP (ping/traceroute)."),
         ]);
         Card("🪟", 2, [
-            L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante e barra flutuante (arrastáveis) ou fixos nos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. Em Configurações › Gadget, a visão pode ser simplificada (somente texto) ou detalhada (mais informações e um mini gráfico de uso de CPU, RAM, GPU, disco e rede).",
-              "When minimized, the app shows a compact gadget with the values you chose. Several layouts exist: floating and floating bar (draggable), or pinned to any of the four screen corners, a strip at the top or a strip at the bottom. In Settings › Gadget the view can be simplified (text only) or detailed (more information and a mini usage chart for CPU, RAM, GPU, disk and network)."),
-            L("Controles do gadget: passe o mouse sobre ele para ver, no canto superior direito, o botão 🔓/🔒 (fixa o gadget e bloqueia posição e tamanho) e, abaixo dele, o botão 👁 (deixa o gadget com a opacidade mínima; clique de novo para voltar à opacidade configurada). Os botões ficam juntos no topo, centralizados (o cadeado fica separado, no canto superior direito), e aparecem ao passar o mouse sem cobrir as informações; ▤/▣ alterna entre visão simplificada e detalhada. Os botões de ação mantêm a opacidade total mesmo com o gadget esmaecido (👁). Segure o botão ↔ (também move com o gadget fixo) para pausar as leituras enquanto estiver pressionado, e arraste para mover o gadget no eixo horizontal (duplo clique volta à posição original nos modos fixos). Arraste o canto inferior direito (◢) para redimensionar: todo o conteúdo escala junto; duplo clique volta ao tamanho padrão.",
-              "Gadget controls: hover over it to see, at the top right, the 🔓/🔒 button (locks the gadget, blocking position and size) and, below it, the 👁 button (sets minimum opacity; click again to return to the configured opacity). The buttons sit together at the top centre (the lock is separate, at the top-right corner) and appear on hover without covering the information; ▤/▣ switches between simplified and detailed view. The action buttons keep full opacity even when the gadget is faded (👁). Hold the ↔ button (also moves while pinned) to pause readings while pressed, and drag to move the gadget along the horizontal axis (double-click restores the original position in pinned modes). Drag the bottom-right corner (◢) to resize: all content scales together; double-click resets the default size."),
+            L("Ao minimizar, o app mostra um gadget compacto com os valores escolhidos. Há vários formatos: flutuante e barra flutuante (arrastáveis) ou fixos nos quatro cantos da tela, em uma faixa no topo ou em uma faixa na parte inferior. Em Configurações › Gadget, a visão pode ser simplificada (somente texto) detalhada (mais informações e um mini gráfico de uso de CPU, RAM, GPU, disco e rede) ou detalhada sem gráficos (mesmas informações, sem os mini gráficos).",
+              "When minimized, the app shows a compact gadget with the values you chose. Several layouts exist: floating and floating bar (draggable), or pinned to any of the four screen corners, a strip at the top or a strip at the bottom. In Settings › Gadget the view can be simplified (text only), detailed (more information and a mini usage chart for CPU, RAM, GPU, disk and network) or detailed without charts (same information, no mini charts)."),
+            L("Controles do gadget: passe o mouse sobre ele para ver, no canto superior direito, o botão 🔓/🔒 (fixa o gadget e bloqueia posição e tamanho) e, abaixo dele, o botão 👁 (deixa o gadget com a opacidade mínima; clique de novo para voltar à opacidade configurada). Os botões ficam juntos no topo, centralizados (o cadeado fica separado, no canto superior direito), e aparecem ao passar o mouse sem cobrir as informações; ▤/▣ alterna entre visão simplificada e detalhada. Os botões de ação mantêm a opacidade total mesmo com o gadget esmaecido (👁). Segure o botão ↔ ou ↕ (também movem com o gadget fixo) para pausar as leituras enquanto estiver pressionado, e arraste para mover o gadget no eixo horizontal ou vertical (duplo clique volta à posição original nos modos fixos). Arraste o canto inferior direito (◢) para redimensionar: todo o conteúdo escala junto; duplo clique volta ao tamanho padrão.",
+              "Gadget controls: hover over it to see, at the top right, the 🔓/🔒 button (locks the gadget, blocking position and size) and, below it, the 👁 button (sets minimum opacity; click again to return to the configured opacity). The buttons sit together at the top centre (the lock is separate, at the top-right corner) and appear on hover without covering the information; ▤/▣ switches between simplified and detailed view. The action buttons keep full opacity even when the gadget is faded (👁). Hold the ↔ or ↕ button (also move while pinned) to pause readings while pressed, and drag to move the gadget along the horizontal or vertical axis (double-click restores the original position in pinned modes). Drag the bottom-right corner (◢) to resize: all content scales together; double-click resets the default size."),
             L("Fechar a janela (X) NÃO encerra o app: ele continua na bandeja do sistema, perto do relógio. Para sair de verdade, clique com o botão direito no ícone da bandeja e escolha Sair.",
               "Closing the window (X) does NOT quit the app: it keeps running in the system tray near the clock. To really exit, right-click the tray icon and choose Exit."),
             L("O ícone da bandeja muda de cor conforme o estado do computador. Clique duas vezes nele para abrir o app.",
               "The tray icon changes color with your computer's state. Double-click it to open the app."),
             L("Atalho Ctrl+Alt+G (configurável) mostra ou esconde o gadget.",
               "Ctrl+Alt+G (configurable) shows or hides the gadget."),
-            L("Com a opção de FPS ligada, o gadget mostra os quadros por segundo do jogo em primeiro plano: vermelho abaixo de 30, verde a partir de 30 e azul a partir de 60. Ao lado aparece a média (Média/méd) do jogo atual, calculada desde que ele entrou em primeiro plano, para comparar com o valor instantâneo.",
-              "With FPS enabled, the gadget shows the frames per second of the foreground game: red below 30, green from 30 and cyan from 60. Next to it, the average (Average/avg) of the current game is shown, computed since it came to the foreground, to compare with the instant value."),
+            L("Com a opção de FPS ligada, o gadget mostra os quadros por segundo do jogo em primeiro plano: vermelho abaixo de 30, verde a partir de 30 e azul a partir de 60. Ao lado aparece a média (Média/méd) do jogo atual, calculada desde que ele entrou em primeiro plano, para comparar com o valor instantâneo. O bloco de FPS só aparece enquanto um jogo é detectado em primeiro plano.",
+              "With FPS enabled, the gadget shows the frames per second of the foreground game: red below 30, green from 30 and cyan from 60. Next to it, the average (Average/avg) of the current game is shown, computed since it came to the foreground, to compare with the instant value. The FPS block only appears while a game is detected in the foreground."),
         ]);
         Card("🔔", 3, [
             L("Atenção: avisa antes do problema, quando a temperatura passa do limite de atenção ou o uso fica 10 pontos abaixo do limite crítico.",
@@ -188,14 +193,14 @@ public partial class HelpView : UserControl
               "Eco mode: with the window minimized and no gadget, the app reads sensors only every 10 s, lowers its priority and frees memory. Alerts keep working."),
             L("Modo gadget: com o gadget visível e a janela fechada, só são lidos os componentes que o gadget exibe. Os outros ficam sem leitura e, por isso, sem alertas.",
               "Gadget mode: with the gadget visible and the window closed, only the components the gadget shows are read. The others are not read and so produce no alerts."),
-            L("Intervalo por componente: cada peça pode ter o seu próprio tempo de atualização (0 usa o intervalo geral). Intervalos menores deixam o app mais preciso, porém mais pesado.",
-              "Per-component interval: each part can have its own refresh time (0 uses the general interval). Shorter intervals are more precise but heavier."),
+            L("Velocidade de atualização: escolha Normal (1 s), Baixo (10 s), Alto (0,25 s) ou Pausado. Em Personalizado, defina o intervalo geral e o de cada componente (0 usa o geral). Pausado congela as leituras e os alertas; intervalos menores deixam o app mais preciso, porém mais pesado.",
+              "Refresh speed: choose Normal (1 s), Low (10 s), High (0.25 s) or Paused. With Custom, set the general interval and one per component (0 uses the general one). Paused freezes readings and alerts; shorter intervals are more precise but heavier."),
         ]);
         Card("⚠️", 5, [
             L("Administrador: o app precisa ser executado como administrador para ler temperaturas, voltagens e ventoinhas. Sem isso, muitos valores aparecem vazios.",
               "Administrator: the app must run as administrator to read temperatures, voltages and fans. Without it, many values appear empty."),
-            L("Driver: a leitura usa um driver do LibreHardwareMonitor. Antivírus ou o recurso Integridade de Memória do Windows podem bloqueá-lo.",
-              "Driver: reading uses a LibreHardwareMonitor driver. Antivirus or Windows Memory Integrity may block it."),
+            L("Intel/AMD: a temperatura da CPU exige o driver PawnIO (winget install namazso.PawnIO); sem ele o app tenta as zonas térmicas ACPI do Windows. Driver: a leitura usa um driver do LibreHardwareMonitor. Antivírus ou o recurso Integridade de Memória do Windows podem bloqueá-lo.",
+              "Intel/AMD: CPU temperature needs the PawnIO driver (winget install namazso.PawnIO); without it the app tries Windows ACPI thermal zones. Driver: reading uses a LibreHardwareMonitor driver. Antivirus or Windows Memory Integrity may block it."),
             L("Nem todo PC mostra tudo: placas-mãe, notebooks, GPUs integradas e peças muito novas podem não expor alguns sensores. Valor vazio significa que o sensor não está disponível, não que o valor é zero.",
               "Not every PC shows everything: motherboards, laptops, integrated GPUs and very new parts may not expose some sensors. An empty value means the sensor is unavailable, not that the value is zero."),
             L("Máquinas virtuais quase não expõem sensores. O app funciona apenas em Windows 10/11 de 64 bits.",
@@ -214,12 +219,32 @@ public partial class HelpView : UserControl
               "Why does the app ask for administrator permission? Because reading sensors requires hardware access."),
             L("Como deixar o app mais leve? Aumente o intervalo, use o modo econômico, a visão simplificada ou o perfil Silencioso.",
               "How do I make the app lighter? Increase the interval, use eco mode, the simplified view or the Quiet profile."),
-            L("Ao abrir, uma tela de abertura mostra o progresso e os logs do carregamento; a janela principal só aparece quando CPU, GPU, memória, discos e rede estão carregados. Dá para desligá-la em Configurações › Geral.",
-              "On launch, a splash screen shows loading progress and logs; the main window only appears once CPU, GPU, memory, disks and network are loaded. You can turn it off in Settings › General."),
+            L("Ao abrir, uma tela de abertura mostra o progresso e os logs do carregamento; a janela principal só aparece quando CPU, GPU, memória, discos e rede estão carregados.",
+              "On launch, a splash screen shows loading progress and logs; the main window only appears once CPU, GPU, memory, disks and network are loaded."),
             L("O app inicia com o Windows? Só se você ativar a opção em Configurações. Ele também pode iniciar minimizado.",
               "Does the app start with Windows? Only if you enable it in Settings. It can also start minimized."),
             L("Como desligar as notificações? Em Configurações, na seção de alertas.",
               "How do I turn notifications off? In Settings, in the alerts section."),
+            L("O app não abre ou não aparece? Ele só permite uma instância: verifique o ícone na bandeja do sistema (perto do relógio) e abra por lá. Se ele fechar com erro, os detalhes ficam em %AppData%\\StatsMonitor\\crash.log.",
+              "The app does not open or show up? Only one instance can run: check the tray icon (near the clock) and open it from there. If it crashes, details are saved in %AppData%\\StatsMonitor\\crash.log."),
+            L("O que mostra o painel de Memória RAM? Uso (usado/total), memória confirmada (commit), tipo e velocidade (ex.: DDR4 3200 MHz) e os módulos instalados, além do gráfico de uso.",
+              "What does the RAM panel show? Usage (used/total), committed memory, type and speed (e.g. DDR4 3200 MHz) and installed modules, plus the usage chart."),
+        ]);
+        Card("🐾", 11, [
+            L("Os Pets são opcionais: ative em Configurações › Geral › Mostrar painel de Pets no menu. O painel aparece no menu lateral (com o menu expandido), acima de Ajuda, e é pensado para distrair enquanto um diagnóstico demora.",
+              "Pets are optional: enable them in Settings › General › Show Pets panel in the menu. The panel appears in the side menu (when expanded), above Help, and is meant to keep you entertained while a diagnostic runs."),
+            L("Adicionar: digite um nome, escolha o tipo e clique em ➕ (até 12 pets). Clique em um pet para fazer carinho, clique com o botão direito para remover e use 🍖 para alimentar todos. Eles são salvos entre sessões.",
+              "Add: type a name, choose the type and click ➕ (up to 12 pets). Click a pet to cuddle it, right-click to remove it and use 🍖 to feed them all. They are saved between sessions."),
+            L("Fundo: escolha o cenário na lista (gramado, noite estrelada, praia, neve, pôr do sol). Use ▾/▸ no cabeçalho para recolher ou expandir o painel; as duas escolhas ficam salvas.",
+              "Background: pick the scenery from the list (grass, starry night, beach, snow, sunset). Use ▾/▸ in the header to collapse or expand the panel; both choices are saved."),
+        ]);
+        Card("🌐", 12, [
+            L("Em Configurações › Geral › Idioma há 16 opções: Português (Brasil e Portugal), English (US e UK), Español (e México), Français, Deutsch, Italiano, 简体中文, 繁體中文, 日本語, 한국어, العربية, हिन्दी e Русский. A troca é imediata e fica salva.",
+              "Settings › General › Language offers 16 options: Portuguese (Brazil and Portugal), English (US and UK), Spanish (and Mexico), French, German, Italian, Simplified and Traditional Chinese, Japanese, Korean, Arabic, Hindi and Russian. Switching is instant and saved."),
+            L("Na primeira execução o idioma é escolhido pelo idioma do Windows; se não houver tradução, usa inglês.",
+              "On first launch the language follows Windows; if there is no translation, English is used."),
+            L("Ressalva: algumas telas avançadas (Diagnóstico, Processos, Testes de conexão e esta Ajuda) estão disponíveis apenas em português e inglês; nos demais idiomas elas aparecem em inglês.",
+              "Caveat: some advanced screens (Diagnostics, Processes, Connection tests and this Help) are only available in Portuguese and English; other languages show them in English."),
         ]);
         if (_navButtons.Count > 0) _navButtons[0].Tag = "active";
     }
@@ -230,6 +255,24 @@ public partial class HelpView : UserControl
     {
         Text = text, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10), Opacity = 0.8,
     };
+
+    private static Button Link(string label, string url)
+    {
+        var b = new Button { Content = label, Style = (Style)Application.Current.FindResource("PillButton"), Margin = new Thickness(0, 4, 8, 0), ToolTip = url };
+        b.Click += (_, _) =>
+        {
+            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
+        };
+        return b;
+    }
+
+    private static WrapPanel LinkRow()
+    {
+        var row = new WrapPanel { Margin = new Thickness(0, 4, 0, 0) };
+        row.Children.Add(Link("🔗  " + Loc.T("Código-fonte no GitHub"), "https://github.com/Evandroac/StatsActivitieMonitor"));
+        row.Children.Add(Link("👤  " + Loc.T("Autor no GitHub"), "https://github.com/Evandroac"));
+        return row;
+    }
 
     private void Card(string icon, int titleIndex, string[] paragraphs)
     {
@@ -257,7 +300,28 @@ public partial class HelpView : UserControl
         _jumps[titleIndex] = Jump;
         _cards[titleIndex] = border;
         _navButtons.Add(btn);
+        _navCards.Add(border);
         NavHost.Children.Add(btn);
+    }
+
+    private readonly List<Border> _navCards = [];
+
+    // Highlights the topic whose card is currently at the top of the page.
+    private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        if (_navCards.Count == 0 || (e.VerticalChange == 0 && e.ExtentHeightChange == 0)) return;
+        int current = 0;
+        for (int i = 0; i < _navCards.Count; i++)
+        {
+            if (!_navCards[i].IsDescendantOf(Scroll)) continue;
+            if (_navCards[i].TranslatePoint(new Point(0, 0), Scroll).Y <= 40) current = i;
+        }
+        if (Scroll.ScrollableHeight > 0 && Scroll.VerticalOffset >= Scroll.ScrollableHeight - 1) current = _navCards.Count - 1;
+        for (int i = 0; i < _navButtons.Count; i++)
+        {
+            object? want = i == current ? "active" : null;
+            if (!Equals(_navButtons[i].Tag, want)) _navButtons[i].Tag = want;
+        }
     }
 
     /// <summary>A bullet row; a short lead-in ("Topic:" or a question) is highlighted so the text can be scanned quickly.</summary>

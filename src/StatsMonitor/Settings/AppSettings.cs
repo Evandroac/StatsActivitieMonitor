@@ -31,13 +31,17 @@ public sealed class AppSettings
     public GadgetDisplayMode GadgetMode { get; set; } = GadgetDisplayMode.Floating;
     /// <summary>False = simplified gadget (text only); true = detailed gadget with extra info and mini charts.</summary>
     public bool GadgetDetailed { get; set; }
+
+    /// <summary>With the detailed gadget: hides the mini charts (dashboards), keeping the extra text.</summary>
+    public bool GadgetNoCharts { get; set; }
     public int UpdateIntervalMs { get; set; } = 1000;
     /// <summary>Per-component update interval in ms; 0 follows the general interval.</summary>
+    public bool UpdatePaused { get; set; }
     public int CpuIntervalMs { get; set; }
     public int GpuIntervalMs { get; set; }
     public int RamIntervalMs { get; set; }
     public int OtherIntervalMs { get; set; }
-    public bool RunAtStartup { get; set; }
+    public bool RunAtStartup { get; set; } = true;
     public bool StartMinimized { get; set; }
     public bool ShowTemperatures { get; set; } = true;
     public bool ShowGadget { get; set; } = true;
@@ -77,17 +81,20 @@ public sealed class AppSettings
     public double? GadgetTop { get; set; }
     public double GadgetScale { get; set; } = 1;
     public bool GadgetLocked { get; set; }
+    public bool AnimationsEnabled { get; set; } = true;
+    public bool PetsEnabled { get; set; }
     public double GadgetXOffset { get; set; }
+    public double GadgetYOffset { get; set; }
     public bool GadgetFaded { get; set; }
 
     public bool SidebarPinned { get; set; }
     public double SidebarWidth { get; set; } = 220;
     public bool SimplifiedView { get; set; }
-    public bool PauseWhenHidden { get; set; }
+    public bool PauseWhenHidden { get; set; } = true;
     public bool EcoWhenMinimized { get; set; } = true;
     public bool LogEnabled { get; set; }
     public int LogIntervalSeconds { get; set; } = 5;
-    public bool SlowSensors { get; set; }
+    public bool SlowSensors { get; set; } = true;
     public string Language { get; set; } = "pt";
  public double FontScalePercent { get; set; } = 110;
     public string TempUnit { get; set; } = "C";
@@ -98,7 +105,7 @@ public sealed class AppSettings
     public bool NotifyNetworkAlerts { get; set; } = true;
     public bool NotifyGreetings { get; set; } = true;
     /// <summary>Which hardware alert levels notify: "both", "attention" or "critical".</summary>
-    public string AlertLevel { get; set; } = "both";
+    public string AlertLevel { get; set; } = "critical";
     public double AlertLoadPercent { get; set; } = 95;
     public int AlertSustainSeconds { get; set; } = 10;
     public int AlertCooldownMinutes { get; set; } = 2;
@@ -108,7 +115,6 @@ public sealed class AppSettings
 
     public bool ShowSensorsMain { get; set; } = true;
     public bool ShowBatteryMain { get; set; } = true;
-    public bool ShowSplash { get; set; } = true;
     public int BatteryLowPercent { get; set; } = 20;
     public int BatteryCriticalPercent { get; set; } = 10;
 
@@ -162,6 +168,8 @@ public sealed class SettingsService
             p.SetValue(Current, p.GetValue(old));
     }
 
+    public event Action? Saved;
+
     public void Save()
     {
         try
@@ -173,6 +181,7 @@ public sealed class SettingsService
         {
             // Settings are non-critical; ignore IO failures.
         }
+        Saved?.Invoke();
     }
 
     /// <summary>Writes the current settings to a user-chosen file.</summary>
@@ -195,7 +204,7 @@ public sealed class SettingsService
         }
     }
 
-    /// <summary>Picks the UI language from the OS culture ("pt" for Portuguese, otherwise "en").</summary>
+    /// <summary>Picks the closest supported UI language for the OS culture ("en" when none matches).</summary>
     public static string DetectLanguage(System.Globalization.CultureInfo? culture = null) =>
-        (culture ?? System.Globalization.CultureInfo.CurrentUICulture).TwoLetterISOLanguageName.Equals("pt", StringComparison.OrdinalIgnoreCase) ? "pt" : "en";
+        Helpers.Loc.FromCulture(culture ?? System.Globalization.CultureInfo.CurrentUICulture);
 }

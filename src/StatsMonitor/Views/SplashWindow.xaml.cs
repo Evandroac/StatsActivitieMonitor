@@ -14,6 +14,15 @@ public partial class SplashWindow : Window
         SubtitleText.Text = L("Monitor de hardware e desempenho", "Hardware and performance monitor");
         SetStatus(L("Iniciando…", "Starting…"), 0);
         CancelBtn.Content = L("Cancelar", "Cancel");
+        MinimizeBtn.Content = L("Minimizar", "Minimize");
+        // The splash has no taskbar button normally; show one while minimized so it can be restored.
+        StateChanged += (_, _) => ShowInTaskbar = WindowState == WindowState.Minimized;
+    }
+
+    private void OnMinimize(object sender, RoutedEventArgs e)
+    {
+        ShowInTaskbar = true;
+        WindowState = WindowState.Minimized;
     }
 
     public bool CancelRequested { get; private set; }

@@ -14,6 +14,17 @@ public partial class SettingsView : UserControl
 
     public event Action? CloseRequested;
 
+    private void ShowSavedToast()
+    {
+        if (!IsVisible) return;
+        SavedToastText.Text = Loc.T("Configuração salva");
+        var a = new System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames();
+        a.KeyFrames.Add(new System.Windows.Media.Animation.EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(180)));
+        a.KeyFrames.Add(new System.Windows.Media.Animation.EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(1700)));
+        a.KeyFrames.Add(new System.Windows.Media.Animation.EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(2100)));
+        SavedToast.BeginAnimation(OpacityProperty, a);
+    }
+
     public string CurrentSection { get; private set; } = "general";
 
     public SettingsView(SettingsViewModel vm, AppearanceView? appearance = null)
@@ -21,7 +32,7 @@ public partial class SettingsView : UserControl
         InitializeComponent();
         DataContext = _vm = vm;
         _appearance = appearance;
-        AlertHistoryList.ItemsSource = StatsMonitor.Services.AlertHistory.Entries;
+        vm.ChangesSaved += () => Dispatcher.BeginInvoke(ShowSavedToast);        AlertHistoryList.ItemsSource = StatsMonitor.Services.AlertHistory.Entries;
         StatsMonitor.Services.AlertHistory.Entries.CollectionChanged += (_, _) => UpdateHistoryEmpty();
         UpdateHistoryEmpty();
         if (appearance is not null)
@@ -197,7 +208,8 @@ public partial class SettingsView : UserControl
         bool off = vm.GadgetNone || !vm.ShowGadget;
         if (floating.Count == 0) { floating.Add(Loc.T("Nenhum indicador")); taskbar.Add(Loc.T("Nenhum indicador")); }
 
-        bool detailed = vm.GadgetViewKey == "Detailed";
+        bool detailed = vm.GadgetViewKey is "Detailed" or "DetailedPlain";
+        bool plain = vm.GadgetViewKey == "DetailedPlain";
         if (detailed)
         {
             var blocks = new List<DetailBlock>();
@@ -206,8 +218,9 @@ public partial class SettingsView : UserControl
             if (vm.ShowGpuGadget) blocks.Add(new("GPU: ", "37%", t(Units.Temp(58)), "1,8 GHz", new double[] { 20, 35, 60, 45, 30, 52, 44, 37, 41, 33, 39, 37 }, "Accent2"));
             if (vm.ShowVramGadget) blocks.Add(new(Loc.T("Disco") + ": ", "12%", "", "R 12 MB/s · W 3 MB/s", new double[] { 5, 8, 4, 20, 12, 9, 30, 14, 8, 6, 10, 12 }, "Accent"));
             if (vm.ShowNetworkGadget) blocks.Add(new(Loc.T("NET: ↓ "), "12,3 Mbps", "", "↑ 1,2 Mbps · 18 ms", new double[] { 10, 30, 22, 45, 38, 25, 50, 42, 30, 35, 28, 33 }, "Accent"));
-            if (vm.ShowFpsGadget) blocks.Add(new("FPS: ", "144", "", Loc.T("Média: ") + "139", Array.Empty<double>(), "Accent"));
+            if (vm.ShowFpsGadget) blocks.Add(new("FPS: ", "144", "", Loc.T("Média: ") + "139", new double[] { 55, 60, 58, 66, 62, 70, 64, 68, 60, 66, 72, 68 }, "Accent"));
             if (blocks.Count == 0) blocks.Add(new(Loc.T("Nenhum indicador"), "", "", "", Array.Empty<double>(), "Accent"));
+            if (plain) blocks = blocks.Select(b => b with { Data = Array.Empty<double>() }).ToList();
             FillDetailed(FloatingPanel, blocks, false);
             FillDetailed(BottomPanel, blocks, true);
             FillDetailed(BarPanel, blocks, true);

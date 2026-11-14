@@ -44,8 +44,9 @@ public sealed class FpsMonitor : IDisposable
         if (!_settings.Current.ShowFpsGadget || _vm.EcoMode)
         {
             StopTrace();
-            _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--";
+            _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--"; _vm.FpsText = "--";
             _vm.FpsActive = false;
+            if (_vm.FpsHistory.Any(v => v != 0)) for (int i = 0; i < _vm.FpsHistory.Count; i++) _vm.PushFps(0);
             return;
         }
 
@@ -64,12 +65,15 @@ public sealed class FpsMonitor : IDisposable
             _idleTicks = 0;
             _avgFrames += frames; _avgSeconds += seconds;
             _vm.FpsText = (frames / seconds).ToString("0");
+            _vm.PushFps(frames / seconds);
             _vm.FpsAvgText = (_avgFrames / _avgSeconds).ToString("0");
             _vm.FpsActive = true;
         }
         else
         {
             if (++_idleTicks >= 10) { _avgPid = 0; _avgFrames = 0; _avgSeconds = 0; _vm.FpsAvgText = "--"; }
+            if (_idleTicks >= 2) _vm.FpsText = "--";
+            _vm.PushFps(0);
             _vm.FpsActive = false;
         }
     }

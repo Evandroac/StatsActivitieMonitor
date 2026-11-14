@@ -22,18 +22,25 @@ public partial class MainWindow : Window
         DataContext = _vm = vm;
         _settings = settings;
         RestoreWindowState();
+        UpdateCaption();
         UiScale.Set(settings.Current.FontScalePercent);
         ApplyUiScale();
         UiScale.Changed += ApplyUiScale;
         ChkSimple.IsChecked = settings.Current.SimplifiedView;
-        NavBattery.Visibility = _vm.HasBattery ? Visibility.Visible : Visibility.Collapsed;
+        if (!_vm.HasBattery)
+        {
+            NavBattery.Opacity = 0.55;
+            NavBattery.ToolTip = Loc.T("Sem bateria neste computador");
+        }
         if (settings.Current.SidebarPinned) SetMenu(true);
         ArrangeCards();
-        Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); };
+        AttachNavAnimations();
+        settings.Saved += () => Dispatcher.BeginInvoke(ApplyPets);
+        Loaded += (_, _) => { UpdateGadget(); RegisterHotkey(); PageAnimator.Play(MainPage, settings.Current.AnimationsEnabled); };
         // Start at (and never shrink below) the size that shows every visible card without scrolling.
         ContentRendered += (_, _) => FitToContent();
         SizeChanged += (_, _) => ArrangeCards();
-        StateChanged += (_, _) => UpdateGadget();
+        StateChanged += (_, _) => { UpdateGadget(); UpdateCaption(); };
         Closing += OnClosing;
         IsVisibleChanged += (_, _) => UpdateGadget();
         Closed += (_, _) =>
@@ -45,6 +52,19 @@ public partial class MainWindow : Window
         Application.Current.SessionEnding += (_, _) => { SaveWindowState(); _exiting = true; };
         CreateTrayIcon();
         if (settings.IsFirstRun) ShowFirstRunHealth();
+    }
+
+    private void OnCaptionMin(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void OnCaptionMax(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    private void OnCaptionClose(object sender, RoutedEventArgs e) => Close();
+
+    private void UpdateCaption()
+    {
+        bool max = WindowState == WindowState.Maximized;
+        MaxBtn.Content = max ? "\uE923" : "\uE922";
+        MaxBtn.ToolTip = Loc.T(max ? "Restaurar" : "Maximizar");
+        // A chrome-less maximized window overflows the screen by the resize border.
+        FrameRoot.Margin = max ? new Thickness(SystemParameters.WindowResizeBorderThickness.Left + 1) : new Thickness(0);
     }
 
     private void ShowFirstRunHealth()
@@ -264,6 +284,13 @@ public partial class MainWindow : Window
     {
         _gadget = gadget;
         gadget.RestoreRequested += (_, _) => RestoreFromGadget();
+        gadget.ExclusiveFullscreenDetected += (_, _) =>
+        {
+            if (!_settings.Current.NotifyAlerts) return;
+            _tray?.ShowBalloonTip(10000, Loc.T("Gadget oculto pelo jogo"),
+                Loc.T("O jogo está em tela cheia exclusiva e o Windows não permite exibir o gadget sobre ele. Use o modo janela sem bordas (borderless) para ver o gadget."),
+                System.Windows.Forms.ToolTipIcon.Warning);
+        };
     }
 
     /// <summary>Shows the gadget while minimized (or always, if configured) and when enabled in settings.</summary>
@@ -498,10 +525,19 @@ public partial class MainWindow : Window
         var v = open ? Visibility.Visible : Visibility.Collapsed;
         LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
+        ApplyPets();
         NavTreeToggle.Visibility = v;
         NavTree.Margin = new Thickness(open ? 14 : 0, 0, 0, 0);
         ApplyTree();
         if (!open) SearchPopup.IsOpen = false;
+    }
+
+    private void ApplyPets()
+    {
+        bool show = _menuOpen && _settings.Current.PetsEnabled;
+        if (show && PetsHost.Child == null) PetsHost.Child = new PetsView();
+        else if (!show) PetsHost.Child = null;
+        PetsHost.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void OnNavResize(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
@@ -539,6 +575,28 @@ public partial class MainWindow : Window
             StatsMonitor.Services.ComponentKind.Network => NavNet, StatsMonitor.Services.ComponentKind.Battery => NavBattery, _ => NavSensors,
         };
         OnOpenComponent(nav, new RoutedEventArgs());
+    }
+
+    private void AttachNavAnimations()
+    {
+        Func<bool> on = () => _settings.Current.AnimationsEnabled;
+        void A(Button b, NavIconAnimator.Kind k) => NavIconAnimator.Attach(b, k, on);
+        A(NavSettings, NavIconAnimator.Kind.Spin);
+        A(NavProcesses, NavIconAnimator.Kind.Bounce);
+        A(NavMenu, NavIconAnimator.Kind.Bounce);
+        A(NavDisk, NavIconAnimator.Kind.Bounce);
+        A(NavNetTools, NavIconAnimator.Kind.Bounce);
+        A(NavNet, NavIconAnimator.Kind.Bounce);
+        A(SearchIcon, NavIconAnimator.Kind.Bounce);
+        A(NavHelp, NavIconAnimator.Kind.Bounce);
+        A(NavGpu, NavIconAnimator.Kind.Bounce);
+        A(NavMain, NavIconAnimator.Kind.Bounce);
+        A(NavRam, NavIconAnimator.Kind.Bounce);
+        A(NavSystem, NavIconAnimator.Kind.Bounce);
+        A(NavCpu, NavIconAnimator.Kind.Bounce);
+        A(NavSensors, NavIconAnimator.Kind.Bounce);
+        A(NavBattery, NavIconAnimator.Kind.Bounce);
+        A(NavDiagnostics, NavIconAnimator.Kind.Bounce);
     }
 
     private void OnShortcut(object sender, RoutedEventArgs e)
@@ -638,6 +696,7 @@ public partial class MainWindow : Window
         PageHost.Visibility = Visibility.Collapsed;
         PageHelpBtn.Visibility = Visibility.Collapsed;
         MainPage.Visibility = Visibility.Visible;
+        if (hadPage) PageAnimator.Play(MainPage, _settings.Current.AnimationsEnabled);
         SetActiveNav(NavMain);
         if (_panelRefitPending) { _panelRefitPending = false; ApplyPanelSettings(); }
     }
@@ -649,6 +708,7 @@ public partial class MainWindow : Window
         PageHost.Content = view;
         if (hadPage) StatsMonitor.Helpers.PowerSaver.TrimSoon();
         PageHost.Visibility = Visibility.Visible;
+        PageAnimator.Play(PageHost, _settings.Current.AnimationsEnabled);
         MainPage.Visibility = Visibility.Collapsed;
         SetActiveNav(nav);
         bool onHelp = view is HelpView;
@@ -674,7 +734,12 @@ public partial class MainWindow : Window
 
     private void OnOpenNetTools(object sender, RoutedEventArgs e) => ShowPage(new NetworkToolsView(), NavNetTools);
 
-    private void OnOpenDiagnostics(object sender, RoutedEventArgs e) => ShowPage(new DiagnosticsView(_vm), NavDiagnostics);
+    private DiagnosticsView? _diagView;
+    private void OnOpenDiagnostics(object sender, RoutedEventArgs e)
+    {
+        if (_diagView == null || !_diagView.IsBusy) _diagView = new DiagnosticsView(_vm);
+        ShowPage(_diagView, NavDiagnostics);
+    }
 
     private void OnOpenHelp(object sender, RoutedEventArgs e) => ShowPage(new HelpView(), NavHelp);
 

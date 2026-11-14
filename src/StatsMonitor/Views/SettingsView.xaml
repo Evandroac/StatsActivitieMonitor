@@ -88,6 +88,15 @@
     <StackPanel x:Name="SectionsStack" Margin="20,20,20,20">
         <Border x:Name="SecGeneral" Style="{StaticResource SecCard}"><StackPanel>
         <TextBlock Text="{h:Tr '⚙️  Geral'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
+        <TextBlock Text="{h:Tr 'Velocidade de atualização'}" Style="{StaticResource Caption}" Margin="0,2,0,2"/>
+        <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" ToolTip="{h:Tr 'Escolha a velocidade das leituras ou defina os intervalos manualmente'}" AutomationProperties.Name="{h:Tr 'Velocidade de atualização'}" SelectedValuePath="Tag" SelectedValue="{Binding SpeedMode, Mode=TwoWay}">
+            <ComboBoxItem Tag="normal" Content="{h:Tr 'Normal (1 s)'}"/>
+            <ComboBoxItem Tag="low" Content="{h:Tr 'Baixo (10 s)'}"/>
+            <ComboBoxItem Tag="high" Content="{h:Tr 'Alto (0,25 s)'}"/>
+            <ComboBoxItem Tag="paused" Content="{h:Tr 'Pausado'}"/>
+            <ComboBoxItem Tag="custom" Content="{h:Tr 'Personalizado'}"/>
+        </ComboBox>
+        <StackPanel Visibility="{Binding IsCustomSpeed, Converter={StaticResource BoolToVis}}">
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Intervalo de atualização (s):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0.25" Maximum="60" Step="0.25" ToolTip="{h:Tr 'Segundos entre atualizações (mínimo 0,25; máximo 60)'}" Value="{Binding IntervalSeconds}"/>
@@ -110,6 +119,7 @@
             <TextBlock Text="{h:Tr 'Discos e sensores (s):'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="0" Maximum="60" Step="0.25" ToolTip="{h:Tr '0 = usa o intervalo geral'}" Value="{Binding OtherIntervalSeconds}"/>
         </StackPanel>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🔠  Tamanho da fonte:'}" VerticalAlignment="Center" Width="200"/>
             <local:NumericBox Minimum="90" Maximum="130" Step="5" ToolTip="{h:Tr 'Tamanho dos textos de todo o programa (90% a 130%)'}" AutomationProperties.Name="{h:Tr 'Tamanho da fonte'}" Value="{Binding FontScalePercent}"/>
@@ -117,9 +127,10 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
-            <ComboBox Width="160" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" SelectedValuePath="Tag" SelectedValue="{Binding Language, Mode=TwoWay}">
-                <ComboBoxItem Content="Português" Tag="pt"/>
-                <ComboBoxItem Content="English" Tag="en"/>
+            <ComboBox Width="200" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" ItemsSource="{x:Static h:Loc.Languages}" SelectedValuePath="Code" SelectedValue="{Binding Language, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate><TextBlock Text="{Binding Name}"/></DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
@@ -129,10 +140,11 @@
         </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
+        <CheckBox Content="{h:Tr 'Mostrar painel de Pets no menu'}" ToolTip="{h:Tr 'Exibe no menu lateral um painel com bichinhos para se divertir enquanto aguarda um diagnóstico'}" IsChecked="{Binding PetsEnabled}"/>
+        <CheckBox Content="{h:Tr 'Animações suaves ao abrir e trocar de tela'}" ToolTip="{h:Tr 'Efeito de transição (esmaecer e deslizar) ao abrir o app e ao navegar entre as telas'}" IsChecked="{Binding AnimationsEnabled}"/>
         <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 10 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
                     <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>
         <CheckBox Content="{h:Tr 'Ler sensores de disco e placa-mãe com menos frequência'}" ToolTip="{h:Tr 'Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais'}" IsChecked="{Binding SlowSensors}"/>
-        <CheckBox Content="{h:Tr 'Exibir tela de abertura (splash)'}" ToolTip="{h:Tr 'Mostra a tela de carregamento ao iniciar o aplicativo'}" IsChecked="{Binding ShowSplash}"/>
         <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>
         </StackPanel></Border>
@@ -145,6 +157,7 @@
         <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" ToolTip="{h:Tr 'Simplificada: apenas texto. Detalhada: mais informações e mini gráfico de uso de cada recurso'}" AutomationProperties.Name="{h:Tr 'Visão do gadget'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetViewKey, Mode=TwoWay}">
             <ComboBoxItem Tag="Simple" Content="{h:Tr 'Simplificada'}"/>
             <ComboBoxItem Tag="Detailed" Content="{h:Tr 'Detalhada (mais informações e mini gráficos)'}"/>
+            <ComboBoxItem Tag="DetailedPlain" Content="{h:Tr 'Detalhada sem gráficos'}"/>
         </ComboBox>
         <TextBlock Text="{h:Tr 'Posição do gadget'}" Style="{StaticResource Caption}" Margin="0,8,0,2"/>
         <ComboBox HorizontalAlignment="Left" MinWidth="280" Margin="0,2" AutomationProperties.Name="{h:Tr 'Exibição do gadget ao minimizar'}" SelectedValuePath="Tag" SelectedValue="{Binding GadgetModeKey, Mode=TwoWay}">
@@ -338,6 +351,12 @@
                     </StackPanel></Border>
     </StackPanel>
     </ScrollViewer>
-            
+    <Border x:Name="SavedToast" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,20" Padding="12,7" CornerRadius="16"
+            Background="{DynamicResource PopupBg}" BorderBrush="{DynamicResource Accent}" BorderThickness="1" Opacity="0" IsHitTestVisible="False">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets, Segoe Fluent Icons" FontSize="11" Foreground="{DynamicResource Accent}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock x:Name="SavedToastText" FontSize="12" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
+        </StackPanel>
+    </Border>
     </Grid>
 </UserControl>
