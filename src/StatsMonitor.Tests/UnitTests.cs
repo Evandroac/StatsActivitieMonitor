@@ -62,6 +62,38 @@ public class LocAndUnitsTests : IDisposable
 }
 
 [Collection("global-state")]
+public class NetworkAlertTests
+{
+    private static NetworkSnapshot Net(bool connected, bool internet, long? lat = 20) =>
+        new(connected, "Wi-Fi", null, null, null, null, 0, 0, 0, 0, lat, internet);
+
+    [Fact]
+    public void Outage_alerts_once_after_sustain_and_reports_restoration()
+    {
+        var now = new DateTime(2025, 1, 1, 12, 0, 0);
+        var n = new NetworkAlertNotifier(() => now);
+        var cfg = new AppSettings();
+        Assert.Empty(n.Evaluate(Net(true, false), cfg));
+        now = now.AddSeconds(11);
+        Assert.Equal(AlertKind.NoInternet, Assert.Single(n.Evaluate(Net(true, false), cfg)).Kind);
+        now = now.AddSeconds(30);
+        Assert.Empty(n.Evaluate(Net(true, false), cfg));
+        Assert.Equal(AlertKind.NetworkRestored, Assert.Single(n.Evaluate(Net(true, true), cfg)).Kind);
+    }
+
+    [Fact]
+    public void Short_blip_and_disabled_setting_raise_nothing()
+    {
+        var now = new DateTime(2025, 1, 1, 12, 0, 0);
+        var n = new NetworkAlertNotifier(() => now);
+        n.Evaluate(Net(false, false), new AppSettings());
+        now = now.AddSeconds(3);
+        Assert.Empty(n.Evaluate(Net(true, true), new AppSettings()));
+        now = now.AddMinutes(1);
+        Assert.Empty(n.Evaluate(Net(false, false), new AppSettings { NotifyNetworkAlerts = false }));
+    }
+}
+
 public class AlertNotifierTests : IDisposable
 {
     public AlertNotifierTests() => Loc.SetLanguage("pt");

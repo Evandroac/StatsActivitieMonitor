@@ -106,7 +106,11 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     private void OnNetwork(object? sender, NetworkSnapshot s)
     {
         _lastNet = s;
-        Application.Current?.Dispatcher.BeginInvoke(() => Network.Update(s));
+        Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            Network.Update(s);
+            foreach (var a in _netAlerts.Evaluate(s, S)) { Services.AlertHistory.Add(a); AlertRaised?.Invoke(a); }
+        });
     }
 
     public void SetPaused(bool paused) => _monitor.Paused = paused;
@@ -149,6 +153,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     }
 
     private readonly Services.AlertNotifier _alerts = new();
+    private readonly Services.NetworkAlertNotifier _netAlerts = new();
     public event Action<Services.AlertEvent>? AlertRaised;
     public event Action<HardwareSnapshot>? SnapshotApplied;
 

@@ -38,7 +38,7 @@ public sealed class SettingsViewModel : ObservableObject
         ShowVramGadget = s.ShowVramGadget; ShowNetworkGadget = s.ShowNetworkGadget; ShowFpsGadget = s.ShowFpsGadget;
         CpuWarnTemp = s.CpuWarnTemp; CpuCritTemp = s.CpuCritTemp;
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
-        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; AlertSound = s.AlertSound;
+        FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; AlertSound = s.AlertSound;
         AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
         ShowSensorsMain = s.ShowSensorsMain; PauseWhenHidden = s.PauseWhenHidden; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
     }
@@ -155,6 +155,7 @@ public sealed class SettingsViewModel : ObservableObject
     private double _gpuCritTemp; public double GpuCritTemp { get => _gpuCritTemp; set { if (_gpuCritTemp != value) { _gpuCritTemp = value; AutoSave(); } } }
 
     private bool _followSystemTheme; public bool FollowSystemTheme { get => _followSystemTheme; set { if (_followSystemTheme != value) { _followSystemTheme = value; Raise(); AutoSave(); } } }
+    private bool _notifyNetworkAlerts; public bool NotifyNetworkAlerts { get => _notifyNetworkAlerts; set { if (_notifyNetworkAlerts != value) { _notifyNetworkAlerts = value; AutoSave(); } } }
     private bool _notifyAlerts; public bool NotifyAlerts { get => _notifyAlerts; set { if (_notifyAlerts != value) { _notifyAlerts = value; AutoSave(); } } }
     private bool _alertSound; public bool AlertSound { get => _alertSound; set { if (_alertSound != value) { _alertSound = value; AutoSave(); } } }
     private double _alertSustainSeconds; public double AlertSustainSeconds { get => _alertSustainSeconds; set { if (_alertSustainSeconds != value) { _alertSustainSeconds = value; AutoSave(); } } }
@@ -264,7 +265,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.CpuWarnTemp = CpuWarnTemp; s.CpuCritTemp = Math.Max(CpuCritTemp, CpuWarnTemp);
         s.GpuWarnTemp = GpuWarnTemp; s.GpuCritTemp = Math.Max(GpuCritTemp, GpuWarnTemp);
 
-        s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.AlertSound = AlertSound;
+        s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.NotifyNetworkAlerts = NotifyNetworkAlerts; s.AlertSound = AlertSound;
         s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.AlertSustainSeconds = (int)Math.Clamp(AlertSustainSeconds, 0, 600); s.AlertCooldownMinutes = (int)Math.Clamp(AlertCooldownMinutes, 0, 240); s.HotkeyEnabled = HotkeyEnabled;
         s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
         s.ShowSensorsMain = ShowSensorsMain; s.PauseWhenHidden = PauseWhenHidden; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);

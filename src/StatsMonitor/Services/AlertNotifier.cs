@@ -4,14 +4,27 @@ using StatsMonitor.Settings;
 
 namespace StatsMonitor.Services;
 
-public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad }
+public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad, NoNetwork, NoInternet, NetworkRestored, HighLatency }
 
 public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
 {
-    public string Title => Loc.T(Kind is AlertKind.CpuTemp or AlertKind.GpuTemp ? "Temperatura crítica" : "Uso muito alto");
+    public bool IsInfo => Kind == AlertKind.NetworkRestored;
+
+    public string Title => Kind switch
+    {
+        AlertKind.CpuTemp or AlertKind.GpuTemp => Loc.T("Temperatura crítica"),
+        AlertKind.NoNetwork or AlertKind.NoInternet => Loc.T("Sem conexão"),
+        AlertKind.NetworkRestored => Loc.T("Conexão restabelecida"),
+        AlertKind.HighLatency => Loc.T("Rede instável"),
+        _ => Loc.T("Uso muito alto"),
+    };
 
     public string Message => Kind switch
     {
+        AlertKind.NoNetwork => Loc.T("Nenhuma rede ativa. Verifique o cabo ou o Wi-Fi."),
+        AlertKind.NoInternet => Loc.T("Conectado à rede, mas sem acesso à internet."),
+        AlertKind.NetworkRestored => Loc.T("A conexão com a internet voltou."),
+        AlertKind.HighLatency => Loc.T("Latência alta: {0:0} ms (limite {1:0} ms)", Value, Limit),
         AlertKind.CpuTemp => Loc.T("CPU: {0} (limite {1})", Units.Temp(Value), Units.Temp(Limit)),
         AlertKind.GpuTemp => Loc.T("GPU: {0} (limite {1})", Units.Temp(Value), Units.Temp(Limit)),
         AlertKind.CpuLoad => Loc.T("CPU: {0:0}% de uso (limite {1:0}%)", Value, Limit),
@@ -79,4 +92,64 @@ public sealed class AlertNotifier
             if (v < limit - Hysteresis) st.Active = false;
         }
     }
+}
+/// <summary>
+/// Smart network alerts: no active adapter, adapter without internet access, high latency and restoration.
+/// A problem must persist for a few seconds before alerting (avoids flapping), each problem alerts once per
+/// episode, and a "restored" notice is sent only after an outage that was actually reported.
+/// </summary>
+public sealed class NetworkAlertNotifier
+{
+    public const double LatencyLimitMs = 250;
+    private static readonly TimeSpan Sustain = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan LatencySustain = TimeSpan.FromSeconds(20);
+
+    private readonly Func<DateTime> _now;
+    private AlertKind? _outage;
+    private DateTime? _since;
+    private bool _outageReported, _latencyActive;
+    private DateTime? _latencySince;
+
+    public NetworkAlertNotifier(Func<DateTime>? now = null) => _now = now ?? (() => DateTime.Now);
+
+    public IReadOnlyList<AlertEvent> Evaluate(NetworkSnapshot n, AppSettings cfg)
+    {
+        var events = new List<AlertEvent>();
+        if (!cfg.NotifyNetworkAlerts) { _outage = null; _since = null; _outageReported = false; _latencySince = null; _latencyActive = false; return events; }
+        var now = _now();
+
+        AlertKind? problem = !n.Connected ? AlertKind.NoNetwork : !n.InternetReachable ? AlertKind.NoInternet : null;
+        if (problem is { } p)
+        {
+            if (_outage != p) { _outage = p; _since = now; }
+            if (now - _since!.Value >= Sustain && !(_outageReported && _lastKind == p))
+            {
+                _outageReported = true; _lastKind = p;
+                events.Add(new AlertEvent(p, 0, 0));
+            }
+            _latencySince = null; _latencyActive = false;
+            return events;
+        }
+
+        _outage = null; _since = null;
+        if (_outageReported)
+        {
+            _outageReported = false; _lastKind = null;
+            events.Add(new AlertEvent(AlertKind.NetworkRestored, 0, 0));
+        }
+
+        if (n.LatencyMs is { } l && l >= LatencyLimitMs)
+        {
+            _latencySince ??= now;
+            if (!_latencyActive && now - _latencySince.Value >= LatencySustain)
+            {
+                _latencyActive = true;
+                events.Add(new AlertEvent(AlertKind.HighLatency, l, LatencyLimitMs));
+            }
+        }
+        else if (n.LatencyMs is null || n.LatencyMs < LatencyLimitMs * 0.6) { _latencySince = null; _latencyActive = false; }
+        return events;
+    }
+
+    private AlertKind? _lastKind;
 }

@@ -230,6 +230,7 @@
         <TextBlock Text="{h:Tr '🔔  Notificações de alerta'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
         <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
         <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
+                    <CheckBox Content="{h:Tr 'Alertas inteligentes de rede (sem conexão, sem internet, latência alta)'}" IsChecked="{Binding NotifyNetworkAlerts}"/>
         <Button Content="{h:Tr '🔔  Testar alerta'}" ToolTip="{h:Tr 'Exibe uma notificação de alerta de teste'}" AutomationProperties.Name="{h:Tr 'Testar alerta'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,6,0,0" Click="OnTestAlert"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
