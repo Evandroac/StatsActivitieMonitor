@@ -573,9 +573,10 @@
                                 <Ellipse Width="12" Height="12" Fill="{Binding WindowsUpdateBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                                 <TextBlock Text="{Binding WindowsUpdateText}" FontSize="16" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
-                        </StackPanel>
-                        <Button Grid.Column="1" Content="{h:Tr 'Abrir Windows Update'}" Style="{StaticResource UpdateButton}" VerticalAlignment="Center" Margin="12,0,0,0" Click="OnOpenWindowsUpdate"
+                            <Button Content="{h:Tr 'Abrir Windows Update'}" Style="{StaticResource UpdateButton}" HorizontalAlignment="Left" Margin="0,8,0,0" Click="OnOpenWindowsUpdate"
                                 Visibility="{Binding HasPendingUpdates, Converter={StaticResource BoolToVis}}" ToolTip="{h:Tr 'Abre a página do Windows Update nas Configurações do Windows'}"/>
+                        </StackPanel>
+                        
                     </Grid></Border>
                 </WrapPanel>
                 <TextBlock Text="{Binding SensorNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,8,0,0"
