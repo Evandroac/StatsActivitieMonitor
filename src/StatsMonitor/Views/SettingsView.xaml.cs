@@ -197,22 +197,60 @@ public partial class SettingsView : UserControl
         bool off = vm.GadgetNone || !vm.ShowGadget;
         if (floating.Count == 0) { floating.Add(Loc.T("Nenhum indicador")); taskbar.Add(Loc.T("Nenhum indicador")); }
 
-        Fill(FloatingPanel, floating, 13, false);
-        Fill(BottomPanel, taskbar, 12, true);
-        Fill(BarPanel, taskbar, 12, true);
-        Fill(TopPanel, taskbar, 12, true);
+        bool detailed = vm.GadgetViewKey == "Detailed";
+        if (detailed)
+        {
+            var blocks = new List<(string Title, string Sub, double[] Data, string Brush)>();
+            if (vm.ShowCpuGadget) blocks.Add(($"CPU: 23%{t(Units.Temp(52))}", "4,2 GHz", new double[] { 12, 18, 15, 30, 26, 41, 23, 35, 22, 28, 20, 23 }, "Accent"));
+            if (vm.ShowRamGadget) blocks.Add(("RAM: 41%", "13,2 GB / 32 GB", new double[] { 38, 39, 39, 40, 40, 41, 41, 40, 41, 41, 41, 41 }, "Accent2"));
+            if (vm.ShowGpuGadget) blocks.Add(($"GPU: 37%{t(Units.Temp(58))}", "1,8 GHz", new double[] { 20, 35, 60, 45, 30, 52, 44, 37, 41, 33, 39, 37 }, "Accent2"));
+            if (vm.ShowVramGadget) blocks.Add(($"{Loc.T("Disco")}: 12%", "R 12 MB/s · W 3 MB/s", new double[] { 5, 8, 4, 20, 12, 9, 30, 14, 8, 6, 10, 12 }, "Accent"));
+            if (vm.ShowNetworkGadget) blocks.Add((Loc.T("NET: ↓ 12,3 Mbps"), "↑ 1,2 Mbps · 18 ms", new double[] { 10, 30, 22, 45, 38, 25, 50, 42, 30, 35, 28, 33 }, "Accent"));
+            if (vm.ShowFpsGadget) blocks.Add(("FPS: 144", Loc.T("Média: ") + "139", Array.Empty<double>(), "Accent"));
+            if (blocks.Count == 0) blocks.Add((Loc.T("Nenhum indicador"), "", Array.Empty<double>(), "Accent"));
+            FillDetailed(FloatingPanel, blocks, false);
+            FillDetailed(BottomPanel, blocks, true);
+            FillDetailed(BarPanel, blocks, true);
+            FillDetailed(TopPanel, blocks, true);
+        }
+        else
+        {
+            Fill(FloatingPanel, floating, 13, false);
+            Fill(BottomPanel, taskbar, 12, true);
+            Fill(BarPanel, taskbar, 12, true);
+            Fill(TopPanel, taskbar, 12, true);
+        }
 
         bool corner = vm.GadgetTopLeft || vm.GadgetTopRight || vm.GadgetBottomLeft || vm.GadgetBottomRight;
         FloatingBox.Visibility = Show((vm.GadgetFloating || corner) && !off);
         FloatingBox.HorizontalAlignment = vm.GadgetTopLeft || vm.GadgetBottomLeft ? HorizontalAlignment.Left : HorizontalAlignment.Right;
         FloatingBox.VerticalAlignment = vm.GadgetBottomLeft || vm.GadgetBottomRight ? VerticalAlignment.Bottom : VerticalAlignment.Top;
-        FloatingBox.Margin = vm.GadgetFloating ? new Thickness(0, 24, 24, 0)
+        FloatingBox.Margin = vm.GadgetFloating ? new Thickness(0, detailed ? 6 : 24, 24, 0)
             : new Thickness(vm.GadgetTopLeft || vm.GadgetBottomLeft ? 10 : 0, vm.GadgetTopLeft || vm.GadgetTopRight ? 10 : 0, vm.GadgetTopRight || vm.GadgetBottomRight ? 10 : 0, vm.GadgetBottomLeft || vm.GadgetBottomRight ? 42 : 0);
         BottomBox.Visibility = Show(vm.GadgetDockedBottom && !off);
         BarBox.Visibility = Show(vm.GadgetFloatingBar && !off);
         TopBox.Visibility = Show(vm.GadgetDockedTop && !off);
         OffText.Parent.SetValue(UIElement.VisibilityProperty, Show(off));
         ModeBadge.Text = Loc.T(off ? "Desativado" : vm.GadgetFloating ? "Flutuante" : vm.GadgetTopLeft ? "Canto superior esquerdo" : vm.GadgetTopRight ? "Canto superior direito" : vm.GadgetBottomLeft ? "Canto inferior esquerdo" : vm.GadgetBottomRight ? "Canto inferior direito" : vm.GadgetDockedBottom ? "Faixa na parte inferior" : vm.GadgetFloatingBar ? "Barra flutuante" : "Faixa no topo");
+    }
+
+    private static void FillDetailed(Panel panel, List<(string Title, string Sub, double[] Data, string Brush)> blocks, bool horizontal)
+    {
+        panel.Children.Clear();
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            var b = blocks[i];
+            var sp = new StackPanel { Width = horizontal ? 120 : 150, Margin = horizontal ? new Thickness(i > 0 ? 12 : 0, 0, 0, 0) : new Thickness(0, i > 0 ? 4 : 0, 0, 0) };
+            sp.Children.Add(Line(b.Title, 11, null));
+            if (b.Sub.Length > 0) { var sub = Line(b.Sub, 9, null); sub.Opacity = 0.7; sp.Children.Add(sub); }
+            if (b.Data.Length > 0)
+            {
+                var sl = new StatsMonitor.Controls.Sparkline { Height = 14, Margin = new Thickness(0, 2, 0, 0), Values = new System.Collections.ObjectModel.ObservableCollection<double>(b.Data) };
+                sl.SetResourceReference(StatsMonitor.Controls.Sparkline.StrokeProperty, b.Brush);
+                sp.Children.Add(sl);
+            }
+            panel.Children.Add(sp);
+        }
     }
 
     private static Visibility Show(bool v) => v ? Visibility.Visible : Visibility.Collapsed;
