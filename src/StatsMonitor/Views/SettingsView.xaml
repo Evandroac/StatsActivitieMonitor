@@ -117,10 +117,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌐  Idioma:'}" VerticalAlignment="Center" Width="200"/>
-            <ComboBox Width="160" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" SelectedValuePath="Tag" SelectedValue="{Binding Language, Mode=TwoWay}">
-                <ComboBoxItem Content="Português" Tag="pt"/>
-                <ComboBoxItem Content="English" Tag="en"/>
-            </ComboBox>
+            <ComboBox Width="200" ToolTip="{h:Tr 'Idioma de exibição do sistema'}" ItemsSource="{x:Static h:Loc.Languages}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Language, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr '🌡️  Unidade de temperatura:'}" VerticalAlignment="Center" Width="200"/>

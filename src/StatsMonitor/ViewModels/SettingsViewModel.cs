@@ -15,7 +15,7 @@ public sealed class SettingsViewModel : ObservableObject
         _service = service;
         _onApplied = onApplied;
         Load(service.Current);
-        _language = service.Current.Language == "en" ? "en" : "pt";
+        _language = Loc.Normalize(service.Current.Language);
  _fontScale = UiScale.Clamp(service.Current.FontScalePercent);
         _fahrenheit = service.Current.TempUnit == "F";
         _loading = false;
@@ -68,7 +68,7 @@ public sealed class SettingsViewModel : ObservableObject
     // The language switches instantly; persistence follows the usual debounce.
     private void SetLanguage(string? lang)
     {
-        if (lang is not ("pt" or "en") || _language == lang) return;
+        if (!Loc.IsSupported(lang) || _language == lang) return;
         _language = lang;
         Loc.SetLanguage(lang);
         AutoSave();
@@ -267,7 +267,7 @@ public sealed class SettingsViewModel : ObservableObject
         var s = _service.Current;
         _loading = true;
         Load(s);
-        _language = s.Language == "en" ? "en" : "pt";
+        _language = Loc.Normalize(s.Language);
  _fontScale = UiScale.Clamp(s.FontScalePercent); UiScale.Set(_fontScale);
         _fahrenheit = s.TempUnit == "F";
         _loading = false;

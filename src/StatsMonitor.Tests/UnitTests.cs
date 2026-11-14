@@ -250,12 +250,41 @@ public class SettingsServiceTests : IDisposable
 
     [Theory]
     [InlineData("pt-BR", "pt")]
-    [InlineData("pt-PT", "pt")]
+    [InlineData("pt-PT", "pt-PT")]
     [InlineData("en-US", "en")]
-    [InlineData("de-DE", "en")]
+    [InlineData("en-GB", "en-GB")]
+    [InlineData("es-MX", "es-MX")]
+    [InlineData("es-ES", "es")]
+    [InlineData("zh-TW", "zh-TW")]
+    [InlineData("zh-CN", "zh-CN")]
+    [InlineData("de-DE", "de")]
+    [InlineData("sv-SE", "en")]
     public void System_language_is_detected(string culture, string expected)
     {
         Assert.Equal(expected, SettingsService.DetectLanguage(new CultureInfo(culture)));
+    }
+}
+
+public class TranslationCoverageTests
+{
+    [Fact]
+    public void Every_language_covers_all_keys_and_keeps_placeholders()
+    {
+        var langs = new Dictionary<string, Dictionary<string, string>>
+        {
+            ["es"] = LocData.Es, ["fr"] = LocData.Fr, ["de"] = LocData.De, ["it"] = LocData.It, ["ru"] = LocData.Ru,
+            ["zh-CN"] = LocData.ZhCn, ["zh-TW"] = LocData.ZhTw, ["ja"] = LocData.Ja, ["ko"] = LocData.Ko, ["ar"] = LocData.Ar, ["hi"] = LocData.Hi,
+        };
+        var problems = new List<string>();
+        foreach (var (code, d) in langs)
+            foreach (var (key, en) in LocData.En)
+            {
+                if (!d.TryGetValue(key, out var v)) { problems.Add($"{code}: missing '{key}'"); continue; }
+                var ph = System.Text.RegularExpressions.Regex.Matches(en, @"\{\d+[^}]*\}").Select(m => m.Value).OrderBy(x => x);
+                var ph2 = System.Text.RegularExpressions.Regex.Matches(v, @"\{\d+[^}]*\}").Select(m => m.Value).OrderBy(x => x);
+                if (!ph.SequenceEqual(ph2)) problems.Add($"{code}: placeholders differ for '{key}'");
+            }
+        Assert.True(problems.Count == 0, string.Join("\n", problems.Take(30)) + $"\n({problems.Count} total)");
     }
 }
 

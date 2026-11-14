@@ -201,7 +201,7 @@ public sealed class SettingsService
         }
     }
 
-    /// <summary>Picks the UI language from the OS culture ("pt" for Portuguese, otherwise "en").</summary>
+    /// <summary>Picks the closest supported UI language for the OS culture ("en" when none matches).</summary>
     public static string DetectLanguage(System.Globalization.CultureInfo? culture = null) =>
-        (culture ?? System.Globalization.CultureInfo.CurrentUICulture).TwoLetterISOLanguageName.Equals("pt", StringComparison.OrdinalIgnoreCase) ? "pt" : "en";
+        Helpers.Loc.FromCulture(culture ?? System.Globalization.CultureInfo.CurrentUICulture);
 }

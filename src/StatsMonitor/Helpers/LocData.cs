@@ -1,7 +1,7 @@
 ﻿namespace StatsMonitor.Helpers;
 
 /// <summary>English translations keyed by the original Portuguese text.</summary>
-public static class LocData
+public static partial class LocData
 {
     public static readonly Dictionary<string, string> En = new()
     {
