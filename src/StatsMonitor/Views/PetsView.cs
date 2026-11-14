@@ -193,7 +193,7 @@ public sealed class PetsView : UserControl
     {
         var b = new Button { Content = text, Padding = new Thickness(7, 2, 7, 2), Margin = new Thickness(0), Cursor = Cursors.Arrow };
         if (Application.Current.TryFindResource(primary ? "PrimaryButton" : "PillButton") is Style st) b.Style = st;
-        b.Click += click;
+        if (click != null) b.Click += click;
         return b;
     }
 
