@@ -265,12 +265,13 @@ public partial class GadgetWindow : Window
         {
             _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleYProperty, null);
             Tools.BeginAnimation(OpacityProperty, null); BtnLock.BeginAnimation(OpacityProperty, null);
-            _toolsScale.ScaleY = show ? 1 : 0; Tools.Opacity = BtnLock.Opacity = show ? 1 : 0;
+            _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleXProperty, null); _toolsScale.ScaleX = show ? 1 : 0.6; _toolsScale.ScaleY = show ? 1 : 0; Tools.Opacity = BtnLock.Opacity = show ? 1 : 0;
             if (!show) Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
             AfterToolsResize();
             return;
         }
-        if (show) { _toolsScale.ScaleY = 0.001; Tools.Opacity = BtnLock.Opacity = 0; }
+        var widen = grow.Clone(); widen.To = show ? 1 : 0.6;
+        if (show) { _toolsScale.ScaleX = 0.6; _toolsScale.ScaleY = 0.001; Tools.Opacity = BtnLock.Opacity = 0; }
         _toolsAnimating = true;
         grow.Completed += (_, _) =>
         {
@@ -278,6 +279,7 @@ public partial class GadgetWindow : Window
             if (!_toolsShown) Tools.Visibility = BtnLock.Visibility = Visibility.Collapsed;
             AfterToolsResize();
         };
+        _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleXProperty, widen);
         _toolsScale.BeginAnimation(System.Windows.Media.ScaleTransform.ScaleYProperty, grow);
         Tools.BeginAnimation(OpacityProperty, fade);
         BtnLock.BeginAnimation(OpacityProperty, fade.Clone());
