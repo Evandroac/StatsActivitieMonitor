@@ -77,6 +77,7 @@ public sealed class AppSettings
     public double? GadgetTop { get; set; }
 
     public bool SidebarPinned { get; set; }
+    public double SidebarWidth { get; set; } = 220;
     public bool SimplifiedView { get; set; }
     public bool PauseWhenHidden { get; set; }
     public bool EcoWhenMinimized { get; set; } = true;

@@ -493,7 +493,8 @@ public partial class MainWindow : Window
     private void SetMenu(bool open)
     {
         _menuOpen = open;
-        NavPanel.Width = open ? 220 : 48;
+        NavPanel.Width = open ? _settings.Current.SidebarWidth : 48;
+        NavResizer.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
         var v = open ? Visibility.Visible : Visibility.Collapsed;
         LblMenu.Visibility = LblMain.Visibility = LblSystem.Visibility = LblCpu.Visibility = LblGpu.Visibility = LblRam.Visibility = LblDisk.Visibility = LblNet.Visibility = LblSensors.Visibility = LblBattery.Visibility = LblProcesses.Visibility = LblNetTools.Visibility = LblDiagnostics.Visibility = LblSettings.Visibility = LblHelp.Visibility = v;
         SearchBox.Visibility = v;
@@ -502,6 +503,16 @@ public partial class MainWindow : Window
         ApplyTree();
         if (!open) SearchPopup.IsOpen = false;
     }
+
+    private void OnNavResize(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+    {
+        if (!_menuOpen) return;
+        var w = Math.Clamp(NavPanel.Width + e.HorizontalChange, 160, 420);
+        _settings.Current.SidebarWidth = w;
+        NavPanel.Width = w;
+    }
+
+    private void OnNavResizeDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e) => _settings.Save();
 
     private bool _treeOpen = true;
 
