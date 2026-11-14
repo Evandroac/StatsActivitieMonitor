@@ -145,7 +145,7 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             CpuName = cpu?.Name.Trim() ?? "CPU",
             CpuLoad = Value(cpu, SensorType.Load, "CPU Total"),
             CpuClockMhz = CpuClock(cpu),
-            CpuTemp = CpuTemperature(cpu),
+            CpuTemp = CpuTemperature(cpu) ?? AcpiTemperature(),
             CpuPowerW = Value(cpu, SensorType.Power, "CPU Package") ?? Like(cpu!, SensorType.Power, "package"),
             CpuVoltage = cpu is null ? null : Like(cpu, SensorType.Voltage, "core"),
             CpuHottestCoreTemp = cpu?.Sensors
@@ -387,6 +387,36 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             if (v.HasValue) return v;
         }
         return MaxTemp([cpu]);
+    }
+
+    /// <summary>True when the PawnIO driver (needed by LibreHardwareMonitor for Intel/AMD CPU temperature) is installed.</summary>
+    public static bool PawnIoInstalled()
+    {
+        try { using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\PawnIO"); return k is not null; }
+        catch { return false; }
+    }
+
+    private static double? _acpiTemp;
+    private static DateTime _acpiAt = DateTime.MinValue;
+
+    // Driver-free fallback (ACPI thermal zones, in tenths of Kelvin); refreshed every 5 s because WMI is slow.
+    private static double? AcpiTemperature()
+    {
+        if (DateTime.UtcNow - _acpiAt < TimeSpan.FromSeconds(5)) return _acpiTemp;
+        _acpiAt = DateTime.UtcNow;
+        try
+        {
+            double? max = null;
+            using var q = Wmi.Searcher("SELECT CurrentTemperature FROM MSAcpi_ThermalZoneTemperature", @"root\WMI");
+            foreach (System.Management.ManagementBaseObject o in q.Get())
+            {
+                var c = Convert.ToDouble(o["CurrentTemperature"]) / 10.0 - 273.15;
+                if (c > 0 && c <= 125 && (max is null || c > max)) max = c;
+            }
+            _acpiTemp = max;
+        }
+        catch { _acpiTemp = null; }
+        return _acpiTemp;
     }
 
     private static bool IsElevated()

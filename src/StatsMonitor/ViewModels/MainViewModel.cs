@@ -327,6 +327,8 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         var notes = new List<string>();
         if (!s.CpuTemp.HasValue && !s.IsElevated)
             notes.Add(Loc.T("Temperatura da CPU indisponível: execute como administrador para acessar este sensor."));
+        else if (!s.CpuTemp.HasValue && !Services.LibreHardwareMonitorService.PawnIoInstalled())
+            notes.Add(Loc.T("Temperatura da CPU indisponível: instale o driver PawnIO (winget install namazso.PawnIO) e reinicie o aplicativo."));
         if (s.GpuName is null) notes.Add(Loc.T("Nenhuma GPU compatível detectada."));
         SensorNote = string.Join(" ", notes);
     }

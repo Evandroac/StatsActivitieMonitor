@@ -466,6 +466,7 @@ public static class LocData
         ["Segure para pausar as leituras; arraste para mover na horizontal (funciona mesmo com o gadget fixo)"] = "Hold to pause readings; drag to move horizontally (works even when pinned)",
         ["Mudar para a visão simplificada"] = "Switch to the simplified view",
         ["Mudar para a visão detalhada"] = "Switch to the detailed view",
+        ["Temperatura da CPU indisponível: instale o driver PawnIO (winget install namazso.PawnIO) e reinicie o aplicativo."] = "CPU temperature unavailable: install the PawnIO driver (winget install namazso.PawnIO) and restart the app.",
         ["Excluir"] = "Delete",
         ["Executar como administrador: reabre o app com privilégios elevados (necessário para temperaturas)"] = "Run as administrator: reopens the app with elevated privileges (required for temperatures)",
         ["Exibe os quadros por segundo no gadget enquanto um jogo (tela cheia ou sem bordas) está em primeiro plano. Requer administrador."] = "Shows frames per second in the gadget while a game (fullscreen or borderless) is in the foreground. Requires administrator.",

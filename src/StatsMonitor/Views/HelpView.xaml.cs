@@ -194,8 +194,8 @@ public partial class HelpView : UserControl
         Card("⚠️", 5, [
             L("Administrador: o app precisa ser executado como administrador para ler temperaturas, voltagens e ventoinhas. Sem isso, muitos valores aparecem vazios.",
               "Administrator: the app must run as administrator to read temperatures, voltages and fans. Without it, many values appear empty."),
-            L("Driver: a leitura usa um driver do LibreHardwareMonitor. Antivírus ou o recurso Integridade de Memória do Windows podem bloqueá-lo.",
-              "Driver: reading uses a LibreHardwareMonitor driver. Antivirus or Windows Memory Integrity may block it."),
+            L("Intel/AMD: a temperatura da CPU exige o driver PawnIO (winget install namazso.PawnIO); sem ele o app tenta as zonas térmicas ACPI do Windows. Driver: a leitura usa um driver do LibreHardwareMonitor. Antivírus ou o recurso Integridade de Memória do Windows podem bloqueá-lo.",
+              "Intel/AMD: CPU temperature needs the PawnIO driver (winget install namazso.PawnIO); without it the app tries Windows ACPI thermal zones. Driver: reading uses a LibreHardwareMonitor driver. Antivirus or Windows Memory Integrity may block it."),
             L("Nem todo PC mostra tudo: placas-mãe, notebooks, GPUs integradas e peças muito novas podem não expor alguns sensores. Valor vazio significa que o sensor não está disponível, não que o valor é zero.",
               "Not every PC shows everything: motherboards, laptops, integrated GPUs and very new parts may not expose some sensors. An empty value means the sensor is unavailable, not that the value is zero."),
             L("Máquinas virtuais quase não expõem sensores. O app funciona apenas em Windows 10/11 de 64 bits.",
