@@ -25,13 +25,14 @@ public partial class ProcessesView : UserControl
     private bool _busy, _ready, _running;
     private int _detailToken;
 
-    public static readonly string[] Keywords = ["Processos", "Gerenciador de tarefas", "Finalizar tarefa", "Reiniciar", "CPU", "Memória", "Disco", "Rede"];
+    public static readonly string[] Keywords = ["Processos", "Gerenciador de tarefas", "Finalizar tarefa", "Finalizar árvore de processos", "Reiniciar", "Prioridade", "Abrir local do arquivo", "Copiar caminho", "Expandir tudo", "Recolher tudo", "Gráfico de linha do tempo", "Pesquisar processo", "CPU", "Memória", "Disco", "Rede"];
 
     public ProcessesView()
     {
         InitializeComponent();
         List.ItemsSource = _items;
         List.ContextMenu = new ContextMenu();
+        PreviewMouseLeftButtonDown += OnClickOutside;
         _timer.Tick += async (_, _) => await TickAsync();
         FillCombos();
         ApplyTexts();
@@ -288,6 +289,15 @@ public partial class ProcessesView : UserControl
     }
 
     private ProcessRow? Selected => List.SelectedItem as ProcessRow;
+
+    private void OnClickOutside(object s, MouseButtonEventArgs e)
+    {
+        for (var d = e.OriginalSource as DependencyObject; d != null; d = d is System.Windows.Media.Visual ? System.Windows.Media.VisualTreeHelper.GetParent(d) : LogicalTreeHelper.GetParent(d))
+            if (d is ListBoxItem or System.Windows.Controls.Primitives.ButtonBase or System.Windows.Controls.Primitives.TextBoxBase
+                or System.Windows.Controls.Primitives.Selector or System.Windows.Controls.Primitives.ScrollBar
+                or System.Windows.Controls.Primitives.Thumb or ProcessTimeline) return;
+        List.SelectedItem = null;
+    }
 
     private void OnSelectionChanged(object s, SelectionChangedEventArgs e)
     {

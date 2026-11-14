@@ -184,6 +184,7 @@
 
     <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="0,0,1,0">
         <DockPanel Margin="0,6">
+            <TextBlock x:Name="VersionText" DockPanel.Dock="Bottom" FontSize="10" TextAlignment="Center" Margin="0,4,0,0" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis"/>
             <Button x:Name="NavSettings" DockPanel.Dock="Bottom" Style="{StaticResource NavButton}" ToolTip="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" AutomationProperties.Name="{h:Tr 'Intervalo, painéis exibidos, gadget e limites de temperatura'}" Click="OnOpenSettings">
                 <StackPanel Orientation="Horizontal"><TextBlock Text="⚙️" FontSize="16" Width="24" TextAlignment="Center" FontFamily="Segoe UI Emoji,Segoe UI Symbol" VerticalAlignment="Center"/><TextBlock x:Name="LblSettings" Text="{h:Tr 'Configurações'}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/></StackPanel>
             </Button>
