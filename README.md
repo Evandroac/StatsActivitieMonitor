@@ -1,15 +1,16 @@
 # Stats Monitor
 
-Monitor de hardware leve para Windows 10/11 (C#, .NET 8, WPF, MVVM). Exibe em tempo real CPU, GPU, RAM, VRAM e temperaturas, com painel principal e um gadget compacto.
+Monitor de hardware leve para Windows 10/11 (C#, .NET 8, WPF, MVVM). Exibe em tempo real CPU, GPU, RAM, VRAM, discos, rede, bateria e temperaturas, com painel principal, gadget compacto e telas dedicadas (processos, testes de conexão e diagnóstico do computador). Disponível em português e inglês.
 
 ## Arquitetura
 
 ```
 src/StatsMonitor
 ├─ Models/      HardwareSnapshot (leitura imutável; null = sensor indisponível → "N/D")
-├─ Services/    IHardwareMonitorService (abstração) + LibreHardwareMonitorService, StartupService
+├─ Services/    IHardwareMonitorService (abstração) + LibreHardwareMonitorService, StartupService, bateria, ferramentas de rede, processos
+├─ Diagnostics/ Módulo de diagnóstico: inventário, motor de regras, testes, histórico, relatórios e monitoramento
 ├─ ViewModels/  MainViewModel, ComponentViewModel (CPU/GPU/RAM/VRAM), SettingsViewModel
-├─ Views/       MainWindow, GadgetWindow, SettingsWindow
+├─ Views/       MainWindow, GadgetWindow, SettingsWindow, Processos, Testes de conexão, Diagnóstico, Bateria, Ajuda, Splash
 ├─ Controls/    CircularGauge (indicador circular animado), Sparkline (gráfico em tempo real)
 ├─ Helpers/     MVVM (ObservableObject, RelayCommand), ThemeHelper
 ├─ Settings/    AppSettings + SettingsService (JSON em %APPDATA%\StatsMonitor\settings.json)
@@ -21,6 +22,26 @@ src/StatsMonitor
 - **Gadget:** janela WPF compacta, sem borda, translúcida e *topmost*, posicionada por padrão no canto da área de trabalho junto à barra de tarefas. Não usa o recurso descontinuado de barras de ferramentas (*appbar/deskband*) e não interfere em outros programas. Aparece ao minimizar a janela principal (ou sempre, se configurado); arraste para mover (posição salva) e dê duplo clique para restaurar a janela principal.
 - **Sensores:** detectados automaticamente. Nunca são exibidos valores fictícios: sensor indisponível = **N/D**. Alguns sensores de temperatura da CPU exigem privilégios de administrador; o app roda sem elevação e informa isso na interface.
 
+## Telas principais
+
+- **Principal / Sistema / CPU / GPU / Memória / Discos / Rede / Sensores / Periféricos:** leituras em tempo real, com intervalo de atualização individual por componente e pesquisa geral.
+- **Bateria (notebooks):** nível, status, tempo restante, tempo para carga completa, saúde e fonte de energia.
+- **Processos:** visão estilo Gerenciador de Tarefas (árvore, CPU/RAM/disco/rede, filtros, ordenação, finalizar/reiniciar, gráfico timeline).
+- **Testes de conexão:** diagnóstico, ping, traceroute, DNS, portas, HTTP e velocidade.
+- **Diagnóstico do computador:** veja abaixo.
+- **Ajuda:** tutorial com funcionamento e ressalvas. Há ainda tela de abertura (splash), alertas de atenção/críticos e modo econômico ao minimizar.
+
+## Diagnóstico do computador
+
+Módulo somente leitura (nenhuma correção automática) com 16 seções: Visão geral, Hardware, Processador, Memória RAM, Placa de vídeo, Armazenamento, Bateria e energia, Sistema operacional, Drivers e dispositivos, Rede, Segurança, Monitoramento em tempo real, Testes de desempenho, Diagnóstico inteligente, Histórico e Relatórios.
+
+- Coleta via WMI, registro, log de eventos e serviços já existentes no app; dado que não pôde ser lido aparece como **Indisponível** e nunca conta como saudável.
+- Testes não destrutivos e canceláveis: CPU, RAM (256 MB), disco (arquivo temporário de 128 MB) e rede; avaliação da GPU; SFC `/verifyonly` opcional.
+- Achados com evidência, causa provável e recomendação; indicador geral heurístico (0–100).
+- Histórico (até 100 diagnósticos) com comparação, em `%APPDATA%\StatsMonitor\diagnostics`, com log de auditoria.
+- Exportação em PDF, HTML, CSV e JSON.
+- Gráficos de 1/5/15/60 min e alertas configuráveis (enquanto a tela está aberta).
+- Limitações: SMART, TPM e BitLocker costumam exigir administrador; "driver antigo" é heurística por data; não há teste de estresse 3D da GPU; o teste de RAM não substitui o MemTest86; o PDF é apenas texto.
 ## Compilar e executar (Visual Studio)
 
 Requisitos: Windows 10/11, Visual Studio 2022 com a carga de trabalho **Desenvolvimento para desktop com .NET**, SDK .NET 8+. Para ler a temperatura da CPU (ex.: AMD Ryzen) é necessário instalar o driver **PawnIO** (`winget install namazso.PawnIO`), exigido pelo LibreHardwareMonitor. O aplicativo também solicita **privilégios de administrador** (UAC) ao iniciar; sem isso o sensor retorna 0. Abra o Visual Studio como administrador para depurar com F5.
@@ -41,7 +62,7 @@ Botão "Personalização" na janela principal (separado das configurações): te
 
 ## Testes
 
-`dotnet test src\StatsMonitor.Tests` executa os testes xUnit (Loc, Units, alertas, configurações, perfis, atalho).
+`dotnet test src\StatsMonitor.Tests` executa os testes xUnit (Loc, Units, alertas, configurações, perfis, atalho, diagnóstico).
 
 ## Instalador
 
