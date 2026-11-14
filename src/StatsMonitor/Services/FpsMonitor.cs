@@ -39,7 +39,7 @@ public sealed class FpsMonitor : IDisposable
 
     private void Tick()
     {
-        if (!_settings.Current.ShowFpsGadget)
+        if (!_settings.Current.ShowFpsGadget || _vm.EcoMode)
         {
             StopTrace();
             _vm.FpsActive = false;

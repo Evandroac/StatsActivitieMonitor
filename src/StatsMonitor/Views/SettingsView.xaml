@@ -105,7 +105,8 @@
         </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
-        <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>
+        <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 5 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
+                    <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>
         <CheckBox Content="{h:Tr 'Ler sensores de disco e placa-mãe com menos frequência'}" ToolTip="{h:Tr 'Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais'}" IsChecked="{Binding SlowSensors}"/>
         <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
         <CheckBox ToolTip="{h:Tr 'Mostra ou oculta os valores de temperatura'}" Content="{h:Tr 'Exibir temperaturas'}" IsChecked="{Binding ShowTemperatures}"/>

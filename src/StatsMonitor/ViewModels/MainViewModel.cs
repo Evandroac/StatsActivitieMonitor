@@ -115,12 +115,32 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     public void SetPaused(bool paused) => _monitor.Paused = paused;
 
+    private bool _eco;
+    public bool EcoMode => _eco;
+
+    private void UpdateInterval()
+    {
+        int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
+        if (S.SimplifiedView) ms = Math.Max(ms, 2000);
+        if (_eco) ms = Math.Max(ms, 5000);
+        _monitor.Interval = TimeSpan.FromMilliseconds(ms);
+    }
+
+    /// <summary>Background mode: window minimized and gadget hidden. Samples less often and trims the process footprint.</summary>
+    public void SetEco(bool eco)
+    {
+        if (_eco == eco) return;
+        _eco = eco;
+        UpdateInterval();
+        _network.SetPeriod(eco ? 3000 : 1000);
+        Helpers.PowerSaver.Apply(eco);
+    }
+
     /// <summary>Re-reads settings (interval, colors, temperature visibility).</summary>
     public void ApplySettings()
     {
         (_normal, _warn, _crit) = ThemeHelper.AlertBrushes(S);
-        int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
-        _monitor.Interval = TimeSpan.FromMilliseconds(S.SimplifiedView ? Math.Max(ms, 2000) : ms);
+        UpdateInterval();
         _monitor.SlowSensors = S.SlowSensors;
         Services.DataLogger.Configure(S.LogEnabled, S.LogIntervalSeconds);
         foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;

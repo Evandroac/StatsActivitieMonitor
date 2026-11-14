@@ -40,7 +40,7 @@ public sealed class SettingsViewModel : ObservableObject
         GpuWarnTemp = s.GpuWarnTemp; GpuCritTemp = s.GpuCritTemp;
         FollowSystemTheme = s.FollowSystemTheme; NotifyAlerts = s.NotifyAlerts; NotifyNetworkAlerts = s.NotifyNetworkAlerts; NotifyGreetings = s.NotifyGreetings; AlertSound = s.AlertSound;
         AlertLoadPercent = s.AlertLoadPercent; AlertSustainSeconds = s.AlertSustainSeconds; AlertCooldownMinutes = s.AlertCooldownMinutes; HotkeyEnabled = s.HotkeyEnabled; GadgetHotkey = s.GadgetHotkey;
-        ShowSensorsMain = s.ShowSensorsMain; PauseWhenHidden = s.PauseWhenHidden; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
+        ShowSensorsMain = s.ShowSensorsMain; PauseWhenHidden = s.PauseWhenHidden; EcoWhenMinimized = s.EcoWhenMinimized; SlowSensors = s.SlowSensors; LogEnabled = s.LogEnabled; LogIntervalSeconds = s.LogIntervalSeconds;
     }
 
     /// <summary>Restores every option on this page to its default value and saves.</summary>
@@ -164,6 +164,7 @@ public sealed class SettingsViewModel : ObservableObject
     private double _alertLoadPercent; public double AlertLoadPercent { get => _alertLoadPercent; set { if (_alertLoadPercent != value) { _alertLoadPercent = value; AutoSave(); } } }
     private bool _hotkeyEnabled; public bool HotkeyEnabled { get => _hotkeyEnabled; set { if (_hotkeyEnabled != value) { _hotkeyEnabled = value; AutoSave(); } } }
     private string _gadgetHotkey = "Ctrl+Alt+G"; public string GadgetHotkey { get => _gadgetHotkey; set { if (_gadgetHotkey != value && value is not null) { _gadgetHotkey = value; AutoSave(); } } }
+    private bool _ecoWhenMinimized; public bool EcoWhenMinimized { get => _ecoWhenMinimized; set { if (_ecoWhenMinimized != value) { _ecoWhenMinimized = value; AutoSave(); } } }
     private bool _pauseWhenHidden; public bool PauseWhenHidden { get => _pauseWhenHidden; set { if (_pauseWhenHidden != value) { _pauseWhenHidden = value; AutoSave(); } } }
     private bool _logEnabled; public bool LogEnabled { get => _logEnabled; set { if (_logEnabled != value) { _logEnabled = value; AutoSave(); } } }
     private double _logIntervalSeconds = 5; public double LogIntervalSeconds { get => _logIntervalSeconds; set { if (_logIntervalSeconds != value) { _logIntervalSeconds = value; AutoSave(); } } }
@@ -269,7 +270,7 @@ public sealed class SettingsViewModel : ObservableObject
         s.FollowSystemTheme = FollowSystemTheme; s.NotifyAlerts = NotifyAlerts; s.NotifyNetworkAlerts = NotifyNetworkAlerts; s.NotifyGreetings = NotifyGreetings; s.AlertSound = AlertSound;
         s.AlertLoadPercent = Math.Clamp(AlertLoadPercent, 50, 100); s.AlertSustainSeconds = (int)Math.Clamp(AlertSustainSeconds, 0, 600); s.AlertCooldownMinutes = (int)Math.Clamp(AlertCooldownMinutes, 0, 240); s.HotkeyEnabled = HotkeyEnabled;
         s.GadgetHotkey = HotkeyParser.TryParse(GadgetHotkey, out _, out _) ? GadgetHotkey : s.GadgetHotkey;
-        s.ShowSensorsMain = ShowSensorsMain; s.PauseWhenHidden = PauseWhenHidden; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);
+        s.ShowSensorsMain = ShowSensorsMain; s.PauseWhenHidden = PauseWhenHidden; s.EcoWhenMinimized = EcoWhenMinimized; s.SlowSensors = SlowSensors; s.LogEnabled = LogEnabled; s.LogIntervalSeconds = (int)Math.Clamp(LogIntervalSeconds, 1, 300);
         ThemeHelper.Apply(s);
 
         _onApplied();

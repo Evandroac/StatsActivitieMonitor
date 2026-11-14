@@ -4,11 +4,14 @@ using StatsMonitor.Settings;
 
 namespace StatsMonitor.Services;
 
-public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad, NoNetwork, NoInternet, NetworkRestored, HighLatency, GreetingMorning, GreetingAfternoon, GreetingNight }
+public enum AlertKind { CpuTemp, GpuTemp, CpuLoad, GpuLoad, RamLoad, NoNetwork, NoInternet, NetworkRestored, HighLatency, GreetingMorning, GreetingAfternoon, GreetingNight,
+    CpuTempWarn, GpuTempWarn, CpuLoadWarn, GpuLoadWarn, RamLoadWarn }
 
 public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
 {
     public bool IsGreeting => Kind is AlertKind.GreetingMorning or AlertKind.GreetingAfternoon or AlertKind.GreetingNight;
+    public bool IsAttention => Kind is AlertKind.CpuTempWarn or AlertKind.GpuTempWarn or AlertKind.CpuLoadWarn or AlertKind.GpuLoadWarn or AlertKind.RamLoadWarn;
+    public bool IsCritical => Kind is AlertKind.CpuTemp or AlertKind.GpuTemp or AlertKind.CpuLoad or AlertKind.GpuLoad or AlertKind.RamLoad;
     public bool IsInfo => Kind == AlertKind.NetworkRestored || IsGreeting;
 
     public string Title => Kind switch
@@ -17,6 +20,7 @@ public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
         AlertKind.NoNetwork or AlertKind.NoInternet => Loc.T("Sem conexão"),
         AlertKind.NetworkRestored => Loc.T("Conexão restabelecida"),
         AlertKind.HighLatency => Loc.T("Rede instável"),
+        _ when IsAttention => Loc.T("Atenção"),
         AlertKind.GreetingMorning => Loc.T("Bom dia!"),
         AlertKind.GreetingAfternoon => Loc.T("Boa tarde!"),
         AlertKind.GreetingNight => Loc.T("Boa noite!"),
@@ -25,6 +29,11 @@ public sealed record AlertEvent(AlertKind Kind, double Value, double Limit)
 
     public string Message => Kind switch
     {
+        AlertKind.CpuTempWarn => Loc.T("{0}: {1} (atenção acima de {2})", "CPU", Units.Temp(Value), Units.Temp(Limit)),
+        AlertKind.GpuTempWarn => Loc.T("{0}: {1} (atenção acima de {2})", "GPU", Units.Temp(Value), Units.Temp(Limit)),
+        AlertKind.CpuLoadWarn => Loc.T("{0}: {1:0}% de uso (atenção acima de {2:0}%)", "CPU", Value, Limit),
+        AlertKind.GpuLoadWarn => Loc.T("{0}: {1:0}% de uso (atenção acima de {2:0}%)", "GPU", Value, Limit),
+        AlertKind.RamLoadWarn => Loc.T("{0}: {1:0}% de uso (atenção acima de {2:0}%)", "RAM", Value, Limit),
         AlertKind.GreetingMorning => Loc.T("Tenha um ótimo dia! O Stats Monitor está acompanhando seu PC."),
         AlertKind.GreetingAfternoon => Loc.T("Bom resto de dia! O Stats Monitor continua de olho no seu PC."),
         AlertKind.GreetingNight => Loc.T("Boa noite! O Stats Monitor segue monitorando seu PC."),
@@ -75,8 +84,18 @@ public sealed class AlertNotifier
         Check(events, AlertKind.CpuLoad, s.CpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
         Check(events, AlertKind.GpuLoad, s.GpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
         Check(events, AlertKind.RamLoad, s.RamLoad, cfg.AlertLoadPercent, sustain, cooldown);
+
+        // Attention level: below the critical limit but past the warning limit (critical takes precedence).
+        double loadWarn = Math.Max(0, cfg.AlertLoadPercent - 10);
+        Check(events, AlertKind.CpuTempWarn, Below(s.CpuTemp, cfg.CpuCritTemp), cfg.CpuWarnTemp, sustain, cooldown);
+        Check(events, AlertKind.GpuTempWarn, Below(s.GpuTemp, cfg.GpuCritTemp), cfg.GpuWarnTemp, sustain, cooldown);
+        Check(events, AlertKind.CpuLoadWarn, Below(s.CpuLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
+        Check(events, AlertKind.GpuLoadWarn, Below(s.GpuLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
+        Check(events, AlertKind.RamLoadWarn, Below(s.RamLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
         return events;
     }
+
+    private static double? Below(double? v, double crit) => v is { } x && x >= crit ? null : v;
 
     private void Check(List<AlertEvent> events, AlertKind kind, double? value, double limit, TimeSpan sustain, TimeSpan cooldown)
     {

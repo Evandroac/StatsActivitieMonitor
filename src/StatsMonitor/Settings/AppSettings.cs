@@ -70,6 +70,7 @@ public sealed class AppSettings
     public bool SidebarPinned { get; set; }
     public bool SimplifiedView { get; set; }
     public bool PauseWhenHidden { get; set; }
+    public bool EcoWhenMinimized { get; set; } = true;
     public bool LogEnabled { get; set; }
     public int LogIntervalSeconds { get; set; } = 5;
     public bool SlowSensors { get; set; }

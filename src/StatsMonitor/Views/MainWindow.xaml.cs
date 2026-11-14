@@ -79,7 +79,7 @@ public partial class MainWindow : Window
         _vm.SnapshotApplied += UpdateTrayHealth;
         _vm.AlertRaised += a =>
         {
-            _tray?.ShowBalloonTip(8000, a.Title, a.Message, a.IsInfo ? System.Windows.Forms.ToolTipIcon.Info : System.Windows.Forms.ToolTipIcon.Warning);
+            _tray?.ShowBalloonTip(8000, a.Title, a.Message, a.IsInfo ? System.Windows.Forms.ToolTipIcon.Info : a.IsCritical ? System.Windows.Forms.ToolTipIcon.Error : System.Windows.Forms.ToolTipIcon.Warning);
             if (_settings.Current.AlertSound && !a.IsGreeting) System.Media.SystemSounds.Exclamation.Play();
         };
     }
@@ -272,6 +272,7 @@ public partial class MainWindow : Window
         if (visible && s.GadgetMode == GadgetDisplayMode.None) visible = false;
         if (visible) _gadget.ShowGadget(); else _gadget.Hide();
         bool windowShown = IsVisible && WindowState != WindowState.Minimized;
+        _vm.SetEco(s.EcoWhenMinimized && !windowShown && !visible);
         _vm.SetPaused(s.PauseWhenHidden && !s.NotifyAlerts && !s.LogEnabled && !windowShown && !visible);
     }
 

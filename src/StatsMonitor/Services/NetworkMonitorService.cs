@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
@@ -43,6 +43,9 @@ public sealed class NetworkMonitorService : IDisposable
     public NetworkMonitorService() => _timer = new Timer(_ => Sample(), null, Timeout.Infinite, Timeout.Infinite);
 
     public void Start() => _timer.Change(0, 1000);
+
+    /// <summary>Slower sampling while the app is idle in the background.</summary>
+    public void SetPeriod(int ms) => _timer.Change(ms, ms);
 
     private void Sample()
     {

@@ -122,9 +122,18 @@ public class AlertNotifierTests : IDisposable
     private static HardwareSnapshot Snap(double? cpuTemp = null, double? cpuLoad = null) => new() { CpuTemp = cpuTemp, CpuLoad = cpuLoad };
 
     [Fact]
+    public void Attention_level_fires_before_critical_and_yields_to_it()
+    {
+        var cfg = new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0 };
+        var n = new AlertNotifier();
+        Assert.Equal(AlertKind.CpuTempWarn, Assert.Single(n.Evaluate(Snap(cpuTemp: 75), cfg)).Kind);
+        Assert.Equal(AlertKind.CpuTemp, Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg)).Kind);
+    }
+
+    [Fact]
     public void Temperature_alert_fires_once_until_it_drops_below_the_limit()
     {
-        var cfg = new AppSettings { CpuCritTemp = 85, AlertSustainSeconds = 0 };
+        var cfg = new AppSettings { CpuWarnTemp = 85, CpuCritTemp = 85, AlertSustainSeconds = 0 };
         var n = new AlertNotifier();
         Assert.Empty(n.Evaluate(Snap(cpuTemp: 80), cfg));
         Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg));
