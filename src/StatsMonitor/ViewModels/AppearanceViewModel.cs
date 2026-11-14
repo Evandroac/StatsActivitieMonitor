@@ -93,6 +93,7 @@ public sealed class ThemeChoice : ObservableObject
     public ThemeChoice(VisualTheme theme, Func<string> current, Action<ThemeChoice> pick)
     {
         Theme = theme; _current = current; _pick = pick;
+        Loc.LanguageChanged += () => Raise(nameof(Name));
     }
 
     public VisualTheme Theme { get; }
@@ -105,9 +106,13 @@ public sealed class ThemeChoice : ObservableObject
     public void Refresh() => Raise(nameof(IsSelected));
 }
 
-public sealed class ThemeGroup
+public sealed class ThemeGroup : ObservableObject
 {
-    public ThemeGroup(string category, IReadOnlyList<ThemeChoice> items) { _category = category; Items = items; }
+    public ThemeGroup(string category, IReadOnlyList<ThemeChoice> items)
+    {
+        _category = category; Items = items;
+        Loc.LanguageChanged += () => Raise(nameof(Category));
+    }
     private readonly string _category;
     public string Category => Loc.T(_category);
     public IReadOnlyList<ThemeChoice> Items { get; }

@@ -77,8 +77,8 @@
             <TextBlock Text="{h:Tr 'AÇÕES'}" Style="{StaticResource Caption}" FontWeight="SemiBold" Margin="2,0,0,8"/>
             <TextBlock Text="{h:Tr 'As alterações são salvas automaticamente.'}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="2,0,0,12"/>
             <Button Content="{h:Tr '↺  Restaurar padrões'}" ToolTip="{h:Tr 'Volta todas as configurações ao padrão'}" AutomationProperties.Name="{h:Tr 'Volta todas as configurações ao padrão'}" Style="{StaticResource PillButton}" Click="OnResetDefaults"/>
-            <Button Content="{h:Tr '⤓  Exportar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
-            <Button Content="{h:Tr '⤒  Importar configurações'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
+            <Button Content="{h:Tr '⤓  Exportar configurações'}" ToolTip="{h:Tr 'Salva todas as configurações em um arquivo'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnExport"/>
+            <Button Content="{h:Tr '⤒  Importar configurações'}" ToolTip="{h:Tr 'Carrega as configurações de um arquivo exportado'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnImport"/>
                         <Button x:Name="BtnResetColors" Content="{h:Tr '↺  Restaurar cores do tema'}" ToolTip="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" AutomationProperties.Name="{h:Tr 'Limpa todas as cores e volta ao padrão do tema'}" Style="{StaticResource PillButton}" Margin="0,8,0,0" Click="OnResetColors"/>
         </StackPanel>
     </Border>
@@ -210,7 +210,7 @@
         </Border>
         </StackPanel>
         <TextBlock Text="{h:Tr '⌨️  Atalho global'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
-        <CheckBox Content="{h:Tr 'Ativar atalho para mostrar/ocultar o gadget'}" IsChecked="{Binding HotkeyEnabled}"/>
+        <CheckBox Content="{h:Tr 'Ativar atalho para mostrar/ocultar o gadget'}" ToolTip="{h:Tr 'Liga o atalho de teclado global que mostra ou esconde o gadget'}" IsChecked="{Binding HotkeyEnabled}"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Atalho:'}" VerticalAlignment="Center" Width="200"/>
             <ComboBox Width="160" ItemsSource="{Binding HotkeyOptions}" SelectedItem="{Binding GadgetHotkey, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Atalho:'}"/>
@@ -275,9 +275,9 @@
             </ComboBox>
         </StackPanel>
         <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
-        <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
-                    <CheckBox Content="{h:Tr 'Saudações (bom dia, boa tarde, boa noite)'}" IsChecked="{Binding NotifyGreetings}"/>
-                    <CheckBox Content="{h:Tr 'Alertas inteligentes de rede (sem conexão, sem internet, latência alta)'}" IsChecked="{Binding NotifyNetworkAlerts}"/>
+        <CheckBox Content="{h:Tr 'Tocar som de alerta'}" ToolTip="{h:Tr 'Emite um som quando um alerta é disparado'}" IsChecked="{Binding AlertSound}"/>
+                    <CheckBox Content="{h:Tr 'Saudações (bom dia, boa tarde, boa noite)'}" ToolTip="{h:Tr 'Exibe uma saudação de acordo com o horário ao abrir o app'}" IsChecked="{Binding NotifyGreetings}"/>
+                    <CheckBox Content="{h:Tr 'Alertas inteligentes de rede (sem conexão, sem internet, latência alta)'}" ToolTip="{h:Tr 'Avisa quando a conexão cai, a internet some ou a latência fica alta'}" IsChecked="{Binding NotifyNetworkAlerts}"/>
         <Button Content="{h:Tr '🔔  Testar alerta'}" ToolTip="{h:Tr 'Exibe uma notificação de alerta de teste'}" AutomationProperties.Name="{h:Tr 'Testar alerta'}" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,6,0,0" Click="OnTestAlert"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="{h:Tr 'Uso crítico (%):'}" VerticalAlignment="Center" Width="200"/>
@@ -301,7 +301,7 @@
         </StackPanel>
         <TextBlock Style="{StaticResource WarnText}" Text="{Binding AlertWarning}"/>
         <DockPanel Margin="0,14,0,6">
-            <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
+            <Button DockPanel.Dock="Right" Content="{h:Tr 'Limpar'}" ToolTip="{h:Tr 'Apaga todo o histórico de alertas'}" Style="{StaticResource PillButton}" Click="OnClearAlertHistory"/>
             <TextBlock Text="{h:Tr '🕘  Histórico de alertas'}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center"/>
         </DockPanel>
         <TextBlock x:Name="AlertHistoryEmpty" Text="{h:Tr 'Nenhum alerta registrado'}" Style="{StaticResource Caption}"/>
@@ -328,12 +328,12 @@
         <TextBlock Text="{h:Tr '🎛️  Perfis'}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,6"/>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <ComboBox Width="200" ItemsSource="{Binding ProfileNames}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" AutomationProperties.Name="{h:Tr 'Perfis'}"/>
-            <Button Content="{h:Tr 'Aplicar'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnApplyProfile"/>
-            <Button Content="{h:Tr 'Excluir'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnDeleteProfile"/>
+            <Button Content="{h:Tr 'Aplicar'}" ToolTip="{h:Tr 'Aplica as configurações do perfil selecionado'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnApplyProfile"/>
+            <Button Content="{h:Tr 'Excluir'}" ToolTip="{h:Tr 'Exclui o perfil selecionado'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnDeleteProfile"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBox Width="200" Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{h:Tr 'Nome do perfil (vazio = perfil selecionado)'}" AutomationProperties.Name="{h:Tr 'Nome do perfil'}"/>
-            <Button Content="{h:Tr 'Salvar atual no perfil'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnSaveProfile"/>
+            <Button Content="{h:Tr 'Salvar atual no perfil'}" ToolTip="{h:Tr 'Salva as configurações atuais em um perfil'}" Style="{StaticResource PillButton}" Margin="8,0,0,0" Click="OnSaveProfile"/>
         </StackPanel>
                     </StackPanel></Border>
     </StackPanel>
