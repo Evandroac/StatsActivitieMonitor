@@ -130,6 +130,16 @@ public class AlertNotifierTests : IDisposable
         Assert.Equal(AlertKind.CpuTemp, Assert.Single(n.Evaluate(Snap(cpuTemp: 90), cfg)).Kind);
     }
 
+    [Theory]
+    [InlineData("attention", AlertKind.CpuTempWarn, 90)]
+    [InlineData("critical", AlertKind.CpuTemp, 90)]
+    public void Alert_level_setting_selects_which_levels_notify(string level, AlertKind expected, double temp)
+    {
+        var cfg = new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0, AlertLevel = level };
+        Assert.Equal(expected, Assert.Single(new AlertNotifier().Evaluate(Snap(cpuTemp: temp), cfg)).Kind);
+        Assert.Empty(new AlertNotifier().Evaluate(Snap(cpuTemp: 75), new AppSettings { CpuWarnTemp = 70, CpuCritTemp = 85, AlertSustainSeconds = 0, AlertLevel = "critical" }));
+    }
+
     [Fact]
     public void Temperature_alert_fires_once_until_it_drops_below_the_limit()
     {

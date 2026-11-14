@@ -20,6 +20,8 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
 
     public TimeSpan Interval { get; set; } = TimeSpan.FromSeconds(1);
     private volatile bool _paused;
+    private volatile int _scope = (int)HardwareScope.All;
+    public HardwareScope Scope { get => (HardwareScope)_scope; set => _scope = (int)value; }
     public bool Paused { get => _paused; set => _paused = value; }
     private volatile bool _slowSensors;
     public bool SlowSensors { get => _slowSensors; set { _slowSensors = value; DiskPerfService.CacheSeconds = value ? SlowSeconds : 2; } }
@@ -172,9 +174,9 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
             VramUsedGb = vramUsed,
             VramAvailableGb = vramFree,
             VramLoad = vramLoad,
-            Disks = ReadDisks(all),
-            Volumes = CachedVolumes(),
-            Sensors = ReadSensors(all),
+            Disks = Scope.HasFlag(HardwareScope.Other) ? ReadDisks(all) : [],
+            Volumes = Scope.HasFlag(HardwareScope.Other) ? CachedVolumes() : [],
+            Sensors = Scope.HasFlag(HardwareScope.Other) ? ReadSensors(all) : [],
             VramTemp = gpu?.Sensors
                 .Where(s => s.SensorType == SensorType.                Temperature && Valid(s.SensorType, s.Value).HasValue                            && s.Name.Contains("Memory", StringComparison.OrdinalIgnoreCase))
                 .Select(s => (double?)s.Value!.Value).Max(),
@@ -285,6 +287,14 @@ public sealed class LibreHardwareMonitorService : IHardwareMonitorService
 
     private void Collect(IHardware hw, List<IHardware> list)
     {
+        var group = hw.HardwareType switch
+        {
+            HardwareType.Cpu => HardwareScope.Cpu,
+            HardwareType.GpuNvidia or HardwareType.GpuAmd or HardwareType.GpuIntel => HardwareScope.Gpu,
+            HardwareType.Memory => HardwareScope.Memory,
+            _ => HardwareScope.Other,
+        };
+        if (!Scope.HasFlag(group)) return;
         bool slow = hw.HardwareType is HardwareType.Storage or HardwareType.Motherboard or HardwareType.SuperIO
             or HardwareType.EmbeddedController or HardwareType.Battery;
         if (!slow || _slowDue) hw.Update();

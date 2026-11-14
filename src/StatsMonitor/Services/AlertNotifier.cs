@@ -79,19 +79,27 @@ public sealed class AlertNotifier
 
         var sustain = TimeSpan.FromSeconds(Math.Max(0, cfg.AlertSustainSeconds));
         var cooldown = Cooldown ?? TimeSpan.FromMinutes(Math.Max(0, cfg.AlertCooldownMinutes));
-        Check(events, AlertKind.CpuTemp, s.CpuTemp, cfg.CpuCritTemp, sustain, cooldown);
-        Check(events, AlertKind.GpuTemp, s.GpuTemp, cfg.GpuCritTemp, sustain, cooldown);
-        Check(events, AlertKind.CpuLoad, s.CpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
-        Check(events, AlertKind.GpuLoad, s.GpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
-        Check(events, AlertKind.RamLoad, s.RamLoad, cfg.AlertLoadPercent, sustain, cooldown);
+        bool crit = cfg.AlertLevel != "attention", warn = cfg.AlertLevel != "critical";
+        if (crit)
+        {
+            Check(events, AlertKind.CpuTemp, s.CpuTemp, cfg.CpuCritTemp, sustain, cooldown);
+            Check(events, AlertKind.GpuTemp, s.GpuTemp, cfg.GpuCritTemp, sustain, cooldown);
+            Check(events, AlertKind.CpuLoad, s.CpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
+            Check(events, AlertKind.GpuLoad, s.GpuLoad, cfg.AlertLoadPercent, sustain, cooldown);
+            Check(events, AlertKind.RamLoad, s.RamLoad, cfg.AlertLoadPercent, sustain, cooldown);
+        }
 
-        // Attention level: below the critical limit but past the warning limit (critical takes precedence).
-        double loadWarn = Math.Max(0, cfg.AlertLoadPercent - 10);
-        Check(events, AlertKind.CpuTempWarn, Below(s.CpuTemp, cfg.CpuCritTemp), cfg.CpuWarnTemp, sustain, cooldown);
-        Check(events, AlertKind.GpuTempWarn, Below(s.GpuTemp, cfg.GpuCritTemp), cfg.GpuWarnTemp, sustain, cooldown);
-        Check(events, AlertKind.CpuLoadWarn, Below(s.CpuLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
-        Check(events, AlertKind.GpuLoadWarn, Below(s.GpuLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
-        Check(events, AlertKind.RamLoadWarn, Below(s.RamLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
+        // Attention level: past the warning limit; critical takes precedence when both levels are enabled.
+        if (warn)
+        {
+            double loadWarn = Math.Max(0, cfg.AlertLoadPercent - 10);
+            double? B(double? v, double limit) => crit ? Below(v, limit) : v;
+            Check(events, AlertKind.CpuTempWarn, B(s.CpuTemp, cfg.CpuCritTemp), cfg.CpuWarnTemp, sustain, cooldown);
+            Check(events, AlertKind.GpuTempWarn, B(s.GpuTemp, cfg.GpuCritTemp), cfg.GpuWarnTemp, sustain, cooldown);
+            Check(events, AlertKind.CpuLoadWarn, B(s.CpuLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
+            Check(events, AlertKind.GpuLoadWarn, B(s.GpuLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
+            Check(events, AlertKind.RamLoadWarn, B(s.RamLoad, cfg.AlertLoadPercent), loadWarn, sustain, cooldown);
+        }
         return events;
     }
 

@@ -115,6 +115,24 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     public void SetPaused(bool paused) => _monitor.Paused = paused;
 
+    private bool _gadgetOnly;
+
+    /// <summary>Gadget-only mode (window hidden, gadget shown): reads just the components the gadget displays.</summary>
+    public void SetGadgetOnly(bool gadgetOnly) { _gadgetOnly = gadgetOnly; UpdateScope(); }
+
+    private void UpdateScope()
+    {
+        var scope = HardwareScope.All;
+        if (_gadgetOnly)
+        {
+            scope = HardwareScope.None;
+            if (S.ShowCpuGadget) scope |= HardwareScope.Cpu;
+            if (S.ShowGpuGadget || S.ShowVramGadget) scope |= HardwareScope.Gpu;
+            if (S.ShowRamGadget) scope |= HardwareScope.Memory;
+        }
+        _monitor.Scope = scope;
+    }
+
     private bool _eco;
     public bool EcoMode => _eco;
 
@@ -122,7 +140,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         int ms = Math.Clamp(S.UpdateIntervalMs, 250, 60000);
         if (S.SimplifiedView) ms = Math.Max(ms, 2000);
-        if (_eco) ms = Math.Max(ms, 5000);
+        if (_eco) ms = Math.Max(ms, 10000);
         _monitor.Interval = TimeSpan.FromMilliseconds(ms);
     }
 
@@ -132,7 +150,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         if (_eco == eco) return;
         _eco = eco;
         UpdateInterval();
-        _network.SetPeriod(eco ? 3000 : 1000);
+        _network.SetPeriod(eco ? 5000 : 1000);
         Helpers.PowerSaver.Apply(eco);
     }
 
@@ -141,6 +159,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     {
         (_normal, _warn, _crit) = ThemeHelper.AlertBrushes(S);
         UpdateInterval();
+        UpdateScope();
         _monitor.SlowSensors = S.SlowSensors;
         Services.DataLogger.Configure(S.LogEnabled, S.LogIntervalSeconds);
         foreach (var c in new[] { Cpu, Gpu, Ram }) c.ShowChart = !S.SimplifiedView;

@@ -105,7 +105,7 @@
         </StackPanel>
         <CheckBox ToolTip="{h:Tr 'Abre o Stats Monitor automaticamente ao entrar no Windows'}" Content="{h:Tr 'Iniciar com o Windows'}" IsChecked="{Binding RunAtStartup}"/>
         <CheckBox ToolTip="{h:Tr 'Abre direto no modo minimizado (gadget)'}" Content="{h:Tr 'Iniciar minimizado'}" IsChecked="{Binding StartMinimized}"/>
-        <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 5 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
+        <CheckBox Content="{h:Tr 'Modo econômico ao minimizar'}" ToolTip="{h:Tr 'Com a janela minimizada e sem gadget, lê os sensores a cada 10 s, reduz a prioridade e libera memória. Os alertas continuam ativos'}" IsChecked="{Binding EcoWhenMinimized}"/>
                     <CheckBox Content="{h:Tr 'Pausar a leitura quando oculto e sem gadget'}" ToolTip="{h:Tr 'Economiza recursos. Só pausa se as notificações de alerta estiverem desligadas'}" IsChecked="{Binding PauseWhenHidden}"/>
         <CheckBox Content="{h:Tr 'Ler sensores de disco e placa-mãe com menos frequência'}" ToolTip="{h:Tr 'Atualiza discos e placa-mãe a cada 10 s: economiza recursos, mas esses valores ficam menos atuais'}" IsChecked="{Binding SlowSensors}"/>
         <CheckBox Content="{h:Tr 'Seguir o tema do Windows'}" ToolTip="{h:Tr 'Usa o tema claro ou escuro do Windows automaticamente'}" IsChecked="{Binding FollowSystemTheme}"/>
@@ -229,6 +229,14 @@
         <TextBlock Style="{StaticResource WarnText}" Text="{Binding GpuTempWarning}"/>
 
         <TextBlock Text="{h:Tr '🔔  Notificações de alerta'}" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,2,0,6">
+            <TextBlock Text="{h:Tr 'Níveis de alerta:'}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <ComboBox Width="200" ToolTip="{h:Tr 'Atenção avisa antes de chegar ao limite crítico'}" SelectedValuePath="Tag" SelectedValue="{Binding AlertLevel, Mode=TwoWay}">
+                <ComboBoxItem Content="{h:Tr 'Atenção e críticos'}" Tag="both"/>
+                <ComboBoxItem Content="{h:Tr 'Somente atenção'}" Tag="attention"/>
+                <ComboBoxItem Content="{h:Tr 'Somente críticos'}" Tag="critical"/>
+            </ComboBox>
+        </StackPanel>
         <CheckBox Content="{h:Tr 'Notificar ao passar do limite crítico'}" ToolTip="{h:Tr 'Mostra uma notificação do Windows quando a temperatura ou o uso passar do limite'}" IsChecked="{Binding NotifyAlerts}"/>
         <CheckBox Content="{h:Tr 'Tocar som de alerta'}" IsChecked="{Binding AlertSound}"/>
                     <CheckBox Content="{h:Tr 'Saudações (bom dia, boa tarde, boa noite)'}" IsChecked="{Binding NotifyGreetings}"/>
