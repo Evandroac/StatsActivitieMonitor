@@ -26,7 +26,7 @@ public sealed class ColumnDef : ObservableObject
     public bool Right { get; }
     public bool Visible { get; internal set; }
     public bool DefaultVisible { get; }
-    public string Title => Loc.Lang == "en" ? En : Pt;
+    public string Title => Loc.Lang == "en" ? En : Loc.T(Pt);
 
     public double Width
     {

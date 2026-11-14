@@ -50,7 +50,7 @@ public partial class ProcessesView : UserControl
         Unloaded += (_, _) => Loc.LanguageChanged -= OnLanguage;
     }
 
-    private static string L(string pt, string en) => Loc.Lang == "en" ? en : pt;
+    private static string L(string pt, string en) => Loc.Lang == "en" ? en : Loc.T(pt);
 
     private void OnLanguage()
     {

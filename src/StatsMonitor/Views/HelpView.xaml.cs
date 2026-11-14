@@ -63,7 +63,7 @@ public partial class HelpView : UserControl
         Unloaded += (_, _) => Loc.LanguageChanged -= Build;
     }
 
-    private static string L(string pt, string en) => Loc.Lang == "en" ? en : pt;
+    private static string L(string pt, string en) => Loc.Lang == "en" ? en : Loc.T(pt);
 
     private void Build()
     {

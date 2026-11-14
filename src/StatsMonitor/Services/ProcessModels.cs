@@ -146,7 +146,7 @@ public sealed class ProcessRow : ObservableObject
     private static string Pct(double v) => v < 0.05 ? "0%" : v < 10 ? $"{v:0.0}%" : $"{v:0}%";
     private static string Rate(double bps) =>
         bps >= 1e6 ? $"{bps / 1e6:0.0} MB/s" : bps >= 1e3 ? $"{bps / 1e3:0} KB/s" : $"{bps:0} B/s";
-    private static string En(string pt, string en) => Loc.Lang == "en" ? en : pt;
+    private static string En(string pt, string en) => Loc.Lang == "en" ? en : Loc.T(pt);
 
     public double MemPct => TotalRam > 0 ? _mem * 100.0 / TotalRam : 0;
     public double DiskPct => Math.Min(100, _disk / DiskRefBps * 100);
