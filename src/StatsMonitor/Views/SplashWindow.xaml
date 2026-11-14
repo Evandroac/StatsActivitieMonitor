@@ -51,7 +51,10 @@
                         </Border.Background>
                     </Border>
                 </Border>
-                <Button x:Name="CancelBtn" Content="Cancelar" HorizontalAlignment="Right" Margin="0,12,0,0" MinWidth="90" Style="{StaticResource PillButton}" Click="OnCancel"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                    <Button x:Name="MinimizeBtn" Content="Minimizar" Margin="0,0,8,0" MinWidth="90" Style="{StaticResource PillButton}" Click="OnMinimize"/>
+                    <Button x:Name="CancelBtn" Content="Cancelar" MinWidth="90" Style="{StaticResource PillButton}" Click="OnCancel"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Border>
