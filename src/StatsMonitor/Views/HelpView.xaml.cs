@@ -179,6 +179,7 @@ public partial class HelpView : UserControl
             L("Como desligar as notificações? Em Configurações, na seção de alertas.",
               "How do I turn notifications off? In Settings, in the alerts section."),
         ]);
+        if (_navButtons.Count > 0) _navButtons[0].Tag = "active";
     }
 
     private readonly List<Button> _navButtons = [];
