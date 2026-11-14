@@ -141,7 +141,7 @@ public sealed class PetsView : UserControl
         if (!_collapsed) head.Children.Add(feed);
         head.Children.Add(new TextBlock { Text = "🐾 Pets", FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
         root.Children.Add(head);
-        root.Children.Add(_status);
+        root.Children.Add(Detach(_status));
         if (_collapsed) { Content = root; _timer.Stop(); return; }
         if (IsVisible) _timer.Start();
 
@@ -186,6 +186,7 @@ public sealed class PetsView : UserControl
     {
         if (el.Parent is Panel p) p.Children.Remove(el);
         else if (el.Parent is Decorator d) d.Child = null;
+        else if (el.Parent is ContentControl c) c.Content = null;
         return el;
     }
 
