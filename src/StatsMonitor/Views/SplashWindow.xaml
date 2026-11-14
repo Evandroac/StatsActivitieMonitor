@@ -23,14 +23,6 @@
                     </LinearGradientBrush>
                 </Border.OpacityMask>
             </Border>
-            <Border Height="3" VerticalAlignment="Top">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                        <GradientStop Color="{DynamicResource AccentColor}" Offset="0"/>
-                        <GradientStop Color="{DynamicResource Accent2Color}" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-            </Border>
             <Grid Margin="32,30,32,24">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
