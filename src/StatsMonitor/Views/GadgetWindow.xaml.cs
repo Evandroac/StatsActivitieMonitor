@@ -151,6 +151,8 @@ public partial class GadgetWindow : Window
         Top = Math.Clamp(top, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight - ActualHeight);
     }
     private const double FadedOpacity = 0.12;
+    // Fully transparent pixels of a layered window let clicks and hover pass through, so keep alpha at 1.
+    private static readonly Brush HitBrush = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0));
 
     private void ApplyScale()
     {
@@ -166,7 +168,7 @@ public partial class GadgetWindow : Window
         BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
         // Only the information fades; the action buttons keep full opacity.
         Body.Opacity = s.GadgetFaded ? FadedOpacity : 1;
-        if (s.GadgetFaded) { Root.Background = Brushes.Transparent; Root.BorderBrush = Brushes.Transparent; }
+        if (s.GadgetFaded) { Root.Background = HitBrush; Root.BorderBrush = Brushes.Transparent; }
         else { Root.ClearValue(System.Windows.Controls.Border.BackgroundProperty); Root.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardBorder"); }
         BtnView.Content = s.GadgetDetailed ? "▣" : "▤";
         BtnView.ToolTip = Loc.T(s.GadgetDetailed ? "Mudar para a visão simplificada" : "Mudar para a visão detalhada");
