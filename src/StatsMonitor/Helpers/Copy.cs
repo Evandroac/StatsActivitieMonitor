@@ -30,5 +30,30 @@ public static class Copy
         catch (System.Runtime.InteropServices.COMException) { return; }
         fe.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0.4, 1, TimeSpan.FromMilliseconds(350)));
         e.Handled = true;
+        ShowToast(fe);
+    }
+
+    private static System.Windows.Controls.Primitives.Popup? _toast;
+    private static System.Windows.Threading.DispatcherTimer? _timer;
+
+    private static void ShowToast(FrameworkElement target)
+    {
+        var res = Application.Current.Resources;
+        var text = new TextBlock { Text = "✓ " + Loc.T("Copiado!"), FontWeight = FontWeights.SemiBold, Foreground = System.Windows.Media.Brushes.White };
+        var border = new Border
+        {
+            Child = text, Padding = new Thickness(10, 5, 10, 5), CornerRadius = new CornerRadius(6), Margin = new Thickness(0, 0, 0, 4),
+            Background = res["Accent"] as System.Windows.Media.Brush ?? System.Windows.Media.Brushes.SteelBlue,
+        };
+        if (_toast is not null) _toast.IsOpen = false;
+        _toast = new System.Windows.Controls.Primitives.Popup
+        {
+            Child = border, PlacementTarget = target, Placement = System.Windows.Controls.Primitives.PlacementMode.Top,
+            AllowsTransparency = true, StaysOpen = true, IsOpen = true,
+        };
+        _timer?.Stop();
+        _timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1400) };
+        _timer.Tick += (_, _) => { _timer.Stop(); if (_toast is not null) _toast.IsOpen = false; };
+        _timer.Start();
     }
 }
