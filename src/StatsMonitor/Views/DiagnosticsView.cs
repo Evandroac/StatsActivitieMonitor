@@ -320,7 +320,10 @@ public sealed class DiagnosticsView : UserControl
         _body.Children.Add(health);
 
         var run = Pill(_running ? "⏹  " + L("CANCELAR DIAGNÓSTICO", "CANCEL DIAGNOSTIC") : "▶  " + L("INICIAR DIAGNÓSTICO COMPLETO", "START FULL DIAGNOSTIC"), async (_, _) => await ToggleFullAsync());
-        run.FontWeight = FontWeights.Bold;
+        run.Style = (Style?)Res("PrimaryButton");
+        run.Padding = new Thickness(28, 12, 28, 12);
+        run.Margin = new Thickness(0, 4, 0, 8);
+        run.ToolTip = L("Executa o diagnóstico completo do computador", "Runs the full computer diagnostic");
         _body.Children.Add(run);
         _body.Children.Add(Cap(L("Executa inventário, testes de CPU, RAM (256 MB), disco (arquivo temporário de 128 MB), rede e análise. Leva cerca de 30 s. O computador pode ficar mais lento durante o teste de CPU.", "Runs inventory, CPU, RAM (256 MB), disk (128 MB temp file) and network tests plus analysis. Takes about 30 s. The computer may slow down during the CPU test.")));
         _bar = new ProgressBar { Height = 10, Maximum = 100, Value = _progress, Margin = new Thickness(0, 8, 0, 2), MaxWidth = 760, HorizontalAlignment = HorizontalAlignment.Left, Width = 760 };
