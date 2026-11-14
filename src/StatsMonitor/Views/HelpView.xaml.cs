@@ -18,6 +18,27 @@ public partial class HelpView : UserControl
 
     private int? _initialTopic;
     private readonly Dictionary<int, Action> _jumps = [];
+    private readonly Dictionary<int, Border> _cards = [];
+
+    // Pulsing accent border + glow around the card, then back to normal.
+    private static void Flash(Border card)
+    {
+        var glow = new System.Windows.Media.Effects.DropShadowEffect { ShadowDepth = 0, BlurRadius = 8, Opacity = 0.9, Color = (Color)Application.Current.FindResource("AccentColor") };
+        card.Effect = glow;
+        card.SetResourceReference(Border.BorderBrushProperty, "Accent");
+        card.BorderThickness = new Thickness(2);
+        var pulse = new System.Windows.Media.Animation.DoubleAnimation(8, 28, TimeSpan.FromMilliseconds(450))
+        {
+            AutoReverse = true, RepeatBehavior = new System.Windows.Media.Animation.RepeatBehavior(3),
+        };
+        pulse.Completed += (_, _) =>
+        {
+            card.Effect = null;
+            card.SetResourceReference(Border.BorderBrushProperty, "CardBorder");
+            card.BorderThickness = new Thickness(1);
+        };
+        glow.BeginAnimation(System.Windows.Media.Effects.DropShadowEffect.BlurRadiusProperty, pulse);
+    }
 
     public HelpView() : this(null) { }
 
@@ -33,6 +54,7 @@ public partial class HelpView : UserControl
                 _initialTopic = null;
                 UpdateLayout();
                 jump();
+                if (_cards.TryGetValue(t, out var card)) Flash(card);
             }
         };
         Build();
@@ -48,6 +70,7 @@ public partial class HelpView : UserControl
         NavHost.Children.Clear();
         _navButtons.Clear();
         _jumps.Clear();
+        _cards.Clear();
         var navTitle = new TextBlock { Text = L("TÓPICOS", "TOPICS"), FontWeight = FontWeights.SemiBold, Margin = new Thickness(2, 0, 0, 8) };
         navTitle.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         var navHint = new TextBlock { Text = L("Clique em um tópico para ir direto até ele.", "Click a topic to jump straight to it."), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(2, 0, 0, 12) };
@@ -230,6 +253,7 @@ public partial class HelpView : UserControl
         }
         btn.Click += (_, _) => Jump();
         _jumps[titleIndex] = Jump;
+        _cards[titleIndex] = border;
         _navButtons.Add(btn);
         NavHost.Children.Add(btn);
     }
