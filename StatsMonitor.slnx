@@ -1,7 +1,6 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/StatsMonitor/StatsMonitor.csproj" />
-    <Project Path="src/StatsMonitor.Widget/StatsMonitor.Widget.csproj" />
     <Project Path="src/StatsMonitor.Tests/StatsMonitor.Tests.csproj" />
   </Folder>
 </Solution>
