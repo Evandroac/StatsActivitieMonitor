@@ -114,6 +114,29 @@ public partial class GadgetWindow : Window
         DDisk.Visibility = V(s.ShowVramGadget); DNet.Visibility = V(s.ShowNetworkGadget);
 
         if (taskbar && !detailed) ReserveTaskbarWidths(s);
+        FloatingPanel.MinWidth = !taskbar && !detailed ? FloatingWidth(s) : 0;
+    }
+
+    // Fixed width for the floating panel (worst-case text) so it doesn't resize on every reading.
+    private double FloatingWidth(Settings.AppSettings s)
+    {
+        double Measure(string text)
+        {
+            var ft = new System.Windows.Media.FormattedText(text, System.Globalization.CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new System.Windows.Media.Typeface(FCpu.FontFamily, FCpu.FontStyle, FontWeights.SemiBold, FCpu.FontStretch),
+                FCpu.FontSize, System.Windows.Media.Brushes.Black,
+                System.Windows.Media.VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            return Math.Ceiling(ft.WidthIncludingTrailingWhitespace);
+        }
+
+        double w = Measure("CPU: 100%" + (s.ShowTemperatures ? " | 100°C" : ""));
+        w = Math.Max(w, Measure("GPU: 100%" + (s.ShowTemperatures ? " | 100°C" : "")));
+        w = Math.Max(w, Measure("RAM: 100% | 99.9 GB"));
+        w = Math.Max(w, Measure(Loc.T("Disco: ") + "100%"));
+        w = Math.Max(w, Measure(Loc.T("FPS: ") + "999" + Loc.T("  Média: ") + "999"));
+        w = Math.Max(w, Measure(Loc.T("NET: ↓ ") + "999.9 Mbps ↑ 999.9 Mbps"));
+        return w;
     }
 
     // Fixed slot per indicator (worst-case text) so the widget doesn't resize on every update.
