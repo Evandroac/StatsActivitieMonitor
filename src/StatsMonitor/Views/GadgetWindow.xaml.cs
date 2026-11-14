@@ -165,7 +165,7 @@ public partial class GadgetWindow : Window
         BtnLock.ToolTip = Loc.T(s.GadgetLocked ? "Gadget fixo: clique para liberar posição e tamanho" : "Fixar o gadget (bloqueia posição e tamanho)");
         BtnFade.ToolTip = Loc.T(s.GadgetFaded ? "Restaurar a opacidade configurada" : "Deixar o gadget com a opacidade mínima");
         Opacity = s.GadgetFaded ? FadedOpacity : 1;
-        MoveX.ToolTip = Loc.T("Clique e segure para mover o gadget na horizontal");
+        MoveX.ToolTip = Loc.T("Segure para pausar as leituras; arraste para mover na horizontal");
         Grip.ToolTip = Loc.T("Arraste para redimensionar · duplo clique para o tamanho padrão");
         UpdateTools(IsMouseOver);
     }
@@ -174,7 +174,7 @@ public partial class GadgetWindow : Window
     {
         Tools.Visibility = hover ? Visibility.Visible : Visibility.Collapsed;
         Grip.Visibility = hover && !_settings.Current.GadgetLocked ? Visibility.Visible : Visibility.Collapsed;
-        MoveX.Visibility = Grip.Visibility;
+        MoveX.Visibility = hover || MoveX.IsDragging ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void OnToggleLock(object sender, RoutedEventArgs e)
@@ -237,7 +237,13 @@ public partial class GadgetWindow : Window
         }
     }
 
-    private void OnMoveXDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e) => _settings.Save();
+    private void OnMoveXStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e) => _vm.HoldReadings(true);
+
+    private void OnMoveXDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+    {
+        _vm.HoldReadings(false);
+        _settings.Save();
+    }
 
     private void OnMoveXReset(object sender, MouseButtonEventArgs e)
     {

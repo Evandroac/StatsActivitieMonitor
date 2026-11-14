@@ -64,7 +64,6 @@
                     <Run Text="{h:Tr 'NET: ↓ '}"/><Run Text="{Binding Network.Download, Mode=OneWay}"/><Run Text=" ↑ "/><Run Text="{Binding Network.Upload, Mode=OneWay}"/>
                 </TextBlock>
             </StackPanel>
-
             <StackPanel x:Name="DetailPanel" Visibility="Collapsed" HorizontalAlignment="Center">
                 <StackPanel x:Name="DCpu" Width="176">
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'CPU: '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/></TextBlock>
@@ -93,7 +92,6 @@
                     <TextBlock FontSize="13"><Run Text="{h:Tr 'FPS: '}"/><Run Text="{Binding FpsText, Mode=OneWay}" Foreground="{Binding FpsBrush, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
                     <TextBlock FontSize="10.5" Opacity="0.7"><Run Text="{h:Tr 'Média: '}"/><Run Text="{Binding FpsAvgText, Mode=OneWay}"/></TextBlock>
                 </StackPanel>            </StackPanel>
-
             <StackPanel x:Name="TaskbarPanel" Orientation="Horizontal" Margin="-12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock x:Name="TCpu" FontSize="12" Margin="12,0,0,0">
                     <Run Text="{h:Tr 'CPU '}"/><Run Text="{Binding Cpu.LoadText, Mode=OneWay}" Foreground="{Binding Cpu.LoadBrush, Mode=OneWay}" FontWeight="SemiBold"/><Run Text="{Binding Cpu.GadgetTemp, Mode=OneWay}" Foreground="{Binding Cpu.TempBrush, Mode=OneWay}"/>
@@ -118,7 +116,8 @@
           <StackPanel x:Name="Tools" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-6,-10,0" Visibility="Collapsed">
               <Button x:Name="BtnLock" Style="{StaticResource GadgetToolButton}" Content="🔓" Click="OnToggleLock"/>
               <Button x:Name="BtnFade" Style="{StaticResource GadgetToolButton}" Content="👁" Margin="0,2,0,0" Click="OnToggleFade"/>
-              <Thumb x:Name="MoveX" Width="20" Height="20" Margin="0,2,0,0" Cursor="SizeWE" DragDelta="OnMoveXDelta" DragCompleted="OnMoveXDone" MouseDoubleClick="OnMoveXReset">
+          </StackPanel>
+          <Thumb x:Name="MoveX" HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="20" Margin="-10,-6,0,0" Visibility="Collapsed" Cursor="SizeWE" DragStarted="OnMoveXStart" DragDelta="OnMoveXDelta" DragCompleted="OnMoveXDone" MouseDoubleClick="OnMoveXReset">
                   <Thumb.Template>
                       <ControlTemplate TargetType="Thumb">
                           <Border x:Name="B" CornerRadius="5" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
@@ -131,7 +130,6 @@
                       </ControlTemplate>
                   </Thumb.Template>
               </Thumb>
-          </StackPanel>
           <Thumb x:Name="Grip" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="14" Height="14" Margin="0,0,-10,-6" Cursor="SizeNWSE" Visibility="Collapsed"
                  DragDelta="OnGripDelta" DragCompleted="OnGripDone" MouseDoubleClick="OnGripReset">
               <Thumb.Template>

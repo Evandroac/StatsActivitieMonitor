@@ -161,6 +161,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
 
     private void OnNetwork(object? sender, NetworkSnapshot s)
     {
+        if (_held) return;
         _lastNet = s;
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
@@ -169,7 +170,10 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         });
     }
 
-    public void SetPaused(bool paused) => _monitor.Paused = paused;
+    private bool _autoPaused, _held;
+    public void SetPaused(bool paused) { _autoPaused = paused; _monitor.Paused = _autoPaused || _held; }
+    /// <summary>Freezes all readings (hardware and network) while the user holds the gadget button.</summary>
+    public void HoldReadings(bool hold) { _held = hold; _monitor.Paused = _autoPaused || _held; }
 
     private bool _gadgetOnly;
 
