@@ -30,6 +30,7 @@ public partial class App : Application
 
         DispatcherUnhandledException += (_, args) =>
         {
+            try { System.IO.File.AppendAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StatsMonitor", "crash.log"), DateTime.Now + "\n" + args.Exception + "\n\n"); } catch { }
             MessageBox.Show(args.Exception.Message, "Stats Monitor", MessageBoxButton.OK, MessageBoxImage.Warning);
             args.Handled = true;
         };
