@@ -90,8 +90,8 @@ public partial class HelpView : UserControl
               "✔ It only READS sensors. It does not change settings, control fans, overclock or touch your files."),
             L("✔ Os dados ficam no seu computador. O app não envia leituras para a internet. A conexão em segundo plano é um ping simples ao DNS 1.1.1.1 para medir a latência e saber se há internet; a tela Testes de conexão só acessa a rede quando você manda executar.",
               "✔ Data stays on your computer. The app does not upload readings. In the background it only sends a simple ping to the 1.1.1.1 DNS to measure latency and detect internet access; the Connection tests page only uses the network when you run something."),
-            L("💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial.",
-              "💡 Open-source project: Stats Monitor is open source and was designed, programmed and built entirely with the help of artificial intelligence."),
+            L("💡 Sobre o projeto: o Stats Monitor é open-source (código aberto) e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Ele foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas: sugestões e relatos de problemas são muito bem-vindos.",
+              "💡 About the project: Stats Monitor is open source and is part of a study on developing software with artificial intelligence. It was designed, programmed and built entirely with the help of AI, so it may contain flaws: suggestions and bug reports are very welcome."),
         ]);
         ((StackPanel)_cards[0].Child).Children.Add(LinkRow());
         Card("🧭", 1, [

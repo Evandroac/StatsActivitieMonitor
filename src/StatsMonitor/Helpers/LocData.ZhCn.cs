@@ -726,7 +726,7 @@ public static partial class LocData
         ["Fechar"] = "关闭",
         ["Restaurar"] = "还原",
         ["Configuração salva"] = "设置已保存",
-        ["💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial."] = "💡 开源项目：Stats Monitor 是开源软件，其设计、编程和制作完全借助人工智能完成。",
+        ["💡 Sobre o projeto: o Stats Monitor é open-source (código aberto) e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Ele foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas: sugestões e relatos de problemas são muito bem-vindos."] = "💡 关于本项目：Stats Monitor 是开源软件，也是一项关于借助人工智能开发软件的研究的一部分。它的设计、编程和制作完全借助 AI 完成，因此可能存在缺陷，欢迎提出建议和反馈问题。",
         ["Código-fonte no GitHub"] = "GitHub 上的源代码",
         ["Autor no GitHub"] = "GitHub 上的作者",
         ["Sem bateria neste computador"] = "此电脑没有电池",

@@ -725,7 +725,7 @@ public static partial class LocData
         ["Fechar"] = "닫기",
         ["Restaurar"] = "복원",
         ["Configuração salva"] = "설정이 저장되었습니다",
-        ["💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial."] = "💡 오픈소스 프로젝트: Stats Monitor는 오픈소스이며, 설계·프로그래밍·제작 전 과정을 인공지능의 도움으로 만들었습니다.",
+        ["💡 Sobre o projeto: o Stats Monitor é open-source (código aberto) e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Ele foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas: sugestões e relatos de problemas são muito bem-vindos."] = "💡 프로젝트 소개: Stats Monitor는 오픈소스이며 인공지능을 활용한 소프트웨어 개발 연구의 일부입니다. 설계·프로그래밍·제작 전 과정을 AI의 도움으로 만들었기 때문에 결함이 있을 수 있으며, 제안과 문제 신고를 환영합니다.",
         ["Código-fonte no GitHub"] = "GitHub 소스 코드",
         ["Autor no GitHub"] = "GitHub 작성자",
         ["Sem bateria neste computador"] = "이 컴퓨터에는 배터리가 없습니다",

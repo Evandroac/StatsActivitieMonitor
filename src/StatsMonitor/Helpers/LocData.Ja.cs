@@ -736,7 +736,7 @@ public static partial class LocData
         ["Fechar"] = "閉じる",
         ["Restaurar"] = "元に戻す",
         ["Configuração salva"] = "設定を保存しました",
-        ["💡 Projeto open-source: o Stats Monitor é de código aberto e foi desenhado, programado e feito inteiramente com a ajuda de inteligência artificial."] = "💡 オープンソースプロジェクト：Stats Monitor はオープンソースで、設計・プログラミング・制作のすべてを人工知能の支援によって行いました。",
+        ["💡 Sobre o projeto: o Stats Monitor é open-source (código aberto) e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Ele foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas: sugestões e relatos de problemas são muito bem-vindos."] = "💡 プロジェクトについて：Stats Monitor はオープンソースで、人工知能によるソフトウェア開発に関する研究の一部です。設計・プログラミング・制作のすべてを AI の支援で行ったため、不具合が含まれる可能性があります。ご提案や不具合の報告を歓迎します。",
         ["Código-fonte no GitHub"] = "GitHub のソースコード",
         ["Autor no GitHub"] = "GitHub の作者",
         ["Sem bateria neste computador"] = "このコンピューターにはバッテリーがありません",
