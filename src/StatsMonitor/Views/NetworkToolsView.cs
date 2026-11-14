@@ -53,6 +53,15 @@ public sealed class NetworkToolsView : UserControl
         _runners.Clear();
     }
 
+    private TextBlock _pageTitle = new() { FontSize = 24, FontWeight = FontWeights.SemiBold };
+
+    private static void TintText(Button b)
+    {
+        var st = new Style(typeof(TextBlock));
+        st.Setters.Add(new Setter(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("Foreground") { RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.FindAncestor, typeof(Button), 1) }));
+        b.Resources[typeof(TextBlock)] = st;
+    }
+
     private void Build()
     {
         _tabs.Clear();
@@ -65,8 +74,13 @@ public sealed class NetworkToolsView : UserControl
         root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
+        _pageTitle = new TextBlock { FontSize = 24, FontWeight = FontWeights.SemiBold };
         var head = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
-        head.Children.Add(new TextBlock { Text = "🌐  " + L("Testes de conexão", "Connection tests"), FontSize = 20, FontWeight = FontWeights.SemiBold });
+        head.Children.Add(new TextBlock { Text = "🌐  " + L("Testes de conexão", "Connection tests"), FontSize = 12, Opacity = 0.7, FontWeight = FontWeights.SemiBold });
+        head.Children.Add(_pageTitle);
+        var rule = new Border { Height = 2, CornerRadius = new CornerRadius(1), Opacity = 0.6, Margin = new Thickness(0, 8, 0, 0), HorizontalAlignment = HorizontalAlignment.Stretch };
+        rule.SetResourceReference(Border.BackgroundProperty, "Accent");
+        head.Children.Add(rule);
         root.Children.Add(head);
 
         var tabs = new StackPanel();
@@ -80,7 +94,8 @@ public sealed class NetworkToolsView : UserControl
         for (int i = 0; i < names.Length; i++)
         {
             int idx = i;
-            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("PillButton")!, Margin = new Thickness(0, 0, 0, 8), HorizontalContentAlignment = HorizontalAlignment.Left };
+            var b = new Button { Content = names[i], Style = (Style)FindResourceOrNull("PillButton")!, Margin = new Thickness(0, 0, 0, 8), HorizontalContentAlignment = HorizontalAlignment.Left, Padding = new Thickness(12, 8, 12, 8) };
+            TintText(b);
             b.Click += (_, _) => Select(idx);
             _tabButtons.Add(b);
             tabs.Children.Add(b);
@@ -109,10 +124,12 @@ public sealed class NetworkToolsView : UserControl
             _tabs[i] = content;
         }
         _body.Child = content;
+        _pageTitle.Text = _tabButtons[i].Content?.ToString() ?? "";
         for (int k = 0; k < _tabButtons.Count; k++)
         {
             _tabButtons[k].FontWeight = k == i ? FontWeights.Bold : FontWeights.Normal;
-            _tabButtons[k].SetResourceReference(BackgroundProperty, k == i ? "TrackBrush" : "InputBg");
+            _tabButtons[k].SetResourceReference(BackgroundProperty, k == i ? "Accent" : "InputBg");
+            _tabButtons[k].SetResourceReference(ForegroundProperty, k == i ? "OnAccent" : "TextPrimary");
         }
     }
 
@@ -195,6 +212,11 @@ public sealed class NetworkToolsView : UserControl
         var r = new Runner();
         _runners.Add(r);
         btn.Content = "▶  " + run;
+        btn.Style = (Style)FindResourceOrNull("PrimaryButton")!;
+        btn.FontSize = 13;
+        btn.Padding = new Thickness(20, 8, 20, 8);
+        btn.Margin = new Thickness(0, 0, 10, 8);
+        TintText(btn);
         btn.Click += async (_, _) =>
         {
             if (r.Cts != null) { r.Cts.Cancel(); return; }
