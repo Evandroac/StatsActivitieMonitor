@@ -216,17 +216,22 @@ public partial class GadgetWindow : Window
     }
 
     // Press and hold the ↔ button to slide the gadget horizontally.
+    private double _moveLastX;
+
+    private double CursorX() => MoveX.PointToScreen(Mouse.GetPosition(MoveX)).X / VisualTreeHelper.GetDpi(this).DpiScaleX;
+
+    // Uses absolute screen coordinates: the thumb moves with the window, so relative deltas would make it jitter.
     private void OnMoveXDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
     {
-        if (_settings.Current.GadgetLocked) return;
-        double dx = e.HorizontalChange * UiScale.Factor;
+        double x = CursorX();
+        double dx = x - _moveLastX;
+        _moveLastX = x;
+        if (_settings.Current.GadgetLocked || dx == 0) return;
         if (IsFixedPosition)
         {
             var work = SystemParameters.WorkArea;
-            var before = Left;
-            RepositionBase();
-            var baseLeft = Left;
-            var target = Math.Clamp(before + dx, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
+            var baseLeft = Left - _settings.Current.GadgetXOffset;
+            var target = Math.Clamp(Left + dx, work.Left, Math.Max(work.Left, work.Right - ActualWidth));
             _settings.Current.GadgetXOffset = target - baseLeft;
             Left = target;
         }
@@ -237,7 +242,11 @@ public partial class GadgetWindow : Window
         }
     }
 
-    private void OnMoveXStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e) => _vm.HoldReadings(true);
+    private void OnMoveXStart(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+    {
+        _moveLastX = CursorX();
+        _vm.HoldReadings(true);
+    }
 
     private void OnMoveXDone(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
     {

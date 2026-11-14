@@ -117,7 +117,7 @@
               <Button x:Name="BtnLock" Style="{StaticResource GadgetToolButton}" Content="🔓" Click="OnToggleLock"/>
               <Button x:Name="BtnFade" Style="{StaticResource GadgetToolButton}" Content="👁" Margin="0,2,0,0" Click="OnToggleFade"/>
           </StackPanel>
-          <Thumb x:Name="MoveX" HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="20" Margin="-10,-6,0,0" Visibility="Collapsed" Cursor="SizeWE" DragStarted="OnMoveXStart" DragDelta="OnMoveXDelta" DragCompleted="OnMoveXDone" MouseDoubleClick="OnMoveXReset">
+          <Thumb x:Name="MoveX" HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="20" Margin="-10,-6,0,0" Visibility="Collapsed" Cursor="Arrow" DragStarted="OnMoveXStart" DragDelta="OnMoveXDelta" DragCompleted="OnMoveXDone" MouseDoubleClick="OnMoveXReset">
                   <Thumb.Template>
                       <ControlTemplate TargetType="Thumb">
                           <Border x:Name="B" CornerRadius="5" Background="{DynamicResource GadgetBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
@@ -130,7 +130,7 @@
                       </ControlTemplate>
                   </Thumb.Template>
               </Thumb>
-          <Thumb x:Name="Grip" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="14" Height="14" Margin="0,0,-10,-6" Cursor="SizeNWSE" Visibility="Collapsed"
+          <Thumb x:Name="Grip" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="14" Height="14" Margin="0,0,-10,-6" Cursor="Arrow" Visibility="Collapsed"
                  DragDelta="OnGripDelta" DragCompleted="OnGripDone" MouseDoubleClick="OnGripReset">
               <Thumb.Template>
                   <ControlTemplate TargetType="Thumb"><Border Background="Transparent"><TextBlock Text="◢" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Opacity="0.7"/></Border></ControlTemplate>
