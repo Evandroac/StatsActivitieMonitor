@@ -28,6 +28,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Ram = new ComponentViewModel("RAM", t => Level(t, 55, 70).brush) { HasTemperature = false };
 
         InitCpuDetails();
+        InitRamDetails();
         ApplySettings();
         _monitor.SnapshotUpdated += OnSnapshot;
         _monitor.ErrorOccurred += OnError;
@@ -59,6 +60,30 @@ public sealed class MainViewModel : ObservableObject, IDisposable
             new DetailItem("Cache", info.Cache),
             _procItem, _threadItem, _handleItem,
         }) Cpu.Details.Add(d);
+    }
+
+    private DetailItem? _ramUsage, _ramCommit, _ramModules, _ramType;
+
+    private void InitRamDetails()
+    {
+        _ramUsage = new DetailItem("Uso da memória", "--");
+        _ramCommit = new DetailItem("Memória confirmada (commit)", "--");
+        _ramType = new DetailItem("Tipo e velocidade", "--");
+        _ramModules = new DetailItem("Módulos instalados", "--");
+        foreach (var d in new[] { _ramUsage, _ramCommit, _ramType, _ramModules }) Ram.Details.Add(d);
+        Task.Run(MemoryInfoService.ReadModules).ContinueWith(t =>
+        {
+            var (mods, ts) = t.Result;
+            System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => { _ramModules.Value = mods; _ramType.Value = ts; });
+        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+    }
+
+    private void UpdateRamDetails(HardwareSnapshot s)
+    {
+        _ramUsage!.Value = s.RamUsedGb.HasValue && s.RamTotalGb.HasValue && s.RamTotalGb > 0
+            ? $"{s.RamUsedGb:0.0} / {s.RamTotalGb:0.0} GB ({s.RamUsedGb / s.RamTotalGb * 100:0}%)" : ComponentViewModel.NotAvailable;
+        _ramCommit!.Value = MemoryInfoService.ReadCommit() is { } c && c.Limit > 0
+            ? $"{c.Used:0.0} / {c.Limit:0.0} GB ({c.Used / c.Limit * 100:0}%)" : ComponentViewModel.NotAvailable;
     }
 
     private void UpdateCounts()
@@ -314,6 +339,7 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         Cpu.Update(s.CpuName, s.CpuLoad, s.CpuTemp, s.CpuClockMhz);
         Gpu.Update(s.GpuName, s.GpuLoad, s.GpuTemp, s.GpuClockMhz);
         Ram.Update(Loc.T("Memória RAM"), s.RamLoad, null, null, s.RamTotalGb, s.RamUsedGb, s.RamAvailableGb);
+        UpdateRamDetails(s);
         Disk.Update(s);
         UpdateSensors(s);
 

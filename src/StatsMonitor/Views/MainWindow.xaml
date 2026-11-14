@@ -171,6 +171,28 @@
                         </Grid>
                     </Grid>
                     <c:Sparkline Visibility="{Binding ShowChart, Converter={StaticResource BoolToVis}}" Height="60" Margin="0,12,0,0" Values="{Binding History}" Stroke="{DynamicResource Accent2}"/>
+                                        <ItemsControl ItemsSource="{Binding Details}" Margin="0,12,0,0" Focusable="False">
+                                            <ItemsControl.Style>
+                                                <Style TargetType="ItemsControl">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="HasItems" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ItemsControl.Style>
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Style="{StaticResource Tile}" MinWidth="130"><StackPanel>
+                                                        <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}"/>
+                                                        <TextBlock Text="{Binding Value}" FontSize="13" FontWeight="SemiBold"/>
+                                                    </StackPanel></Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                 </StackPanel>
             </Border>
         </DataTemplate>
