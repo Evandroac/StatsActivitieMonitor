@@ -151,7 +151,7 @@ public sealed class DiagnosticsView : UserControl
         for (int i = 0; i < Sections.Length; i++)
         {
             int idx = i;
-            var b = new Button { Content = $"{Sections[i].Icon}  {L(Sections[i].Pt, Sections[i].En)}", Style = (Style?)Res("PillButton"), Margin = new Thickness(0, 0, 0, 4), HorizontalContentAlignment = HorizontalAlignment.Left, Padding = new Thickness(10, 6, 10, 6) };
+            var b = new Button { Content = $"{Sections[i].Icon}  {L(Sections[i].Pt, Sections[i].En)}", Style = (Style?)Res("TabButton"), Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(10, 6, 10, 6) };
             b.Click += (_, _) => Show(idx);
             _nav.Add(b); left.Children.Add(b);
         }
@@ -168,8 +168,7 @@ public sealed class DiagnosticsView : UserControl
         _sec = i;
         for (int k = 0; k < _nav.Count; k++)
         {
-            _nav[k].FontWeight = k == i ? FontWeights.Bold : FontWeights.Normal;
-            _nav[k].SetResourceReference(BackgroundProperty, k == i ? "TrackBrush" : "InputBg");
+            _nav[k].Tag = k == i ? "active" : null;
         }
         _body.Children.Clear(); _liveText.Clear(); _charts.Clear();
         _body.Children.Add(Header(i));
