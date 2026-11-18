@@ -2,7 +2,7 @@
 
 Monitor de hardware leve para Windows 10/11 (C#, .NET 8, WPF, MVVM). Exibe em tempo real CPU, GPU, RAM, VRAM, discos, rede, bateria e temperaturas, com painel principal, gadget compacto e telas dedicadas (processos, testes de conexão e diagnóstico do computador). Disponível em 16 idiomas (português, inglês, espanhol, francês, alemão, italiano, russo, chinês, japonês, coreano, árabe, hindi e variantes regionais).
 
-> 💡 **Sobre o projeto:** o Stats Monitor é open-source e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas. Sugestões e relatos de problemas são muito bem-vindos em [Evandroac/StatsActivitieMonitor](https://github.com/Evandroac/StatsActivityMonitor).
+> 💡 **Sobre o projeto:** o Stats Monitor é open-source e faz parte de um estudo sobre o desenvolvimento de software com inteligência artificial. Foi desenhado, programado e feito inteiramente com a ajuda de IA, e por isso pode conter falhas. Sugestões e relatos de problemas são muito bem-vindos em [Evandroac/StatsActivityMonitor](https://github.com/Evandroac/StatsActivityMonitor).
 
 ## Arquitetura
 
